@@ -1,0 +1,34 @@
+$script = <<SCRIPT
+sudo apt update
+sudo apt install memcached -y
+sudo sed -i "s/^-l *$/-l 0.0.0.0" /etc/memcached.conf
+sudo service memcached restart
+
+curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+source /etc/lsb-release
+echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+sudo apt-get install influxdb
+sudo service influxdb start
+SCRIPT
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ceph/ubuntu-xenial"
+  config.vm.box_version = "0.0.1"
+
+  config.vm.provider :libvirt do |domain|
+    domain.memory = 1024
+    domain.driver = 'kvm'
+  end
+
+  # vm dev
+  config.vm.define :devvm1 do |node|
+    node.vm.hostname = 'devvm1'
+    node.vm.synced_folder '.', '/vagrant'
+
+    node.vm.network :private_network,
+      :ip => "172.16.10.10"
+
+    node.vm.provision "shell", inline: $script
+  end
+end
