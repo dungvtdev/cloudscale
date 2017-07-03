@@ -4,7 +4,6 @@ import os
 from bootstrap import app
 from plugins import sqlbackend as sql
 
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer
 
 # test config
@@ -21,7 +20,7 @@ sqlbackend.init_app(app)
 
 
 # test model
-Base = declarative_base()
+Base = sqlbackend.get_base()
 
 
 class TestModel(Base):
@@ -31,7 +30,7 @@ class TestModel(Base):
     number = Column(Integer)
 
 
-app.sqlbackend.create_all(Base)
+app.sqlbackend.create_all()
 
 
 @sql.dbsession

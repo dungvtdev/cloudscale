@@ -8,3 +8,24 @@ LOG_LEVEL = 'DEBUG'
 LOG_NAME = 'CloudScale'
 
 DB_PATH = 'sqlite:///db.sqlite'
+
+DEFAULT_PARAMS = {
+    "pdgabp": {
+        # tinh theo chu ky 1 lan lay du lieu (MONITOR_PERIOD_SECONDS)
+        "data_length": 100,
+        "update_in_time": 10,   # tinh nhu tren
+        "neural_size": 15,
+        "recent_point": 4,
+        "periodic_number": 1
+    },
+    "monitor": {
+        "db_name": "cadvisor",
+        "metric": "cpu_usage_total"
+    }
+}
+
+# chu ky lay du lieu
+MONITOR_PERIOD_SECONDS = 1
+
+# so chu ky lay du lieu duoc du doan truoc
+FORCAST_LENGTH = 1

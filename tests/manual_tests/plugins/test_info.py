@@ -4,7 +4,7 @@ from plugins.info import InfoManager
 
 # test config
 conf = {
-    'DEFAULT_PARAMS' : {
+    'DEFAULT_PARAMS': {
         "TEST": {
             'hello': 'world'
         }
