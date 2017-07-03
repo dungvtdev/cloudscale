@@ -1,6 +1,15 @@
+current_app = None
+
+
+def get_current_app():
+    return current_app
+
+
 class App():
     def __init__(self):
         self._config = {}
+        global current_app
+        current_app = self
 
     def config_from_module(self, config_module):
         # get all upcase attribute

@@ -7,3 +7,4 @@ LOG_CONSOLE = True
 LOG_LEVEL = 'DEBUG'
 LOG_NAME = 'CloudScale'
 
+DB_PATH = 'sqlite:///db.sqlite'
