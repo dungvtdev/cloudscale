@@ -17,6 +17,9 @@ class InfoManager():
             if init_info_func:
                 obj = init_info_func(key)
 
+        return self.patch_info(key, obj)
+
+    def patch_info(self, key, obj):
         obj = self._defaultparams.populate_default_params(key, obj)
         return obj
 

@@ -36,3 +36,8 @@ assert 'hello' in rl
 # get default params without init object
 rl2 = app.infomanager.get_info('TEST')
 assert 'init' not in rl2
+
+obj = {'init': 'this is init'}
+rl3 = app.infomanager.patch_info('TEST', obj)
+assert 'init' in rl3
+assert 'hello' in rl3
