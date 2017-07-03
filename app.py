@@ -10,6 +10,11 @@ class App():
                 config[key] = getattr(config_module, key)
         self._config = config
 
+    def config_from_dict(self, config_dict):
+        for k, v in config_dict.items():
+            if k.isupper():
+                self._config[k] = v
+
     @property
     def config(self):
         return self._config
