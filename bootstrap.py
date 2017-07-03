@@ -1,8 +1,8 @@
 import app as app_module
 import config
 import log
-from modules.info import InfoManager
-from modules.sqlbackend import SQLBackend
+from plugins.info import InfoManager
+from plugins.sqlbackend import SQLBackend
 
 
 def configure_log(app):

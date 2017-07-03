@@ -2,7 +2,7 @@ import setup_test
 import os
 
 from bootstrap import app
-from modules import sqlbackend as sql
+from plugins import sqlbackend as sql
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer

@@ -1,6 +1,6 @@
 import setup_test
 from bootstrap import app
-from modules.info import InfoManager
+from plugins.info import InfoManager
 
 # test config
 conf = {
