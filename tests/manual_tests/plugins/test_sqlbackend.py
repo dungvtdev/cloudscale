@@ -41,8 +41,19 @@ def test_action(session, i):
     session.commit()
 
 
+class TestObject():
+    @sql.dbsession_method
+    def test_action(self, session, i):
+        m = TestModel()
+        m.number = i
+        session.add(m)
+        session.commit()
+
+
 print('Test data, create new database sqlite.')
 test_action(10)
+t = TestObject()
+t.test_action(10)
 
 print('Delete sqlite database')
 os.remove(path)

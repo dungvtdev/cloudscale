@@ -21,6 +21,20 @@ def dbsession(func):
     return func_wrapper
 
 
+def dbsession_method(func):
+    @wraps(func)
+    def func_wrapper(self, *args, **kwargs):
+        app = get_current_app()
+        if app:
+            session = app.sqlbackend.new_session()
+            rl = func(self, session, *args, **kwargs)
+            app.sqlbackend.close_session()
+            return rl
+        else:
+            raise Exception('App must be init first.')
+    return func_wrapper
+
+
 class SQLBackend():
     def init_app(self, app):
         DB_PATH = app.config.get('DB_PATH', 'sqlite:///db.sqlite')
