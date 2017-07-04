@@ -21,7 +21,13 @@ DEFAULT_PARAMS = {
     "monitor": {
         "db_name": "cadvisor",
         "metric": "cpu_usage_total"
-    }
+    },
+    "group": [
+        "pdgabp", "monitor"
+    ],
+    "vm": [
+        "monitor"
+    ]
 }
 
 # chu ky lay du lieu

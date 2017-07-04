@@ -30,6 +30,12 @@ class Group(Base):
 
     instances = relationship("Instance", backref='group')
 
+    def parse_dict(self, group_dict):
+        excepts = ['instances', ]
+        for k in dir(Group):
+            if k not in excepts:
+                setattr(self, k, group_dict.get(k, getattr(self, k)))
+
     def __repr__(self):
         return "<User(name='%s')>" \
                % (self.name)
@@ -46,6 +52,10 @@ class Instance(Base):
     db_name = Column(String(20))
 
     group_id = Column(Integer, ForeignKey('group.group_id'))
+
+    def parse_dict(self, vm_dict):
+        for k in dir(Instance):
+            setattr(self, k, vm_dict.get(k, getattr(self, k)))
 
     def __repr__(self):
         return "<Instance(user_id='%s', instance_id='%s', group_id='%s')>" \
