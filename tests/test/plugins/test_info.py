@@ -6,7 +6,10 @@ conf = {
     'DEFAULT_PARAMS': {
         "TEST": {
             'hello': 'world'
-        }
+        },
+        "other": [
+            "TEST"
+        ]
     }
 }
 
@@ -41,3 +44,8 @@ obj = {'init': 'this is init'}
 rl3 = app.infomanager.patch_info('TEST', obj)
 assert 'init' in rl3
 assert 'hello' in rl3
+
+# test default reference
+rl4 = app.infomanager.get_info('other')
+assert 'hello' in rl4
+assert 'TEST' not in rl4
