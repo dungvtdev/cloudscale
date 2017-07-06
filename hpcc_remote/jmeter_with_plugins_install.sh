@@ -42,3 +42,5 @@ echo "******************************** Install jmeter plugins ******************
 echo "********************** Install Ultimate Thread Group plugins ******************************"
 ./bin/PluginsManagerCMD.sh install jpgc-casutg
 
+# back to current home
+cd $CURRENT_HOME
