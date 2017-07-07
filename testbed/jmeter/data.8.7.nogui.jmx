@@ -15,7 +15,7 @@
         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
           <collectionProp name="Arguments.arguments"/>
         </elementProp>
-        <stringProp name="HTTPSampler.domain">192.168.122.154</stringProp>
+        <stringProp name="HTTPSampler.domain">192.168.122.224</stringProp>
         <stringProp name="HTTPSampler.port">8000</stringProp>
         <stringProp name="HTTPSampler.protocol"></stringProp>
         <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -528,34 +528,6 @@
           <collectionProp name="373655920">
             <stringProp name="19">19</stringProp>
             <stringProp name="481980">481980</stringProp>
-            <stringProp name="3960">3960</stringProp>
-            <stringProp name="480">480</stringProp>
-            <stringProp name="1500">1500</stringProp>
-          </collectionProp>
-          <collectionProp name="-1483553366">
-            <stringProp name="10">10</stringProp>
-            <stringProp name="504000">504000</stringProp>
-            <stringProp name="6000">6000</stringProp>
-            <stringProp name="24960">24960</stringProp>
-            <stringProp name="9960">9960</stringProp>
-          </collectionProp>
-          <collectionProp name="1367909146">
-            <stringProp name="22">22</stringProp>
-            <stringProp name="508200">508200</stringProp>
-            <stringProp name="4980">4980</stringProp>
-            <stringProp name="960">960</stringProp>
-            <stringProp name="7500">7500</stringProp>
-          </collectionProp>
-          <collectionProp name="79248290">
-            <stringProp name="26">26</stringProp>
-            <stringProp name="522960">522960</stringProp>
-            <stringProp name="3480">3480</stringProp>
-            <stringProp name="3000">3000</stringProp>
-            <stringProp name="4980">4980</stringProp>
-          </collectionProp>
-          <collectionProp name="1095970680">
-            <stringProp name="17">17</stringProp>
-            <stringProp name="517980">517980</stringProp>
             <stringProp name="3960">3960</stringProp>
             <stringProp name="480">480</stringProp>
             <stringProp name="1500">1500</stringProp>
