@@ -1,0 +1,1 @@
+java -Djmeter.home JMETER_HOME -Dcf.thread=(1) -Dcf.period=(2:tinh theo phut) -Dcf.nPeriod=(3) -Dcf.rand=(4)[0-1] -Dcf.file=(5 output file)
