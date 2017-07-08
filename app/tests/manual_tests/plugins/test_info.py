@@ -7,7 +7,8 @@ conf = {
     'DEFAULT_PARAMS': {
         "TEST": {
             'hello': 'world'
-        }
+        },
+        "TEST2": ["TEST", ]
     }
 }
 
@@ -34,3 +35,6 @@ t.test()
 
 # get default params without init object
 print(app.infomanager.get_info('TEST'))
+
+g = app.infomanager.patch_info('TEST2', {})
+print(g)

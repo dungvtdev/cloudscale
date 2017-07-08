@@ -1,11 +1,11 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, String, \
     Integer, Boolean, DateTime, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
-from app import current_app
+import datetime
 
-Base = current_app.sqlbackend.get_base()
+from plugins.sqlbackend import Base
 
 
 class Group(Base):
@@ -15,7 +15,7 @@ class Group(Base):
     group_id = Column(String(250), nullable=False, unique=True)
     user_id = Column(String(250), nullable=False)
     name = Column(String(250), nullable=False)
-    desc = Column(String(250), nullable=True)
+    desc = Column(String(250))
     image = Column(String(250))
     flavor = Column(String(250))
     selfservice = Column(String(250))
@@ -28,13 +28,17 @@ class Group(Base):
     periodic_number = Column(Integer)
     update_in_time = Column(Integer)
 
-    instances = relationship("Instance", backref='group')
+    instances = relationship(
+        "Instance", backref=backref('group', lazy='joined'))
+
+    attrs = ['id', 'group_id', 'user_id', 'name', 'desc', 'image', 'flavor',
+             'selfservice', 'provider', 'script_data', 'created', 'data_length',
+             'recent_point', 'periodic_number', 'update_in_time']
 
     def parse_dict(self, group_dict):
-        excepts = ['instances', ]
-        for k in dir(Group):
-            if k not in excepts:
-                setattr(self, k, group_dict.get(k, getattr(self, k)))
+        for k, v in group_dict.items():
+            if k in self.attrs:
+                setattr(self, k, v)
 
     def __repr__(self):
         return "<User(name='%s')>" \
@@ -53,9 +57,13 @@ class Instance(Base):
 
     group_id = Column(Integer, ForeignKey('group.group_id'))
 
+    attrs = ['id', 'user_id', 'instance_id', 'endpoint', 'is_monitoring',
+             'db_name', 'group_id']
+
     def parse_dict(self, vm_dict):
-        for k in dir(Instance):
-            setattr(self, k, vm_dict.get(k, getattr(self, k)))
+        for k, v in vm_dict.items():
+            if k in self.attrs:
+                setattr(self, k, v)
 
     def __repr__(self):
         return "<Instance(user_id='%s', instance_id='%s', group_id='%s')>" \

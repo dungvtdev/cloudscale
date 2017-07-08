@@ -6,6 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from app import get_current_app
 
+Base = declarative_base()
+
 
 def dbsession(func):
     @wraps(func)
@@ -40,7 +42,7 @@ class SQLBackend():
         DB_PATH = app.config.get('DB_PATH', 'sqlite:///db.sqlite')
         self._engine = create_engine(DB_PATH, echo=False)
         self._session = scoped_session(sessionmaker(bind=self._engine))
-        self.Base = declarative_base()
+        self.Base = Base
 
         app.sqlbackend = self
 

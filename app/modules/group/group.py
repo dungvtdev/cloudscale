@@ -1,50 +1,85 @@
+import uuid
+
 from plugins.sqlbackend import dbsession_method
 from . import models
+from core import DependencyModule
+from core.exceptions import ExistsException
 
 
-class GroupUtils():
+class GroupUtils(DependencyModule):
+    __module_name__ = 'grouputils'
+
     group_params_key = 'group'
     vm_params_key = 'vm'
 
-    def init_app(self, app):
-        self._app = app
-        app.grouputils = self
+    def on_register_app(self, app):
+        pass
 
-    # add or update if group exists
+    @property
+    def infomanager(self):
+        return self._app.infomanager
+
     @dbsession_method
     def db_create_group(self, session, group_dict):
-        infomanager = getattr(self._app, 'infomanager')
+        infomanager = self.infomanager
         if infomanager:
             group_dict = self._app.infomanager.patch_info(
                 self.group_params_key, group_dict)
+
+            group_dict.setdefault('group_id', str(uuid.uuid4()))
+
+            rl_group_id = None
 
             exists_group = self.dbutils_get_group(
                 session, group_dict=group_dict)
             if exists_group:
                 exists_group.parse_dict(group_dict)
+                rl_group_id = exists_group.group_id
             else:
                 group = models.Group()
                 group.parse_dict(group_dict)
                 session.add(group)
+                rl_group_id = group.group_id
 
             session.commit()
+
+            return rl_group_id
+
+    @dbsession_method
+    def db_get_group(self, session, group_dict):
+        return self.dbutils_get_group(session, group_dict=group_dict)
 
     @dbsession_method
     def db_drop_group(self, session, group_dict):
         group = self.dbutils_get_group(session, group_dict=group_dict)
         if group:
+            # drop all vm
+            for inst in group.instances:
+                session.delete(inst)
+
             session.delete(group)
             session.commit()
 
     @dbsession_method
     def db_drop_vm(self, session, vm_dict):
-        self.utils_drop_vm(session, vm_dict)
+        self.dbutils_drop_vm(session, vm_dict=vm_dict)
         session.commit()
 
     @dbsession_method
     def db_create_vm(self, session, vm_dict):
         self.dbutils_create_vm(session, vm_dict)
         session.commit()
+
+    @dbsession_method
+    def db_create_vms_onlynew(self, session, vm_dicts):
+        if vm_dicts:
+            for vm_dict in vm_dicts:
+                vm = self.dbutils_get_vm(session, vm_dict=vm_dict)
+                if vm:
+                    raise ExistsException('VM is exists.')
+
+            for vm_dict in vm_dicts:
+                self.dbutils_create_vm(session, vm_dict)
 
     def dbutils_drop_vm(self, session, vm_dict):
         vm = self.dbutils_get_vm(session, vm_dict=vm_dict)
