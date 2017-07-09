@@ -28,4 +28,6 @@ google/cadvisor \
 -storage_driver_host=influxsrv:8086 
 
 sudo apt install python-falcon -y
-wget https://gist.githubusercontent.com/dungvtdev/e3cc837864eb89d695a6884541d8b1e7/raw
+wget -O testapp.py https://gist.githubusercontent.com/dungvtdev/e3cc837864eb89d695a6884541d8b1e7/raw
+
+sudo apt install gunicorn -y
