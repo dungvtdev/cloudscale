@@ -53,19 +53,20 @@ vm_dicts = [
 
 try:
     # tao mot group moi
-    g_id = group.db_create_group(group_dict)
-    g = group.db_get_group({'group_id': g_id})
-    assert g != None
-    assert g.data_length > 0
-    assert g.created != None
+    g_dict_1 = group.db_create_group(group_dict)
+    g_dict_2 = group.db_get_group({'group_id': g_dict_1['group_id']})
+    assert g_dict_1['data_length'] > 0
+    assert 'created' not in g_dict_1
+    assert g_dict_2['created'] is not None
 
-    group.db_drop_group({'group_id': g_id})
+    group.db_drop_group({'group_id': g_dict_2['group_id']})
 
     # drop vm chua ton tai khong bao loi
     group.db_drop_vm(vm_dicts[0])
 
     # create vm
-    group.db_create_vm(vm_dicts[0])
+    vm_dict = group.db_create_vm(vm_dicts[0])
+    assert isinstance(vm_dict, dict)
 
     # bao loi khi tao them vm only new
     try:
