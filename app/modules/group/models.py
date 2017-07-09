@@ -40,6 +40,12 @@ class Group(Base):
             if k in self.attrs:
                 setattr(self, k, v)
 
+    def to_dict(self):
+        d = {}
+        for k in self.attrs:
+            d[k] = getattr(self, k)
+        return d
+
     def __repr__(self):
         return "<User(name='%s')>" \
                % (self.name)
@@ -64,6 +70,13 @@ class Instance(Base):
         for k, v in vm_dict.items():
             if k in self.attrs:
                 setattr(self, k, v)
+
+    def to_dict(self):
+        d = {}
+        for k in self.attrs:
+            d[k] = getattr(self, k)
+
+        return d
 
     def __repr__(self):
         return "<Instance(user_id='%s', instance_id='%s', group_id='%s')>" \

@@ -1,8 +1,20 @@
 from core import DependencyModule
-from core.exceptions import InvalidActionException, NotEnoughParams
+from core.exceptions import InvalidActionException, ActionErrorException, BaseWrapperException
+from core import TSList
+from . import GroupController
+
+
+def compare_groupctrl(g1, g2):
+    if not isinstanceof(g1, GroupController):
+        return False
+    g2_dict = g2 if isinstanceof(g2, dict) else g2.data
+    return g1.test(g2_dict)
 
 
 class Controller(DependencyModule):
+    def __init__(self):
+        self.group_ctrls = TSList(compare_groupctrl)
+
     def on_register_app(self, app):
         pass
 
@@ -19,14 +31,12 @@ class Controller(DependencyModule):
         if self.is_group_exists(group_dict):
             raise InvalidActionException('Can\'t create a exists group')
 
-        if not group_dict.get('instances', None):
-            raise NotEnoughParams('Create new group must containt vms')
-
-        # tao group
-        self.group.db_create_group(group_dict)
-
-        # tao cac vm lien quan
-        self.group.db_create_vms_onlynew(group_dict['instances'])
+        try:
+            groupctrl = GroupController(group_dict)
+            self.group_ctrls.add(groupctrl)
+            groupctrl.run()
+        except BaseWrapperException as e:
+            raise ActionErrorException(e)
 
     def update_group(self, group_dict):
         # sua group, update cac param nhung khong duoc update vm
@@ -41,5 +51,9 @@ class Controller(DependencyModule):
     ***************************************************************************
     """
 
+    def get_running_group(self, group_dict):
+        g = next((g for g in self.group_ctrls if g.test(group_dict)), None)
+        return g
+
     def is_group_exists(self, group_dict):
-        return False
+        return self.get_running_group(group_dict) is not None
