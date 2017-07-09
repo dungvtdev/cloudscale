@@ -1,9 +1,9 @@
 class BaseWrapperException(Exception):
     __ex_name__ = 'BaseWrapperException'
 
-    def __init__(self, *args, **kwargs, copy=None):
+    def __init__(self, copy=None, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
-        if copy AND isinstance(copy, Exception):
+        if copy and isinstance(copy, Exception):
             self.message = 'From: %s, %s' % (copy.__ex_name__, copy.message)
 
 
@@ -21,3 +21,4 @@ class ExistsException(BaseWrapperException):
 
 class NotEnoughParams(BaseWrapperException):
     __ex_name__ = 'NotEnoughParams'
+
