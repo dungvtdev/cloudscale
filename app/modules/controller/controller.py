@@ -12,6 +12,8 @@ def compare_groupctrl(g1, g2):
 
 
 class Controller(DependencyModule):
+    __module_name__ = 'controller'
+
     def __init__(self):
         self.group_ctrls = TSList(compare_groupctrl)
 
@@ -32,7 +34,7 @@ class Controller(DependencyModule):
             raise InvalidActionException('Can\'t create a exists group')
 
         try:
-            groupctrl = GroupController(group_dict)
+            groupctrl = GroupController(self.group, group_dict)
             self.group_ctrls.add(groupctrl)
             groupctrl.run()
         except BaseWrapperException as e:
@@ -57,3 +59,6 @@ class Controller(DependencyModule):
 
     def is_group_exists(self, group_dict):
         return self.get_running_group(group_dict) is not None
+
+    def run(self):
+        pass

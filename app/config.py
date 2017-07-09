@@ -19,8 +19,8 @@ DEFAULT_PARAMS = {
         "periodic_number": 1
     },
     "monitor": {
-        "db_name": "cadvisor",
-        "metric": "cpu_usage_total"
+        # "db_name": "cadvisor",
+        # "metric": "cpu_usage_total"
     },
     "group": [
         "pdgabp", "monitor"
@@ -38,6 +38,18 @@ OPS_ACCOUNT = {
     'project_domain_name': 'default',
     'project_name': 'admin',
     'nova_version': '2.1'
+}
+
+MONITOR = {
+    'interval_minute': 4,
+    'parse_plugin': 'influxdb_series_read',
+    'dump_plugin': 'influxdb_series_write',
+    'parse': {
+        'db': 'cadvisor'
+    },
+    'dump': {
+        'max_fault_minute': 8
+    }
 }
 
 # chu ky lay du lieu

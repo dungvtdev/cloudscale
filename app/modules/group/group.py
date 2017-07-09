@@ -84,6 +84,12 @@ class GroupUtils(DependencyModule):
         return vm_dict
 
     @dbsession_method
+    def db_update_vm(self, session, vm_dict):
+        vm = self.dbutils_get_vm_model(vm_dict=vm_dict)
+        vm.parse_dict(vm_dict)
+        session.commit()
+
+    @dbsession_method
     def db_create_vms_onlynew(self, session, vm_dicts):
         if vm_dicts:
             rl = []

@@ -21,32 +21,41 @@ class OpsVmService(DependencyModule):
         return vmthread
 
 
-class VmCreaterThread(threading.Thread):
+class VmScaleBaseThread(threading.Thread):
     # state = processing, fail, success
+    def __init__(self, *args, **kwargs):
+        self.daemon = False
+
+        self.save_exception = None
+        self.save_state = None
+
+    def is_finish(self):
+        return self.save_state in ['fail', 'success']
+
+    @property
+    def exception(self):
+        return self.save_exception
+
+    @property
+    def state(self):
+        return self.save_state
+
+
+class VmCreaterThread(VmScaleBaseThread):
     CHECK_INTERVAL = 1
     TIME_OUT = 30
 
     def __init__(self, data, osclient):
-        threading.Thread.__init__(self)
-        self.daemon = False
+        VmScaleBaseThread.__init__(self, data, osclient)
 
         self.data = data
         self.osclient = osclient
 
-        self._exception = None
-        self._state = None
         self._vm = None      # {'instance_id', 'ip'}
 
-    def is_finish(self):
-        return self._state in ['fail', 'success']
-
     @property
-    def exception(self):
-        return self._exception
-
-    @property
-    def state(self):
-        return self._state
+    def vm(self):
+        return self._vm
 
     def run(self):
         try:
@@ -66,21 +75,18 @@ class VmCreaterThread(threading.Thread):
                                                          user_data=user_data,
                                                          time_out=self.TIME_OUT,
                                                          check_interval=self.CHECK_INTERVAL)
-            self._state = 'success'
+            self.save_state = 'success'
         except Exception as e:
-            self._exception = e
-            self._state = 'fail'
+            self.save_exception = e
+            self.save_state = 'fail'
 
 
-class VmDropThread(threading.Thread):
+class VmDropThread(VmScaleBaseThread):
     def __init__(self, data):
-        threading.Thread.__init__(self)
+        VmScaleBaseThread.__init__(self, data)
         self.data = data
         self.osclient = osclient
 
-        self.state = None
-        self.exception = None
-
     def run(self):
         self.osclient.delete(self.data['instance_id'])
-        self.state = 'success'
+        self.save_state = 'success'
