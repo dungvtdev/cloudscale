@@ -42,7 +42,7 @@ OPS_ACCOUNT = {
 }
 
 MONITOR = {
-    'max_batch_size': 100,
+    'max_batch_size': 10000,
     'max_fault_point': 8,
     'read_plugin': {
         'plugin': 'cadvisor_influxdb_series_read',

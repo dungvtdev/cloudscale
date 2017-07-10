@@ -237,7 +237,8 @@ class GroupController(threading.Thread):
         try:
             result = self.monitorcontroller.init_data()
             interval = result['first_interval']
-
+            # values = self.monitorcontroller.get_data_series()
+            print(sum(len(v) for v in values))
         except Exception as e:
             raise e
 

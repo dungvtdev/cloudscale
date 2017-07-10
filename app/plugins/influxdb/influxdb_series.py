@@ -79,19 +79,19 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
         use_length = (time_from is None or time_to is None) and time_length
         if use_length:
             if time_from is not None:
-                q = 'SELECT value from {metric} where time > {time_from}{epoch} AND time < {time_to}{epoch} AND {conditions}'
+                q = 'SELECT value from {metric} where time >= {time_from}{epoch} AND time <= {time_to}{epoch} AND {conditions}'
                 q = q.format(metric=metric, epoch=epoch, conditions=conditions,
                              time_from=time_from, time_to=time_from + time_length)
             elif time_to is not None:
-                q = 'SELECT value from {metric} where time > {time_from}{epoch} AND time < {time_to}{epoch} AND {conditions}'
+                q = 'SELECT value from {metric} where time >= {time_from}{epoch} AND time <= {time_to}{epoch} AND {conditions}'
                 q = q.format(metric=metric, epoch=epoch, conditions=conditions,
                              time_from=time_to - time_length, time_to=time_to)
             else:
-                q = 'SELECT value from {metric} where time > now() - {time_length}{epoch} AND {conditions}'
+                q = 'SELECT value from {metric} where time >= now() - {time_length}{epoch} AND {conditions}'
                 q = q.format(metric=metric, epoch=epoch,
                              conditions=conditions, time_length=time_length)
         else:
-            q = 'SELECT value from {metric} where time > {time_from}{epoch} AND time < {time_to}{epoch} AND {conditions}'
+            q = 'SELECT value from {metric} where time >= {time_from}{epoch} AND time <= {time_to}{epoch} AND {conditions}'
             q = q.format(metric=metric, epoch=epoch, conditions=conditions,
                          time_from=time_from, time_to=time_to)
         return q
@@ -115,6 +115,50 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
                 raise Exception('Data not correct form or null')
         else:
             raise Exception(r.text)
+
+    def read_value(self, tag):
+        return self.read_write_value('read', tag)
+
+    def write_value(self, tag, value):
+        self.read_write_value('write', tag, value)
+
+    def read_write_value(self, action, tag, *args):
+        endpoint = config['endpoint']
+        db = config['db']
+        metric = config['metric']
+        tags = config['tags']
+        tags['tag'] = tag
+        epoch = config['epoch']
+
+        # build tags
+
+        if action == 'read':
+            tags_str = ' AND '.join("%s=%s" % (k, v) for k, v in tags.items())
+            url = 'http://{endpoint}:8086/query'.format(endpoint=endpoint)
+            query = 'SELECT value from {metric} where {tags_str}'.format(
+                metric=metric, tags_str=tags_str)
+            params = {
+                'epoch': epoch,
+                'db': db,
+                'q': query
+            }
+            r = requests.get(url, params=params)
+            try:
+                value = ['results'][0]['series'][0]['values'][0][1]
+                return value
+            except Exception as e:
+                raise Exception('Get error')
+        else:
+            tags_str = ','.join("%s=%s" % (k, v) for k, v in tags.items())
+            url = 'http://{endpoint}:8086/write?db={db}&epoch={epoch}'
+            url = url.format(endpoint=endpoint, db=db, epoch=epoch)
+            value = args[0]
+            data = '{metric},{tags} value={value} 0'.format(
+                metric=metric, tags=tags_str, value=value)
+            r = requests.post(url, data=data)
+            success = r.status_code == 200 or r.status_code == 204
+            if not success:
+                raise Exception('Error when write value')
 
 
 class SimpleInfluxdb():

@@ -53,7 +53,7 @@ class CPUTotalRead(ReadDriverBase):
                     metric=metric, time_length=time_length, epoch=epoch)
         else:
             q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
-            q = q.format(metric=metric, utc_begin=time_to - time_length,
+            q = q.format(metric=metric, utc_begin=time_from,
                          utc_end=time_to, epoch=epoch)
         # print(q)
         return q

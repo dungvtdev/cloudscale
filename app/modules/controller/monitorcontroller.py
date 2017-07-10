@@ -62,15 +62,16 @@ class MonitorController():
 
         self.data_total = 0
 
+        max_time_length = max_batch_size / 47
         while(True):
             try:
-                timevalues = self.reader.read(time_length=max_batch_size,
+                timevalues = self.reader.read(time_length=max_time_length,
                                               time_to=time_to)
                 if not timevalues:
                     break
 
                 last = timevalues[-1][0]
-                time_to = timevalues[0][0]
+                time_to = timevalues[0][0] - 1
 
                 if not time_from_begin:
                     time_from_begin = last
@@ -83,7 +84,6 @@ class MonitorController():
 
                 # convert to time value pair to write
                 self.write_data_series(newest, last, self.interval_minute)
-
                 is_finish = len(df) != len(newest)
                 if(is_finish):
                     break
@@ -95,6 +95,8 @@ class MonitorController():
 
         # khi lay xong du lieu, check lai do dai du lieu xem the nao
         first_interval = interval_minute
+
+        last_time = time_from_begin
 
         try:
             tv = self.reader.read(time_from=time_from_begin)
@@ -111,9 +113,15 @@ class MonitorController():
                     # bo di phan tu cuoi vi chua du chu ky
                     newest = newest[:len(newest) - 1]
                     cache = [newest, ] + cache
+                    last = newest[-1][0]
                     self.write_data_series(newest, last, self.interval_minute)
+
+                    last_time = last
+            # ghi lai last time value
+            self.cacher.write_value('last_time', last_time)
+            print('write %s ' % value)
         except Exception as e:
-            pass
+            raise e
 
         # tinh tong so point thu duoc
         total = sum(len(c) for c in cache)
@@ -133,6 +141,43 @@ class MonitorController():
         values = [((begin + i * step) * 1000000000 * 60, series[i])
                   for i in range(len(series))]
         self.cacher.write(values)
+
+    def get_data_series(self):
+        # max_time_length = self.max_batch_size * self.interval_minute
+        max_batch_size = 1000
+        max_time_length = max_batch_size * self.interval_minute
+
+        # TODO can than cho nay neu khong read duoc value
+        try:
+            time_to = self.cacher.read_value('last_time')
+        except:
+            time_to = None
+
+        accum = []
+        while(True):
+            try:
+                values = self.cacher.read(
+                    time_to=time_to, time_length=max_time_length)
+
+                if not values:
+                    break
+
+                # tru 1 cung duoc vi so sanh <= time_to
+                time_to = values[0][0] - 1
+
+                accum.append(values)
+
+                is_finish = len(values) < max_batch_size
+
+                if(is_finish):
+                    break
+            except Exception as e:
+                if 'Got Data is None' in e.message:
+                    break
+                else:
+                    raise e
+
+        return accum[::-1]
 
     def get_last_one(self):
         values = self.reader.read(time_length=self.interval_minute)
