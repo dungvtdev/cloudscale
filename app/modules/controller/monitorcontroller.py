@@ -19,8 +19,9 @@ class MonitorController():
         self.max_batch_size = app_config['max_batch_size']
         self.max_fault_point = app_config.get('max_fault_point', 0)
 
-        read_plugin = getattr(app, app_config['parse_plugin'])
-        def_read_config = app_config.get('parse', {})
+        read_plugin_config = app_config['read_plugin']
+        read_plugin = getattr(app, read_plugin_config['plugin'])
+        def_read_config = read_plugin_config['config']
         read_config = {
             'endpoint': endpoint,
             'db': def_read_config['db'],
@@ -31,10 +32,11 @@ class MonitorController():
 
         self.reader = read_plugin.create(read_config)
 
-        write_plugin = getattr(app, app_config['dump_plugin'])
-        def_write_config = app_config.get('dump', {})
-        write_config = {
-            'endpoint': def_write_config['endpoint'],
+        cache_plugin_config = app_config['cache_plugin']
+        cache_plugin = getattr(app, cache_plugin_config['plugin'])
+        def_cache_config = cache_plugin_config['config']
+        cache_config = {
+            'endpoint': def_cache_config['endpoint'],
             'metric': metric,
             'epoch': epoch,
             'tags': {
@@ -42,7 +44,7 @@ class MonitorController():
             },
             'db': to_db
         }
-        self.writer = write_plugin.create(write_config)
+        self.cacher = cache_plugin.create(cache_config)
 
     @property
     def data_total(self):
@@ -130,7 +132,7 @@ class MonitorController():
         begin = last - len(series) + 1
         values = [((begin + i * step) * 1000000000 * 60, series[i])
                   for i in range(len(series))]
-        self.writer.write(values)
+        self.cacher.write(values)
 
     def get_last_one(self):
         values = self.reader.read(time_length=self.interval_minute)

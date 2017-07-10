@@ -5,14 +5,14 @@ from core import DependencyModule
 from core.exceptions import NotEnoughParams
 
 
-class InfluxdbSeriesReadPlugin(DependencyModule):
-    __module_name__ = 'influxdb_series_read'
+class CadvisorInfluxdbSeriesReadPlugin(DependencyModule):
+    __module_name__ = 'cadvisor_influxdb_series_read'
 
     def on_register_app(self, app):
         pass
 
     def create(self, config):
-        return InfluxdbSeriesRead(config)
+        return CadvisorInfluxdbSeriesRead(config)
 
 
 class ReadDriverBase():
@@ -106,7 +106,7 @@ class CPUTotalRead(ReadDriverBase):
             raise Exception('Unknown filter %s' % filter_setting)
 
 
-class InfluxdbSeriesRead():
+class CadvisorInfluxdbSeriesRead():
     map = {
         'cpu_usage_total': CPUTotalRead
     }

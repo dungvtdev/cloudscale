@@ -1,6 +1,6 @@
 import time
 import setup_test
-from plugins.influxdb import InfluxdbSeriesWritePlugin
+from plugins.influxdb import InfluxdbSeriesPlugin
 
 
 config = {
@@ -20,11 +20,14 @@ class App():
 
 app = App()
 
-writerservice = InfluxdbSeriesWritePlugin()
-writerservice.init_app(app)
+service = InfluxdbSeriesPlugin()
+service.init_app(app)
 
-writer = writerservice.create(config)
+driver = service.create(config)
 
 values = [(i, int(time.time() - i) * 1000000000) for i in range(1000)]
 
-writer.write(values)
+driver.write(values)
+
+read_values = driver.read(time_length=1000)
+print(read_values)

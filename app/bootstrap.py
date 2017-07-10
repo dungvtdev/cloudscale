@@ -3,8 +3,8 @@ import config
 import log
 from plugins.info import InfoManager
 from plugins.sqlbackend import SQLBackend
-from plugins.influxdb import InfluxdbSeriesReadPlugin, \
-    InfluxdbSeriesWritePlugin
+from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin, \
+    InfluxdbSeriesPlugin
 from modules.group import GroupUtils
 from modules.controller import Controller
 
@@ -26,10 +26,10 @@ def configure_sqlbackend_plugin(app):
 
 
 def configure_influxdb_plugin(app):
-    influxdbseriesread = InfluxdbSeriesReadPlugin()
+    influxdbseriesread = CadvisorInfluxdbSeriesReadPlugin()
     influxdbseriesread.init_app(app)
 
-    influxdbserieswrite = InfluxdbSeriesWritePlugin()
+    influxdbserieswrite = InfluxdbSeriesPlugin()
     influxdbserieswrite.init_app(app)
 
 

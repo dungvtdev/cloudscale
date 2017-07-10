@@ -6,3 +6,10 @@ GET http://192.168.122.124:8086/query
     ?db=cadvisor
     &epoch=s
     &q=select value from cpu_usage_total where time > now() - 5m group by container_name
+
+###
+
+GET http://192.168.122.124:8086/query
+    ?db=monitor_test_vm
+    &epoch=s
+    &q=select value from cpu_usage_total where container_name="/"

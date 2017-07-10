@@ -1,2 +1,2 @@
-from .influxdb_series_read import InfluxdbSeriesReadPlugin
-from .influxdb_series_write import InfluxdbSeriesWritePlugin
+from .cadvisor_influxdb_series_read import CadvisorInfluxdbSeriesReadPlugin
+from .influxdb_series import InfluxdbSeriesPlugin

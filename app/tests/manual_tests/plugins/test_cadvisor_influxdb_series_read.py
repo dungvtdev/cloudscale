@@ -1,5 +1,5 @@
 import setup_test
-from plugins.influxdb import InfluxdbSeriesReadPlugin
+from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin
 
 config = {
     'endpoint': '192.168.122.124',
@@ -17,7 +17,7 @@ class App():
 
 app = App()
 
-read_plugin = InfluxdbSeriesReadPlugin()
+read_plugin = CadvisorInfluxdbSeriesReadPlugin()
 read_plugin.init_app(app)
 
 reader = read_plugin.create(config)
