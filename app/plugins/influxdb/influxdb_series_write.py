@@ -26,7 +26,7 @@ class CpuTotalWriter(WriteDriverBase):
             CpuTotalWriter._instance = CpuTotalWriter()
         return CpuTotalWriter._instance
 
-    def create_database(self, endpoint, db):
+    def _create_database(self, endpoint, db):
         p = 'http://{endpoint}:8086/query?q=CREATE DATABASE {db}'
         p = p.format(endpoint=endpoint, db=db)
         r = requests.post(p)
@@ -49,23 +49,21 @@ class CpuTotalWriter(WriteDriverBase):
         base = '{metric},{tags} %s'.format(metric=metric, tags=tags_str)
         tmpl = base % 'value={value} {time}'
 
-        data = '\n'.join(tmpl.format(value=line[0], time=line[1])
+        data = '\n'.join(tmpl.format(value=line[1], time=line[0])
                          for line in values)
 
         r = requests.post(url, data=data)
         if r.status_code == 404:
             body = json.loads(r.text)
             if "database not found" in body.get("error", ""):
-                self.create_database(endpoint, db)
+                self._create_database(endpoint, db)
 
                 # khong lap lai truong hop so sanh database not found nua,
                 # tranh bi lap vo han
                 r = requests.post(url, data=data)
 
         if r.status_code != 204 and r.status_code != 200:
-            return False, body.get("error", "")
-
-        return True, ""
+            raise Exception(body.get("error", ""))
 
 
 class InfluxdbSeriesWrite():
@@ -80,7 +78,8 @@ class InfluxdbSeriesWrite():
         self.writer = writerclass.default()
 
     def write(self, values):
-        # values = [(value, time),]
-        success, error = self.writer.write_data(self.config, values)
-        if not success:
-            raise Exception(error)
+        # values = [(time, value),]
+        try:
+            self.writer.write_data(self.config, values)
+        except Exception as e:
+            raise e

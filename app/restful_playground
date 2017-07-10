@@ -1,6 +1,8 @@
-// POST http://192.168.122.124:8086/query?q=CREATE DATABASE mydb2
+POST http://192.168.122.124:8086/query?q=CREATE DATABASE mydb2
+
+###
 
 GET http://192.168.122.124:8086/query
     ?db=cadvisor
     &epoch=s
-    &q=select * from cpu_usage_total where time > now() - 5m group by container_name
+    &q=select value from cpu_usage_total where time > now() - 5m group by container_name
