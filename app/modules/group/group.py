@@ -48,7 +48,6 @@ class GroupUtils(DependencyModule):
             group = models.Group()
             group.parse_dict(group_dict)
             session.add(group)
-            rl_group_id = group.group_id
 
         session.commit()
 
@@ -85,7 +84,7 @@ class GroupUtils(DependencyModule):
 
     @dbsession_method
     def db_update_vm(self, session, vm_dict):
-        vm = self.dbutils_get_vm_model(vm_dict=vm_dict)
+        vm = self.dbutils_get_vm_model(session, vm_dict=vm_dict)
         vm.parse_dict(vm_dict)
         session.commit()
 
@@ -96,12 +95,14 @@ class GroupUtils(DependencyModule):
             for vm_dict in vm_dicts:
                 vm = self.dbutils_get_vm_model(session, vm_dict=vm_dict)
                 if vm:
-                    raise ExistsException('VM is exists.')
+                    # raise ExistsException('VM is exists.')
+                    pass
 
             for vm_dict in vm_dicts:
                 vm_rl = self.dbutils_create_vm_model(session, vm_dict)
                 rl.append(vm_rl)
 
+            session.commit()
             return rl
 
     def dbutils_drop_vm_model(self, session, vm_dict):

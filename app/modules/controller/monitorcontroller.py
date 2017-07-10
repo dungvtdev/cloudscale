@@ -12,18 +12,18 @@ class MonitorController():
         self.interval_minute = group_config['interval_minute']
 
         # 2 gia tri trong thuat toan, group khong the thay doi duoc
-        epoch = 's'
+        epoch = 'm'
         filter_setting = 'root_container_filter'
 
         app_config = app.config['MONITOR']
         self.max_batch_size = app_config['max_batch_size']
-        self.max_fault_point = def_write_config.get('max_fault_point', 0)
+        self.max_fault_point = app_config.get('max_fault_point', 0)
 
         read_plugin = getattr(app, app_config['parse_plugin'])
         def_read_config = app_config.get('parse', {})
         read_config = {
             'endpoint': endpoint,
-            'db': def_read_config['db']
+            'db': def_read_config['db'],
             'metric': metric,
             'epoch': epoch,
             'filter': filter_setting
@@ -62,13 +62,13 @@ class MonitorController():
 
         while(True):
             try:
-                timevalues = self.reader.read(time_lenth=max_batch_size,
+                timevalues = self.reader.read(time_length=max_batch_size,
                                               time_to=time_to)
                 if not timevalues:
                     break
 
                 last = timevalues[-1][0]
-                time_to = last
+                time_to = timevalues[0][0]
 
                 if not time_from_begin:
                     time_from_begin = last
@@ -76,12 +76,11 @@ class MonitorController():
                 df = su.minutevaluepair_to_pdseries(timevalues)
                 df = su.resample(df, self.interval_minute)
                 newest = su.get_newestseries(df, max_fault_point)
-
                 # cache lai de dung ngay khi du dieu kien train data
                 cache.append(newest)
 
                 # convert to time value pair to write
-                self.write_data_series(newest, last)
+                self.write_data_series(newest, last, self.interval_minute)
 
                 is_finish = len(df) != len(newest)
                 if(is_finish):
@@ -110,7 +109,7 @@ class MonitorController():
                     # bo di phan tu cuoi vi chua du chu ky
                     newest = newest[:len(newest) - 1]
                     cache = [newest, ] + cache
-                    self.write_data_series(newest, last)
+                    self.write_data_series(newest, last, self.interval_minute)
         except Exception as e:
             pass
 
@@ -121,12 +120,16 @@ class MonitorController():
         self.logger.info('Get %s point from %s' %
                          (total, self.group_config['endpoint']))
 
-        return first_interval
+        return {
+            'first_interval': first_interval,
+            'total': total,
+            'cache': cache
+        }
 
-    def write_data_series(self, series, last):
+    def write_data_series(self, series, last, step):
         begin = last - len(series) + 1
-        values = [((begin + i) * 1000000000 * 60, series[i])
-                  for i in range(len(newest))]
+        values = [((begin + i * step) * 1000000000 * 60, series[i])
+                  for i in range(len(series))]
         self.writer.write(values)
 
     def get_last_one(self):

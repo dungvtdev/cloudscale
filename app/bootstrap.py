@@ -22,6 +22,7 @@ def configure_info_manager_plugin(app):
 def configure_sqlbackend_plugin(app):
     sqlbackend = SQLBackend()
     sqlbackend.init_app(app)
+    sqlbackend.create_all()
 
 
 def configure_influxdb_plugin(app):
@@ -48,6 +49,21 @@ application.config_from_module(config)
 configure_log(application)
 configure_info_manager_plugin(application)
 configure_sqlbackend_plugin(application)
+configure_influxdb_plugin(application)
 
 configure_group_module(application)
 configure_controller(application)
+
+group_dict = {
+    'name': 'test_vm',
+    'user_id': 'u1',
+    'image': 'i1',
+    'flavor': 'f1',
+    'selfservice': 's1',
+    'provider': 'p1',
+    'instances': [{
+        'endpoint': '192.168.122.124',
+        'instance_id': 'is1'
+    }]
+}
+app.controller.create_group(group_dict)

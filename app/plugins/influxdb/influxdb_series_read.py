@@ -55,7 +55,7 @@ class CPUTotalRead(ReadDriverBase):
             q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
             q = q.format(metric=metric, utc_begin=time_to - time_length,
                          utc_end=time_to, epoch=epoch)
-        print(q)
+        # print(q)
         return q
 
     def read_data(self, config, time_from=None, time_to=None, time_length=None):

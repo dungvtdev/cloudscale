@@ -1,5 +1,6 @@
 from core import DependencyModule
-from core.exceptions import InvalidActionException, ActionErrorException, BaseWrapperException
+from core.exceptions import ActionInvalidException, ActionErrorException,\
+    BaseWrapperException
 from core import TSList
 from . import GroupController
 
@@ -34,9 +35,10 @@ class Controller(DependencyModule):
             raise InvalidActionException('Can\'t create a exists group')
 
         try:
-            groupctrl = GroupController(self.group, group_dict)
+            groupctrl = GroupController(self._app, group_dict)
             self.group_ctrls.add(groupctrl)
-            groupctrl.run()
+            groupctrl.init_group()
+            groupctrl.run_up()
         except BaseWrapperException as e:
             raise ActionErrorException(e)
 
@@ -54,11 +56,8 @@ class Controller(DependencyModule):
     """
 
     def get_running_group(self, group_dict):
-        g = next((g for g in self.group_ctrls if g.test(group_dict)), None)
+        g = self.group_ctrls.get(group_dict)
         return g
 
     def is_group_exists(self, group_dict):
-        return self.get_running_group(group_dict) is not None
-
-    def run(self):
-        pass
+        return self.group_ctrls.is_exist(group_dict)

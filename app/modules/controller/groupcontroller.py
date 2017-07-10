@@ -3,14 +3,14 @@ import threading
 
 # from threading import Lock
 import time
-from core.exceptions import NotEnoughParams
+from core.exceptions import NotEnoughParams, ExistsException
 from . import MonitorController
 
 
 class GroupController(threading.Thread):
     WARM_UP_TIME_SECS = 240
 
-    def __init__(self, app, groupservice, group_dict):
+    def __init__(self, app, group_dict):
         threading.Thread.__init__(self)
 
         self.app = app
@@ -18,7 +18,7 @@ class GroupController(threading.Thread):
 
         self.is_running = False
 
-        self.groupservice = groupservice
+        self.groupservice = self.app.grouputils
 
         if not group_dict.get('instances', None):
             raise NotEnoughParams('Create new group must containt vms')
@@ -28,9 +28,15 @@ class GroupController(threading.Thread):
         # tao cac vm lien quan
         for vm in group_dict['instances']:
             vm['is_monitoring'] = False
+            vm['user_id'] = group_dict['user_id']
 
-        vm_dicts = self.groupservice.db_create_vms_onlynew(
-            group_dict['instances'])
+        try:
+            vm_dicts = self.groupservice.db_create_vms_onlynew(
+                group_dict['instances'])
+        except ExistsException as e:
+            # xoa group da tao
+            self.groupservice.db_drop_group(group_dict)
+            raise e
 
         group_dict['instances'] = vm_dicts
 
@@ -77,7 +83,12 @@ class GroupController(threading.Thread):
         self.monitorcontroller = self.create_monitorcontroller(vm)
 
     def create_monitorcontroller(self, vm):
-        group_config = {}
+        group_config = {
+            'endpoint': vm['endpoint'],
+            'to_db': 'monitor_%s' % self.data['name'],
+            'metric': self.data['metric'],
+            'interval_minute': self.data['interval_minute'],
+        }
         return MonitorController(group_config, self.app)
 
     """ Status region
@@ -156,8 +167,8 @@ class GroupController(threading.Thread):
             'image': self.data['image'],
             'flavor': self.data['flavor'],
             'selfservice': self.data['selfservice'],
-            'provider_name': self.data['provider']
-            'user_data': self.data['user_data']
+            'provider_name': self.data['provider'],
+            'user_data': self.data['user_data'],
         }
 
         vmthread = self.opsvm.make_createvm_thread(data)
@@ -175,7 +186,7 @@ class GroupController(threading.Thread):
             self._last_scale_time = time.time()
             vm = vmthread.vm
             vm_dict = {
-                'instance_id': vm['instance_id']
+                'instance_id': vm['instance_id'],
                 'endpoint': 'ip',
                 'user_id': self.data['user_id'],
                 'is_monitoring': False
@@ -224,12 +235,14 @@ class GroupController(threading.Thread):
 
         interval = self.interval_minute
         try:
-            interval = self.monitorcontroller.init_data()
+            result = self.monitorcontroller.init_data()
+            interval = result['first_interval']
+
         except Exception as e:
             raise e
 
         while(self.is_running):
-            time.sleep(interval)
+            time.sleep(interval * 60)
             interval = self.interval_minute
 
             timestamp, value = self.monitorcontroller.get_last_one()

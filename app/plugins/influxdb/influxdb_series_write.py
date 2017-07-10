@@ -54,9 +54,10 @@ class CpuTotalWriter(WriteDriverBase):
 
         r = requests.post(url, data=data)
 
-        body = json.loads(r.text)
         if r.status_code == 404:
-            if "database not found" in body.get("error", ""):
+            # body = json.loads(r.text)
+            # if "database not found" in body.get("error", ""):
+            if "database not found" in r.text:
                 self._create_database(endpoint, db)
 
                 # khong lap lai truong hop so sanh database not found nua,
@@ -64,7 +65,8 @@ class CpuTotalWriter(WriteDriverBase):
                 r = requests.post(url, data=data)
 
         if r.status_code != 204 and r.status_code != 200:
-            raise Exception(body.get("error", ""))
+            # raise Exception(body.get("error", ""))
+            raise Exception(r.text)
 
 
 class InfluxdbSeriesWrite():
