@@ -20,13 +20,13 @@ DEFAULT_PARAMS = {
     },
     "monitor": {
         # "db_name": "cadvisor",
-        # "metric": "cpu_usage_total"
+        "metric": ["cpu_usage_total", ]
     },
     "group": [
         "pdgabp", "monitor"
     ],
     "vm": [
-        "monitor"
+        # "monitor"
     ]
 }
 
@@ -45,7 +45,7 @@ MONITOR = {
     'parse_plugin': 'influxdb_series_read',
     'dump_plugin': 'influxdb_series_write',
     'parse': {
-        'db': 'cadvisor'
+        'db': 'cadvisor',
     },
     'dump': {
         'max_fault_minute': 8

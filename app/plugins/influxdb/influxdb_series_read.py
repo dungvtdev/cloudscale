@@ -17,3 +17,12 @@ class InfluxdbSeriesRead():
         self.dbname = config['dbname']
         self.max_fault_minute = config.get('max_fault_minute', 0)
         self.batch_size = config.get('batch_size', 0)
+
+
+class ReadDriverBase():
+    pass
+
+
+class CPUTotalRead(ReadDriverBase):
+    def __init__(self, data):
+        pass

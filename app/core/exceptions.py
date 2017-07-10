@@ -21,4 +21,3 @@ class ExistsException(BaseWrapperException):
 
 class NotEnoughParams(BaseWrapperException):
     __ex_name__ = 'NotEnoughParams'
-
