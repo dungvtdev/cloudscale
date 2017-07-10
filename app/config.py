@@ -42,13 +42,14 @@ OPS_ACCOUNT = {
 
 MONITOR = {
     'interval_minute': 4,
+    'max_batch_size': 1000, 
+    'max_fault_point': 8,
     'parse_plugin': 'influxdb_series_read',
     'dump_plugin': 'influxdb_series_write',
     'parse': {
         'db': 'cadvisor',
     },
     'dump': {
-        'max_fault_point': 8,
         'endpoint': '192.168.122.124'
     }
 }

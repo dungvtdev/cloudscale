@@ -36,33 +36,33 @@ class CPUTotalRead(ReadDriverBase):
         return serie["tags"]["container_name"] == '/'
 
     def generate_query(self, endpoint, metric, epoch,
-                       secs_from, secs_to, secs_length):
-        use_length = (secs_from is None or secs_to is None) and secs_length
+                       time_from, time_to, time_length):
+        use_length = (time_from is None or time_to is None) and time_length
         if use_length:
-            if secs_from is not None:
+            if time_from is not None:
                 q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
-                q = q.format(metric=metric, utc_begin=secs_from,
-                             utc_end=secs_from + secs_length, epoch=epoch)
-            elif secs_to is not None:
+                q = q.format(metric=metric, utc_begin=time_from,
+                             utc_end=time_from + time_length, epoch=epoch)
+            elif time_to is not None:
                 q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
-                q = q.format(metric=metric, utc_begin=secs_to - secs_length,
-                             utc_end=secs_to, epoch=epoch)
+                q = q.format(metric=metric, utc_begin=time_to - time_length,
+                             utc_end=time_to, epoch=epoch)
             else:
-                q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= now() - {secs_length}{epoch} GROUP BY "container_name" fill(null)'
+                q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= now() - {time_length}{epoch} GROUP BY "container_name" fill(null)'
                 q = q.format(
-                    metric=metric, secs_length=secs_length, epoch=epoch)
+                    metric=metric, time_length=time_length, epoch=epoch)
         else:
             q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
-            q = q.format(metric=metric, utc_begin=secs_to - secs_length,
-                         utc_end=secs_to, epoch=epoch)
+            q = q.format(metric=metric, utc_begin=time_to - time_length,
+                         utc_end=time_to, epoch=epoch)
         print(q)
         return q
 
-    def read_data(self, config, secs_from=None, secs_to=None, secs_length=None):
+    def read_data(self, config, time_from=None, time_to=None, time_length=None):
         # validate
-        if not (secs_from or secs_to or secs_length):
+        if not (time_from or time_to or time_length):
             raise NotEnoughParams(
-                'secs_from, secs_to, secs_length are all None')
+                'time_from, time_to, time_length are all None')
 
         endpoint = config['endpoint']
         db = config['db']
@@ -72,8 +72,8 @@ class CPUTotalRead(ReadDriverBase):
 
         # generate query
         query = self.generate_query(endpoint=endpoint, metric=metric,
-                                    epoch=epoch, secs_from=secs_from,
-                                    secs_to=secs_to, secs_length=secs_length)
+                                    epoch=epoch, time_from=time_from,
+                                    time_to=time_to, time_length=time_length)
         url = 'http://{endpoint}:8086/query'.format(endpoint=endpoint)
         params = {
             'db': db,
@@ -116,10 +116,10 @@ class InfluxdbSeriesRead():
         readerclass = self.map[config['metric']]()
         self.reader = readerclass.default()
 
-    def read(self, secs_from=None, secs_to=None, secs_length=None):
+    def read(self, time_from=None, time_to=None, time_length=None):
         try:
-            return self.reader.read_data(self.config, secs_from=secs_from,
-                                         secs_to=secs_to,
-                                         secs_length=secs_length)
+            return self.reader.read_data(self.config, time_from=time_from,
+                                         time_to=time_to,
+                                         time_length=time_length)
         except Exception as e:
             raise e

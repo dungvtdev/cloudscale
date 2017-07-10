@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np
 
 
-def timevaluepair_to_pdseries(timevalues):
+def minutevaluepair_to_pdseries(timevalues):
     df = timevalues if isinstance(timevalues, pd.DataFrame) \
         else pd.DataFrame(timevalues)
-    convert = 1000000000
+    convert = 1000000000 * 60   # tinh theo minute
     df = df.set_index(pd.to_datetime(df[0] * convert))[1]
     return df
 

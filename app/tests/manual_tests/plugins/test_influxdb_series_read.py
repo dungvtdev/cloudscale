@@ -6,7 +6,7 @@ config = {
     # 'db': 'test_db',
     'db': 'cadvisor',
     'metric': 'cpu_usage_total',
-    'epoch': 's',
+    'epoch': 'm',
     'filter': 'root_container_filter',
 }
 
@@ -21,7 +21,7 @@ read_plugin = InfluxdbSeriesReadPlugin()
 read_plugin.init_app(app)
 
 reader = read_plugin.create(config)
-values = reader.read(secs_length=100000)
+values = reader.read(time_length=20)
 
 print(values)
 
@@ -30,11 +30,12 @@ print(values)
 """
 from core import seriesutils as su
 
-pdseries = su.timevaluepair_to_pdseries(values)
+pdseries = su.minutevaluepair_to_pdseries(values)
 # print(pdseries)
 
-pdminute = su.resample(pdseries, 4)
+pdminute = su.resample(pdseries, 1)
 series = su.get_newestseries(pdminute, 3)
 is_finish = len(series) != len(pdminute)
 print(series)
 print(is_finish)
+print(series.index[0])
