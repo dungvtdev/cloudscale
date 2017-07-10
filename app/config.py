@@ -48,7 +48,8 @@ MONITOR = {
         'db': 'cadvisor',
     },
     'dump': {
-        'max_fault_minute': 8
+        'max_fault_point': 8,
+        'endpoint': '192.168.122.124'
     }
 }
 

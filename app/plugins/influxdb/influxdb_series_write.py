@@ -53,8 +53,9 @@ class CpuTotalWriter(WriteDriverBase):
                          for line in values)
 
         r = requests.post(url, data=data)
+
+        body = json.loads(r.text)
         if r.status_code == 404:
-            body = json.loads(r.text)
             if "database not found" in body.get("error", ""):
                 self._create_database(endpoint, db)
 

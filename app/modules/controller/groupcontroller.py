@@ -2,6 +2,7 @@ import thread
 # from threading import Lock
 import time
 from core.exceptions import NotEnoughParams
+from . import MonitorController
 
 
 class GroupController(object):
@@ -24,8 +25,7 @@ class GroupController(object):
 
         group_dict['instances'] = vm_dicts
 
-        # chon 1 vm bat ky lam key de monitor
-        self.enable_monitor_vm()
+        self.monitorcontroller = None
 
         # co thread scale anh huong toi self.data, self._last_scale_time,
         # nhung dong bo la khong can thiet vi khong can duyet self.data va
@@ -36,6 +36,10 @@ class GroupController(object):
         # khong dung Boolean vi co the co nhieu thread cung chay, thuc ra
         # khong can dong bo nhung van la giai phap an toan
         self._scaling_threads = []
+
+    def init_group(self):
+        # chon 1 vm bat ky lam key de monitor
+        self.enable_monitor_vm()
 
     def test(self, group_dict):
         return self.data['group_id'] == group_dict['group_id']
@@ -54,10 +58,16 @@ class GroupController(object):
 
     """ Task region
     """
-    def enable_monitor_vm():
+
+    def enable_monitor_vm(self):
         vm = self.data['instances'][0]
         vm['is_monitoring'] = True
         self.groupservice.db_update_vm(vm)
+        self.monitorcontroller = self.create_monitorcontroller(vm)
+
+    def create_monitorcontroller(self, vm):
+        group_config = {}
+        return MonitorController(group_config)
 
     """ Status region
     """
