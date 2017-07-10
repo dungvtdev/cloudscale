@@ -23,7 +23,7 @@ read_plugin.init_app(app)
 reader = read_plugin.create(config)
 values = reader.read(time_length=20)
 
-print(values)
+# print(values)
 
 
 """ Test pandas series

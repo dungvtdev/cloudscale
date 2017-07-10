@@ -20,6 +20,7 @@ DEFAULT_PARAMS = {
     },
     "monitor": {
         # "db_name": "cadvisor",
+        'interval_minute': 4,
         "metric": ["cpu_usage_total", ]
     },
     "group": [
@@ -41,8 +42,7 @@ OPS_ACCOUNT = {
 }
 
 MONITOR = {
-    'interval_minute': 4,
-    'max_batch_size': 1000, 
+    'max_batch_size': 100,
     'max_fault_point': 8,
     'parse_plugin': 'influxdb_series_read',
     'dump_plugin': 'influxdb_series_write',

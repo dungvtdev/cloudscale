@@ -1,14 +1,23 @@
 import thread
+import threading
+
 # from threading import Lock
 import time
 from core.exceptions import NotEnoughParams
 from . import MonitorController
 
 
-class GroupController(object):
+class GroupController(threading.Thread):
     WARM_UP_TIME_SECS = 240
 
-    def __init__(self, groupservice, group_dict):
+    def __init__(self, app, groupservice, group_dict):
+        threading.Thread.__init__(self)
+
+        self.app = app
+        self.logname = group_dict['name']
+
+        self.is_running = False
+
         self.groupservice = groupservice
 
         if not group_dict.get('instances', None):
@@ -37,6 +46,8 @@ class GroupController(object):
         # khong can dong bo nhung van la giai phap an toan
         self._scaling_threads = []
 
+        self.interval_minute = group_dict['interval_minute']
+
     def init_group(self):
         # chon 1 vm bat ky lam key de monitor
         self.enable_monitor_vm()
@@ -50,11 +61,11 @@ class GroupController(object):
 
     @property
     def opsvm(self):
-        return self._app.opsvm
+        return self.app.opsvm
 
     @property
     def log(self):
-        return self._app.logger
+        return self.app.logger
 
     """ Task region
     """
@@ -67,7 +78,7 @@ class GroupController(object):
 
     def create_monitorcontroller(self, vm):
         group_config = {}
-        return MonitorController(group_config)
+        return MonitorController(group_config, self.app)
 
     """ Status region
     """
@@ -208,8 +219,30 @@ class GroupController(object):
             self.log.error('fail to scale down vm id=%s' %
                            vmthread.data['instance_id'])
 
-    def start(self):
-        pass
+    def run(self):
+        self.log.info('Group %s start' % self.logname)
 
-    def stop(self):
-        pass
+        interval = self.interval_minute
+        try:
+            interval = self.monitorcontroller.init_data()
+        except Exception as e:
+            raise e
+
+        while(self.is_running):
+            time.sleep(interval)
+            interval = self.interval_minute
+
+            timestamp, value = self.monitorcontroller.get_last_one()
+            if timestamp:
+                self.log.debug('Group %s get success' % self.logname)
+            else:
+                self.log.debug('Group %s get fail' % self.logname)
+
+        self.log.info('Group %s stop' % self.logname)
+
+    def run_up(self):
+        self.is_running = True
+        self.start()
+
+    def shutdown(self):
+        self.is_running = False
