@@ -37,25 +37,24 @@ class CPUTotalRead(ReadDriverBase):
 
     def generate_query(self, endpoint, metric, epoch,
                        time_from, time_to, time_length):
-        use_length = (time_from is None or time_to is None) and time_length
-        if use_length:
-            if time_from is not None:
-                q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
-                q = q.format(metric=metric, utc_begin=time_from,
-                             utc_end=time_from + time_length, epoch=epoch)
-            elif time_to is not None:
-                q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
-                q = q.format(metric=metric, utc_begin=time_to - time_length,
-                             utc_end=time_to, epoch=epoch)
+        # time_from, time_to, time_length truyen vao phai co it nhat 1 cai khac
+        # None
+
+
+        if not time_to:
+            q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time > {time_begin}{epoch} GROUP BY "container_name" fill(null)'
+            if not time_from:
+                time_begin = 'now() - %s' % time_length
             else:
-                q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= now() - {time_length}{epoch} GROUP BY "container_name" fill(null)'
-                q = q.format(
-                    metric=metric, time_length=time_length, epoch=epoch)
+                time_begin = time_from
+            q = q.format(metric=metric, time_begin=time_begin, epoch=epoch)
         else:
-            q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time >= {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
+            q = 'SELECT derivative("value", 1s)/1000000000 FROM {metric} WHERE time > {utc_begin}{epoch} AND time <= {utc_end}{epoch} GROUP BY "container_name" fill(null)'
+            if not time_from:
+                time_from = time_to - time_length
             q = q.format(metric=metric, utc_begin=time_from,
                          utc_end=time_to, epoch=epoch)
-        # print(q)
+        print(q)
         return q
 
     def read_data(self, config, time_from=None, time_to=None, time_length=None):
@@ -92,16 +91,16 @@ class CPUTotalRead(ReadDriverBase):
         if filter_setting in self._filters:
             filter_func = getattr(self, filter_setting)
             jdata = json.loads(text)
-            if jdata.get("results", None) is None \
-                    or not jdata["results"][0]:
+            try:
+                series = jdata["results"][0]["series"]
+                values_raw = next(s["values"]
+                                  for s in series if filter_func(s))
+
+                # da chuyen ve dang [(time_secs, value), ]
+                values = values_raw
+                return values
+            except:
                 raise Exception('Got Data is None')
-
-            series = jdata["results"][0]["series"]
-            values_raw = next(s["values"] for s in series if filter_func(s))
-
-            # da chuyen ve dang [(time_secs, value), ]
-            values = values_raw
-            return values
         else:
             raise Exception('Unknown filter %s' % filter_setting)
 
@@ -117,9 +116,9 @@ class CadvisorInfluxdbSeriesRead():
         self.reader = readerclass.default()
 
     def read(self, time_from=None, time_to=None, time_length=None):
-        try:
-            return self.reader.read_data(self.config, time_from=time_from,
-                                         time_to=time_to,
-                                         time_length=time_length)
-        except Exception as e:
-            raise e
+        # try:
+        return self.reader.read_data(self.config, time_from=time_from,
+                                     time_to=time_to,
+                                     time_length=time_length)
+        # except Exception as e:
+        #     raise e

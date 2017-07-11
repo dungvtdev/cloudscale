@@ -117,12 +117,14 @@ class MonitorController():
                     self.write_data_series(newest, last, self.interval_minute)
 
                     last_time = last
-            # ghi lai last time value
-            self.cacher.write_value('last_time', last_time)
-            print('write %s ' % value)
+        # ghi lai last time value
+        # print(last_time)
+        # self.cacher.write_value('last_time', last_time)
+
         except Exception as e:
             raise e
 
+        cache = cache[::-1]
         # tinh tong so point thu duoc
         total = sum(len(c) for c in cache)
         self.data_total = total
@@ -130,6 +132,10 @@ class MonitorController():
         self.logger.info('Get %s point from %s' %
                          (total, self.group_config['endpoint']))
 
+        # print(total)
+        # with open('/home/dungvt/read.cache', 'w') as f:
+        #     for c in cache:
+        #         f.write(str(c))
         return {
             'first_interval': first_interval,
             'total': total,
@@ -137,7 +143,7 @@ class MonitorController():
         }
 
     def write_data_series(self, series, last, step):
-        begin = last - len(series) + 1
+        begin = last - len(series) * step + 1
         values = [((begin + i * step) * 1000000000 * 60, series[i])
                   for i in range(len(series))]
         self.cacher.write(values)
@@ -148,10 +154,12 @@ class MonitorController():
         max_time_length = max_batch_size * self.interval_minute
 
         # TODO can than cho nay neu khong read duoc value
-        try:
-            time_to = self.cacher.read_value('last_time')
-        except:
-            time_to = None
+        # try:
+        #     # time_to = int(self.cacher.read_value('last_time'))
+        #     time_to = 
+        # except:
+        #     time_to = None
+        time_to = None
 
         accum = []
         while(True):
@@ -176,8 +184,15 @@ class MonitorController():
                     break
                 else:
                     raise e
+        accum = accum[::-1]
 
-        return accum[::-1]
+        # total = sum(len(a) for a in accum)
+        # print(total)
+        # with open('/home/dungvt/read2.cache', 'w') as f:
+        #     for c in accum:
+        #         f.write(str(c))
+
+        return accum
 
     def get_last_one(self):
         values = self.reader.read(time_length=self.interval_minute)

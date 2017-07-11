@@ -76,28 +76,25 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
         conditions = ' AND '.join(["%s='%s'" % (k, v)
                                    for k, v in tags.items()])
 
-        use_length = (time_from is None or time_to is None) and time_length
-        if use_length:
-            if time_from is not None:
-                q = 'SELECT value from {metric} where time >= {time_from}{epoch} AND time <= {time_to}{epoch} AND {conditions}'
-                q = q.format(metric=metric, epoch=epoch, conditions=conditions,
-                             time_from=time_from, time_to=time_from + time_length)
-            elif time_to is not None:
-                q = 'SELECT value from {metric} where time >= {time_from}{epoch} AND time <= {time_to}{epoch} AND {conditions}'
-                q = q.format(metric=metric, epoch=epoch, conditions=conditions,
-                             time_from=time_to - time_length, time_to=time_to)
+        if not time_to:
+            q = 'SELECT value from {metric} where time > {time_begin}{epoch} AND {conditions}'
+            if not time_from:
+                time_begin = 'now() - %s' % time_length
             else:
-                q = 'SELECT value from {metric} where time >= now() - {time_length}{epoch} AND {conditions}'
-                q = q.format(metric=metric, epoch=epoch,
-                             conditions=conditions, time_length=time_length)
+                time_begin = time_from
+            q = q.format(metric=metric, time_begin=time_begin,
+                         epoch=epoch, conditions=conditions)
         else:
-            q = 'SELECT value from {metric} where time >= {time_from}{epoch} AND time <= {time_to}{epoch} AND {conditions}'
-            q = q.format(metric=metric, epoch=epoch, conditions=conditions,
-                         time_from=time_from, time_to=time_to)
+            q = 'SELECT value FROM {metric} WHERE time > {utc_begin}{epoch} AND time <= {utc_end}{epoch} AND {conditions}'
+            if not time_from:
+                time_from = time_to - time_length
+            q = q.format(metric=metric, utc_begin=time_from,
+                         utc_end=time_to, epoch=epoch, conditions=conditions)
         return q
 
     def read_data(self, config, time_from=None, time_to=None, time_length=None):
         query = self.get_read_query(config, time_from, time_to, time_length)
+        print(query)
         params = {
             'db': config['db'],
             'epoch': config['epoch'],
@@ -116,24 +113,25 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
         else:
             raise Exception(r.text)
 
-    def read_value(self, tag):
-        return self.read_write_value('read', tag)
+    def read_value(self, config, tag):
+        return self.read_write_value(config, 'read', tag)
 
-    def write_value(self, tag, value):
-        self.read_write_value('write', tag, value)
+    def write_value(self, config, tag, value):
+        self.read_write_value(config, 'write', tag, value)
 
-    def read_write_value(self, action, tag, *args):
+    def read_write_value(self, config, action, tag, *args):
         endpoint = config['endpoint']
         db = config['db']
         metric = config['metric']
         tags = config['tags']
-        tags['tag'] = tag
         epoch = config['epoch']
 
         # build tags
 
         if action == 'read':
-            tags_str = ' AND '.join("%s=%s" % (k, v) for k, v in tags.items())
+            tags_str = ' AND '.join("%s='%s'" % (k, v)
+                                    for k, v in tags.items())
+            tags_str = "%s AND value_tag='%s'" % (tags_str, tag)
             url = 'http://{endpoint}:8086/query'.format(endpoint=endpoint)
             query = 'SELECT value from {metric} where {tags_str}'.format(
                 metric=metric, tags_str=tags_str)
@@ -144,12 +142,14 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
             }
             r = requests.get(url, params=params)
             try:
-                value = ['results'][0]['series'][0]['values'][0][1]
+                body = json.loads(r.text)
+                value = body['results'][0]['series'][0]['values'][0][1]
                 return value
             except Exception as e:
                 raise Exception('Get error')
         else:
             tags_str = ','.join("%s=%s" % (k, v) for k, v in tags.items())
+            tags_str = '%s,value_tag=%s' % (tags_str, tag)
             url = 'http://{endpoint}:8086/write?db={db}&epoch={epoch}'
             url = url.format(endpoint=endpoint, db=db, epoch=epoch)
             value = args[0]
@@ -181,3 +181,11 @@ class SimpleInfluxdb():
                                           time_to=time_to, time_length=time_length)
         except Exception as e:
             raise e
+
+    # raise exception
+    def write_value(self, tag, value):
+        self.service.write_value(self.config, tag, value)
+
+    # raise exception
+    def read_value(self, tag):
+        return self.service.read_value(self.config, tag)

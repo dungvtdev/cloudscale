@@ -234,13 +234,14 @@ class GroupController(threading.Thread):
         self.log.info('Group %s start' % self.logname)
 
         interval = self.interval_minute
-        try:
-            result = self.monitorcontroller.init_data()
-            interval = result['first_interval']
-            # values = self.monitorcontroller.get_data_series()
-            print(sum(len(v) for v in values))
-        except Exception as e:
-            raise e
+        # try:
+        result = self.monitorcontroller.init_data()
+
+        # interval = result['first_interval']
+        values = self.monitorcontroller.get_data_series()
+        # except Exception as e:
+        #     raise e
+        # print(values[-1][0])
 
         while(self.is_running):
             time.sleep(interval * 60)
