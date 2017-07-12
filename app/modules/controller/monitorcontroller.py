@@ -117,9 +117,9 @@ class MonitorController():
                     self.write_data_series(newest, last, self.interval_minute)
 
                     last_time = last
-        # ghi lai last time value
-        # print(last_time)
-        # self.cacher.write_value('last_time', last_time)
+            # ghi lai last time value
+            # print(last_time)
+            self.cacher.write_value('last_time', last_time)
 
         except Exception as e:
             raise e
@@ -154,12 +154,10 @@ class MonitorController():
         max_time_length = max_batch_size * self.interval_minute
 
         # TODO can than cho nay neu khong read duoc value
-        # try:
-        #     # time_to = int(self.cacher.read_value('last_time'))
-        #     time_to = 
-        # except:
-        #     time_to = None
-        time_to = None
+        try:
+            time_to = int(self.cacher.read_value('last_time'))
+        except:
+            time_to = None
 
         accum = []
         while(True):

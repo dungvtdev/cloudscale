@@ -168,19 +168,15 @@ class SimpleInfluxdb():
         self.config = config
         self.service = SimpleInfluxdbService.default()
 
+    # raise exception
     def write(self, values):
         # values = [(time, value),]
-        try:
-            self.service.write_data(self.config, values)
-        except Exception as e:
-            raise e
+        self.service.write_data(self.config, values)
 
+    # raise exception
     def read(self, time_from=None, time_to=None, time_length=None):
-        try:
-            return self.service.read_data(self.config, time_from=time_from,
-                                          time_to=time_to, time_length=time_length)
-        except Exception as e:
-            raise e
+        return self.service.read_data(self.config, time_from=time_from,
+                                      time_to=time_to, time_length=time_length)
 
     # raise exception
     def write_value(self, tag, value):
