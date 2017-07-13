@@ -58,7 +58,7 @@ class GroupController(threading.Thread):
         self.wait_cycle_training = self.data['data_length']
         self.wait_cycle_update = self.data['update_in_time']
 
-        self.forcast_model = None
+        # self.forecast_model = None
 
         self.interval_minute = group_dict['interval_minute']
 

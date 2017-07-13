@@ -1,5 +1,5 @@
 import setup_test
-from modules.forcast import SimpleFeeder, Predictor
+from plugins.forecast import SimpleFeeder, Predictor
 import pandas as pd
 import os
 from tests.manual_tests.utils.GraphUtil import plot_figure

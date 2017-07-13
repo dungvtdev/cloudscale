@@ -1,5 +1,5 @@
 import setup_test
-from modules.forcast import SimpleFeeder
+from plugins.forecast import SimpleFeeder
 import pandas as pd
 import os
 
