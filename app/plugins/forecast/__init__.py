@@ -14,7 +14,7 @@ class PredictPlugin(DependencyModule):
         return Predictor(**kwargs)
 
     @classmethod
-    def period_detect(self, series, config):
+    def period_detect(cls, series, **config):
         return period_detect(series, **config)
 
 

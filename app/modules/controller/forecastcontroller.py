@@ -29,6 +29,7 @@ class ForecastControllerBase(object):
         self.predictor = None
         self.feeder = None
         self.datacache = None
+        self.app = app
 
     def train(self, data):
         if isinstance(data, list):
@@ -40,7 +41,11 @@ class ForecastControllerBase(object):
         del self.feeder
         del self.datacache
 
-        periods = self.predict_plugin.period_detect(data, **self.config)
+        pd_params = {
+            'threshold': self.config['threshold'],
+            'fs': self.config['fs']
+        }
+        periods = self.predict_plugin.period_detect(data, **pd_params)
         if not periods:
             periodic_number = 0
             period = 0
@@ -93,7 +98,10 @@ class ForecastControllerBase(object):
             return pr
 
 
-def ForecastCpuController(ForecastControllerBase):
+class ForecastCpuController(ForecastControllerBase):
+    def __init__(self, config, app):
+        ForecastControllerBase.__init__(self, config, app)
+
     def train(self, data):
         if isinstance(data, list):
             data = pd.DataFrame(data)[0]
@@ -102,7 +110,7 @@ def ForecastCpuController(ForecastControllerBase):
 
         # clamp data [0,1]
         data = clamp01(data)
-        return ForecastControllerBase.train(data)
+        return ForecastControllerBase.train(self, data)
 
     def add_last_point(self, value, time):
         return ForecastControllerBase.add_last_point(self, value, time)
@@ -111,7 +119,7 @@ def ForecastCpuController(ForecastControllerBase):
         return ForecastControllerBase.predict(self)
 
 
-def DataLoop(object):
+class DataLoop(object):
     def __init__(self, max_length, base_length, data):
         self.max_length = max_length
         self.base_length = base_length

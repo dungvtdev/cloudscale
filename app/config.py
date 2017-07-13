@@ -12,17 +12,20 @@ DB_PATH = 'sqlite:///db.sqlite'
 DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
-        "data_length": 100,
+        "data_length": 263,
         "update_in_time": 10,   # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
         "periodic_number": 1,
-        "predict_length": 1
+        "predict_length": 1,
+        'cross_rate': 0.5,
+        'mutation_rate': 0.04,
+        'pop_size': 50
     },
     "monitor": {
         # "db_name": "cadvisor",
         'interval_minute': 4,
-        "metric": ["cpu_usage_total", ]
+        "metric": "cpu_usage_total"
     },
     "group": [
         "pdgabp", "monitor"

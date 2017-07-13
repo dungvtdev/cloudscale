@@ -8,7 +8,7 @@ class MonitorController():
 
         endpoint = group_config['endpoint']
         to_db = group_config['to_db']
-        metric = group_config['metric'][0]
+        metric = group_config['metric']
         self.interval_minute = group_config['interval_minute']
 
         # 2 gia tri trong thuat toan, group khong the thay doi duoc
@@ -108,6 +108,7 @@ class MonitorController():
                 if amount_time >= interval_minute:
                     # cache lai du lieu
                     df = su.minutevaluepair_to_pdseries(timevalues)
+                    # last = df[-1][0]
                     df = su.resample(df, self.interval_minute)
                     newest = su.get_newestseries(df, max_fault_point)
                     # bo di phan tu cuoi vi chua du chu ky
@@ -122,7 +123,8 @@ class MonitorController():
             self.cacher.write_value('last_time', last_time)
 
         except Exception as e:
-            raise e
+            if 'Got Data is None' not in e.message:
+                raise e
 
         cache = cache[::-1]
         # tinh tong so point thu duoc

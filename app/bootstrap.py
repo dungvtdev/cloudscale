@@ -59,20 +59,7 @@ configure_log(application)
 configure_info_manager_plugin(application)
 configure_sqlbackend_plugin(application)
 configure_influxdb_plugin(application)
+configure_predict_plugin(application)
 
 configure_group_module(application)
 configure_controller(application)
-
-group_dict = {
-    'name': 'test_vm',
-    'user_id': 'u1',
-    'image': 'i1',
-    'flavor': 'f1',
-    'selfservice': 's1',
-    'provider': 'p1',
-    'instances': [{
-        'endpoint': '192.168.122.124',
-        'instance_id': 'is1'
-    }]
-}
-app.controller.create_group(group_dict)

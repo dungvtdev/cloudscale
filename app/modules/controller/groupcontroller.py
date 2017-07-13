@@ -1,13 +1,20 @@
 import thread
 import threading
+import copy
 
 # from threading import Lock
 import time
 from core.exceptions import NotEnoughParams, ExistsException
 from . import MonitorController
+from . import ForecastCpuController
+from core.seriesutils import join_series
 
 WAIT_FOR_TRAIN_STATE = 'training'
 PREDICT_STATE = 'predicting'
+
+forecast_map = {
+    'cpu_usage_total': ForecastCpuController
+}
 
 
 class GroupController(threading.Thread):
@@ -50,17 +57,19 @@ class GroupController(threading.Thread):
         # self._last_scale_time chi luu thoi diem cuoi cung scale
         self.data = group_dict
 
-        self._last_scale_time = 0
+        # self._last_scale_time = 0
         # khong dung Boolean vi co the co nhieu thread cung chay, thuc ra
         # khong can dong bo nhung van la giai phap an toan
-        self._scaling_threads = []
+        # self._scaling_threads = []
 
         self.wait_cycle_training = self.data['data_length']
         self.wait_cycle_update = self.data['update_in_time']
 
-        # self.forecast_model = None
+        self.forecast_model = None
 
-        self.interval_minute = group_dict['interval_minute']
+    @property
+    def interval_minute(self):
+        return self.data['interval_minute']
 
     def init_group(self):
         # chon 1 vm bat ky lam key de monitor
@@ -102,6 +111,128 @@ class GroupController(threading.Thread):
             'interval_minute': self.data['interval_minute'],
         }
         return MonitorController(group_config, self.app)
+
+    # return interval dau tien
+    # return cache list neu data du de train
+    def _run_init(self):
+        interval = self.interval_minute
+        try:
+            result = self.monitorcontroller.init_data()
+            interval = result['first_interval']
+            total = result['total']
+
+            # check time to wait to predict
+            data_length = self.data['data_length']
+            self.wait_cycle_training = data_length - total if data_length > total else 0
+
+            if self.wait_cycle_training > 0:
+                del result['cache']
+                return interval, None
+            else:
+                # cache o day la pandas.core.series.Series
+                return interval, result['cache']
+
+            # values = self.monitorcontroller.get_data_series()
+        except Exception as e:
+            raise e
+
+    def _run_train_data(self, data_cache):
+        # data_cache la 1 mang pd.Series
+        if data_cache is not None:
+            series = join_series(data_cache)
+        metric = self.data['metric']
+        forecast_cls = forecast_map[metric]
+        config = copy.copy(self.data)
+        forecast = forecast_cls(config, self.app)
+        finish = None
+
+        def train():
+            try:
+                self.log.debug('Group %s start train model' % self.logname)
+                forecast.train(series)
+                finish = 'success'
+            except Exception as e:
+                finish = e.message
+            finally:
+                self.log.debug('Group %s finish train with %s' %
+                               (self.logname, finish))
+
+        def get_forecast():
+            if not finish:
+                return
+            elif finish != 'success':
+                raise Exception(finish)
+            else:
+                return forecast
+
+        thread.start_new_thread(train, ())
+
+        return get_forecast
+
+    def run(self):
+        self.log.info('Group %s start' % self.logname)
+
+        interval, cache = self._run_init()
+        print(interval)
+        if not cache and self.wait_cycle_training > 0:
+            self.log.debug('Group %s wait %s cycle to train data' %
+                           (self.logname, self.wait_cycle_training))
+        state = 'wait'
+
+        train_data_func = None
+        self.wait_cycle_update = self.data['update_in_time']
+
+        while self.is_running:
+            need_update_model = False
+
+            if state == 'wait':
+                # truong hop dang doi model de train
+                if self.wait_cycle_training > 0:
+                    # neu lan dau tien khong du data thi xoa cache
+                    del cache
+                    cache = None
+                    self.wait_cycle_training = self.wait_cycle_training - 1
+                else:
+                    # bao la co the train
+                    state = 'run'
+                    need_update_model = True
+            else:
+                # kiem tra dieu kien update model
+                if self.wait_cycle_update > 0:
+                    self.wait_cycle_update = self.wait_cycle_update - 1
+                elif not train_data_func:
+                    need_update_model = True
+
+            if need_update_model and not train_data_func:
+                # update forecast_model, cache co the null
+                train_data_func = self._run_train_data(cache)
+
+            if train_data_func:
+                try:
+                    forecast = train_data_func()
+                    if forecast is not None:
+                        del self.forecast_model
+                        self.forecast_model = forecast
+                        train_data_func = None
+                        self.wait_cycle_update = self.data['update_in_time']
+                except Exception as e:
+                    train_data_func = None
+                    self.log.debug('Group %s train data ERROR %s' %
+                                   (self.logname, e.message))
+
+            # self.thread_up_forcast_model =
+            time.sleep(interval * 60)
+            interval = self.interval_minute
+
+            timestamp, value = self.monitorcontroller.get_last_one()
+            if timestamp is not None and value is not None:
+                self.log.debug('Group %s get new value success' % self.logname)
+            else:
+                self.log.debug('Group %s get new value fail' % self.logname)
+
+            # if self.forecast_model:
+
+        self.log.info('Group %s stop' % self.logname)
 
     """ Status region
     """
@@ -241,56 +372,6 @@ class GroupController(threading.Thread):
         if vmthread.status == 'fail':
             self.log.error('fail to scale down vm id=%s' %
                            vmthread.data['instance_id'])
-
-    def run(self):
-        self.log.info('Group %s start' % self.logname)
-
-        interval = self.interval_minute
-        try:
-            result = self.monitorcontroller.init_data()
-            interval = result['first_interval']
-            total = result['total']
-
-            # check time to wait to predict
-            data_length = self.data['data_length']
-            self.wait_cycle_training = data_length - total if data_length > total else 0
-
-            if self.wait_cycle_training > 0:
-                del result['cache']
-
-            # values = self.monitorcontroller.get_data_series()
-        except Exception as e:
-            raise e
-        print(values[-1][0])
-
-        while(self.is_running):
-            need_update_model = False
-            if self.forcast_model is None:
-                if self.wait_cycle_training > 0:
-                    self.wait_cycle_training = self.wait_cycle_training - 1
-                else:
-                    # goi thread thu data va train model
-                    need_update_model = True
-            else:
-                # forcast new data
-
-                # kiem tra dieu kien update model
-                if self.wait_cycle_update > 0:
-                    self.wait_cycle_update = self.wait_cycle_update - 1
-                elif not self.thread_up_forcast_model:
-                    need_update_model = True
-
-            # self.thread_up_forcast_model = 
-            time.sleep(interval * 60)
-            interval = self.interval_minute
-
-            timestamp, value = self.monitorcontroller.get_last_one()
-            if timestamp is not None and value is not None:
-                self.log.debug('Group %s get new value success' % self.logname)
-            else:
-                self.log.debug('Group %s get new value fail' % self.logname)
-
-        self.log.info('Group %s stop' % self.logname)
 
     def run_up(self):
         self.is_running = True

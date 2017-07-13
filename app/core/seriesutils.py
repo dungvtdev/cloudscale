@@ -2,6 +2,19 @@ import pandas as pd
 import numpy as np
 
 
+def join_series(series_list):
+    if not series_list:
+        return None
+    if len(series_list) == 1:
+        return series_list[0]
+
+    s = series_list[0]
+    series_list = series_list[1:]
+    for si in series_list:
+        s = s.append(si, ignore_index=True)
+    return s
+
+
 def minutevaluepair_to_pdseries(timevalues):
     df = timevalues if isinstance(timevalues, pd.DataFrame) \
         else pd.DataFrame(timevalues)
