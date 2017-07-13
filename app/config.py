@@ -13,7 +13,7 @@ DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
         "data_length": 263,
-        "update_in_time": 10,   # tinh nhu tren
+        "update_in_time": 1,   # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
         "periodic_number": 1,
@@ -24,7 +24,7 @@ DEFAULT_PARAMS = {
     },
     "monitor": {
         # "db_name": "cadvisor",
-        'interval_minute': 4,
+        'interval_minute': 1,
         "metric": "cpu_usage_total"
     },
     "group": [

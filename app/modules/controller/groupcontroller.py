@@ -144,15 +144,15 @@ class GroupController(threading.Thread):
         forecast_cls = forecast_map[metric]
         config = copy.copy(self.data)
         forecast = forecast_cls(config, self.app)
-        finish = None
+        finish = []
 
         def train():
             try:
                 self.log.debug('Group %s start train model' % self.logname)
                 forecast.train(series)
-                finish = 'success'
+                finish.append('success')
             except Exception as e:
-                finish = e.message
+                finish.append(e.message)
             finally:
                 self.log.debug('Group %s finish train with %s' %
                                (self.logname, finish))
@@ -160,7 +160,7 @@ class GroupController(threading.Thread):
         def get_forecast():
             if not finish:
                 return
-            elif finish != 'success':
+            elif finish[0] != 'success':
                 raise Exception(finish)
             else:
                 return forecast
@@ -201,6 +201,8 @@ class GroupController(threading.Thread):
                 if self.wait_cycle_update > 0:
                     self.wait_cycle_update = self.wait_cycle_update - 1
                 elif not train_data_func:
+                    self.log.debug('Group %s time to update model.' %
+                                   self.logname)
                     need_update_model = True
 
             if need_update_model and not train_data_func:
