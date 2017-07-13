@@ -1,2 +1,1 @@
-from .base import BaseFeeder as Feeder
-from .simplefeeder import SimpleFeeder
+from .base import BaseFeeder, SimpleFeeder

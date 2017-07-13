@@ -14,11 +14,10 @@ class Predictor():
         self._cross_rate = cross_rate
         self._mutation_rate = mutation_rate
         self._pop_size = pop_size
-        self.period = period
 
-    def train(self, dataFeeder):
-        in_train, out_train = dataFeeder.fetch_training(
-            self._recent_point, self._periodic_number, self.period)
+    def train(self, in_train, out_train):
+        # in_train, out_train = dataFeeder.fetch_training(
+        #     self._recent_point, self._periodic_number, self.period)
 
         gaEstimator = GAEstimator(cross_rate=self._cross_rate,
                                   mutation_rate=self._mutation_rate,
@@ -35,12 +34,9 @@ class Predictor():
         neuralNet.fit(in_train, out_train, **fit_param)
         self.neural = neuralNet
 
-    def predict_test(self, dataFeeder):
-        in_test, out_test = dataFeeder.fetch_training(
-            self._recent_point, self._periodic_number, self.period)
-
+    def predict_test(self, in_test):
         out_pred = self.neural.predict(in_test)
-        return out_pred, out_test
+        return out_pred
 
     def predict(self, data):
         df = pd.DataFrame([data, ])
