@@ -12,7 +12,7 @@ DB_PATH = 'sqlite:///db.sqlite'
 DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
-        "data_length": 263,
+        "data_length": 1117,
         "update_in_time": 1,   # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,

@@ -138,7 +138,9 @@ class GroupController(threading.Thread):
 
     def _run_train_data(self, data_cache):
         # data_cache la 1 mang pd.Series
+        series = None
         if data_cache is not None:
+            self.log.info('Group %s train with cache data' % self.logname)
             series = join_series(data_cache)
         metric = self.data['metric']
         forecast_cls = forecast_map[metric]
@@ -149,7 +151,20 @@ class GroupController(threading.Thread):
         def train():
             try:
                 self.log.debug('Group %s start train model' % self.logname)
-                forecast.train(series)
+                if series is None:
+                    # get data
+                    self.log.info(
+                        'Group %s get data from influxdb to train' % self.logname)
+                    accum = self.monitorcontroller.get_data_series()
+                    if accum:
+                        ita = [[it[1] for it in a] for a in accum]
+                        del accum
+                        data = join_series(ita)
+                else:
+                    data = series
+                if data is None:
+                    raise Exception("Can't get data from influxdb to train.")
+                forecast.train(data)
                 finish.append('success')
             except Exception as e:
                 finish.append(e.message)
