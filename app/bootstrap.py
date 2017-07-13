@@ -5,6 +5,7 @@ from plugins.info import InfoManager
 from plugins.sqlbackend import SQLBackend
 from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin, \
     InfluxdbSeriesPlugin
+from plugins.forecast import PredictPlugin, FeederPlugin
 from modules.group import GroupUtils
 from modules.controller import Controller
 
@@ -31,6 +32,14 @@ def configure_influxdb_plugin(app):
 
     influxdbserieswrite = InfluxdbSeriesPlugin()
     influxdbserieswrite.init_app(app)
+
+
+def configure_predict_plugin(app):
+    predict = PredictPlugin()
+    predict.init_app(app)
+
+    feeder = FeederPlugin()
+    feeder.init_app(app)
 
 
 def configure_group_module(app):

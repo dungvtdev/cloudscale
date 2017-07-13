@@ -27,13 +27,14 @@ class Group(Base):
     recent_point = Column(Integer)
     periodic_number = Column(Integer)
     update_in_time = Column(Integer)
+    predict_length = Column(Integer)
 
     instances = relationship(
         "Instance", backref=backref('group', lazy='joined'))
 
     attrs = ['id', 'group_id', 'user_id', 'name', 'desc', 'image', 'flavor',
              'selfservice', 'provider', 'script_data', 'created', 'data_length',
-             'recent_point', 'periodic_number', 'update_in_time']
+             'recent_point', 'periodic_number', 'update_in_time', 'predict_length']
 
     def parse_dict(self, group_dict):
         for k, v in group_dict.items():

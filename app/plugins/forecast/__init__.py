@@ -1,6 +1,7 @@
 from core import DependencyModule
 from .predict import Predictor
 from .datafeeder import SimpleFeeder
+from .periodicity_detect import period_detect
 
 
 class PredictPlugin(DependencyModule):
@@ -11,6 +12,10 @@ class PredictPlugin(DependencyModule):
 
     def create(self, **kwargs):
         return Predictor(**kwargs)
+
+    @classmethod
+    def period_detect(self, series, config):
+        return period_detect(series, **config)
 
 
 class FeederPlugin(DependencyModule):

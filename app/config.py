@@ -16,7 +16,8 @@ DEFAULT_PARAMS = {
         "update_in_time": 10,   # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
-        "periodic_number": 1
+        "periodic_number": 1,
+        "predict_length": 1
     },
     "monitor": {
         # "db_name": "cadvisor",
@@ -61,6 +62,6 @@ MONITOR = {
 FORECAST = {
     'threshold': 0.1,
     'fs': 144,
-    'predict_factory': 'predictplugin',
-    'feeder_factory': 'feederplugin'
+    'predict_plugin': 'predictplugin',
+    'feeder_plugin': 'feederplugin'
 }
