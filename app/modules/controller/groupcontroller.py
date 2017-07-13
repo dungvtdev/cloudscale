@@ -285,10 +285,10 @@ class GroupController(threading.Thread):
             interval = self.interval_minute
 
             timestamp, value = self.monitorcontroller.get_last_one()
-            if timestamp:
-                self.log.debug('Group %s get success' % self.logname)
+            if timestamp is not None and value is not None:
+                self.log.debug('Group %s get new value success' % self.logname)
             else:
-                self.log.debug('Group %s get fail' % self.logname)
+                self.log.debug('Group %s get new value fail' % self.logname)
 
         self.log.info('Group %s stop' % self.logname)
 
