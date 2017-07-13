@@ -179,6 +179,8 @@ class GroupController(threading.Thread):
                            (self.logname, self.wait_cycle_training))
         state = 'wait'
 
+        cache_list_when_train = None
+
         train_data_func = None
         self.wait_cycle_update = self.data['update_in_time']
 
@@ -208,6 +210,8 @@ class GroupController(threading.Thread):
             if need_update_model and not train_data_func:
                 # update forecast_model, cache co the null
                 train_data_func = self._run_train_data(cache)
+                # setup list nhan du lieu trong qua trinh train
+                cache_list_when_train = []
 
             if train_data_func:
                 try:
@@ -217,6 +221,11 @@ class GroupController(threading.Thread):
                         self.forecast_model = forecast
                         train_data_func = None
                         self.wait_cycle_update = self.data['update_in_time']
+                        # update cac diem luc dang doi
+                        if cache_list_when_train:
+                            for it in cache_list_when_train:
+                                self.forecast_model.add_last_point(it)
+                            cache_list_when_train = None
                 except Exception as e:
                     train_data_func = None
                     self.log.debug('Group %s train data ERROR %s' %
@@ -227,6 +236,17 @@ class GroupController(threading.Thread):
             interval = self.interval_minute
 
             timestamp, value = self.monitorcontroller.get_last_one()
+            # luu lai value neu model dang train, trong truong hop thoi gian train
+            # lon hon thoi gian interval_minute
+            if cache_list_when_train is not None:
+                cache_list_when_train.append(value)
+
+            # them 1 point va du doan
+            if self.forecast_model:
+                self.forecast_model.add_last_point(value)
+                pr = self.forecast_model.predict()
+                print(pr)
+
             if timestamp is not None and value is not None:
                 self.log.debug('Group %s get new value success' % self.logname)
             else:

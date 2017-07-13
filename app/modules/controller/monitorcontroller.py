@@ -200,5 +200,8 @@ class MonitorController():
             self.data_total = self.data_total + 1
             t = values[-1][0]
             v = sum(v[1] for v in values) / len(values)
+
+            # write to database
+            self.cacher.write([(t, v), ])
             return t, v
         return None, None

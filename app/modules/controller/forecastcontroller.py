@@ -112,8 +112,12 @@ class ForecastCpuController(ForecastControllerBase):
         data = clamp01(data)
         return ForecastControllerBase.train(self, data)
 
-    def add_last_point(self, value, time):
-        return ForecastControllerBase.add_last_point(self, value, time)
+    def add_last_point(self, value):
+        if value < 0:
+            value = 0
+        if value > 1:
+            value = 1
+        return ForecastControllerBase.add_last_point(self, value)
 
     def predict(self):
         return ForecastControllerBase.predict(self)
@@ -127,8 +131,8 @@ class DataLoop(object):
 
     def check_length(self):
         len_data = len(self.data)
-        if len_data > max_length:
-            delta = len_data - max_length
+        if len_data > self.max_length:
+            delta = len_data - self.max_length
             new_data = pd.Series([]).append(
                 self.data[delta:], ignore_index=True)
             del self.data
