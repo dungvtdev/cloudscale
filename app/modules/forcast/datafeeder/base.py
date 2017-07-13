@@ -43,7 +43,10 @@ class BaseFeeder():
 
     def generate_train_one(self, data, k=0):
         if isinstance(data, list):
-            data = pd.DataFrame(data)
+            data = pd.DataFrame(data)[0]
+
+        input_train = self.get_train_data(data, k=k)[0]
+        return np.asarray(input_train)
 
     def get_train_data(self, raw_data, output_train=None, k=None):
         training = []
