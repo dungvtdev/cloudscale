@@ -6,6 +6,9 @@ import time
 from core.exceptions import NotEnoughParams, ExistsException
 from . import MonitorController
 
+WAIT_FOR_TRAIN_STATE = 'training'
+PREDICT_STATE = 'predicting'
+
 
 class GroupController(threading.Thread):
     WARM_UP_TIME_SECS = 240
@@ -52,6 +55,11 @@ class GroupController(threading.Thread):
         # khong can dong bo nhung van la giai phap an toan
         self._scaling_threads = []
 
+        self.wait_cycle_training = self.data['data_length']
+        self.wait_cycle_update = self.data['update_in_time']
+
+        self.forcast_model = None
+
         self.interval_minute = group_dict['interval_minute']
 
     def init_group(self):
@@ -60,6 +68,10 @@ class GroupController(threading.Thread):
 
     def test(self, group_dict):
         return self.data['group_id'] == group_dict['group_id']
+
+    @property
+    def state(self):
+        return WAIT_FOR_TRAIN_STATE
 
     @property
     def vms(self):
@@ -234,16 +246,41 @@ class GroupController(threading.Thread):
         self.log.info('Group %s start' % self.logname)
 
         interval = self.interval_minute
-        # try:
-        result = self.monitorcontroller.init_data()
+        try:
+            result = self.monitorcontroller.init_data()
+            interval = result['first_interval']
+            total = result['total']
 
-        # interval = result['first_interval']
-        values = self.monitorcontroller.get_data_series()
-        # except Exception as e:
-        #     raise e
-        # print(values[-1][0])
+            # check time to wait to predict
+            data_length = self.data['data_length']
+            self.wait_cycle_training = data_length - total if data_length > total else 0
+
+            if self.wait_cycle_training > 0:
+                del result['cache']
+
+            # values = self.monitorcontroller.get_data_series()
+        except Exception as e:
+            raise e
+        print(values[-1][0])
 
         while(self.is_running):
+            need_update_model = False
+            if self.forcast_model is None:
+                if self.wait_cycle_training > 0:
+                    self.wait_cycle_training = self.wait_cycle_training - 1
+                else:
+                    # goi thread thu data va train model
+                    need_update_model = True
+            else:
+                # forcast new data
+
+                # kiem tra dieu kien update model
+                if self.wait_cycle_update > 0:
+                    self.wait_cycle_update = self.wait_cycle_update - 1
+                elif not self.thread_up_forcast_model:
+                    need_update_model = True
+
+            # self.thread_up_forcast_model = 
             time.sleep(interval * 60)
             interval = self.interval_minute
 
