@@ -1,11 +1,19 @@
 import setup_test
 from modules.forcast import SimpleFeeder
+import pandas as pd
+import os
 
 data = range(1, 100)
-k = 3
+k = 1
 m = 1
 T = 10
 p = 4
+
+base_path = os.path.dirname(__file__)
+path = os.path.join(base_path, '10min_workload.csv')
+
+# data = pd.read_csv(path, header=None)
+# data = data[0]
 
 feeder = SimpleFeeder(n_input=p, n_periodic=m, period=T)
 in_train, out_train = feeder.generate(data, k)

@@ -27,6 +27,8 @@ class BaseFeeder():
 
         if isinstance(data, list):
             data = pd.DataFrame(data)[0]
+        elif isinstance(data, np.ndarray):
+            data = pd.DataFrame(data)[0]
 
         # calc output train range
         # t_start = max(m.T - k, p - 1)
