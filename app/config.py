@@ -63,3 +63,10 @@ MONITOR_PERIOD_SECONDS = 1
 
 # so chu ky lay du lieu duoc du doan truoc
 FORCAST_LENGTH = 1
+
+
+API = {
+    'version': ['v1', ],
+    'address': '0.0.0.0',
+    'port': 8008
+}

@@ -7,6 +7,7 @@ from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin, \
     InfluxdbSeriesPlugin
 from modules.group import GroupUtils
 from modules.controller import Controller
+from modules.api import APIHandler
 
 
 def configure_log(app):
@@ -43,6 +44,11 @@ def configure_controller(app):
     controller.init_app(app)
 
 
+def configure_api(app):
+    api = APIHandler()
+    api.init_app(app)
+
+
 app = application = app_module.App()
 application.config_from_module(config)
 
@@ -53,17 +59,22 @@ configure_influxdb_plugin(application)
 
 configure_group_module(application)
 configure_controller(application)
+configure_api(application)
 
-group_dict = {
-    'name': 'test_vm',
-    'user_id': 'u1',
-    'image': 'i1',
-    'flavor': 'f1',
-    'selfservice': 's1',
-    'provider': 'p1',
-    'instances': [{
-        'endpoint': '192.168.122.124',
-        'instance_id': 'is1'
-    }]
-}
-app.controller.create_group(group_dict)
+# run service
+app.apihandler.listen()
+
+
+# group_dict = {
+#     'name': 'test_vm',
+#     'user_id': 'u1',
+#     'image': 'i1',
+#     'flavor': 'f1',
+#     'selfservice': 's1',
+#     'provider': 'p1',
+#     'instances': [{
+#         'endpoint': '192.168.122.124',
+#         'instance_id': 'is1'
+#     }]
+# }
+# app.controller.create_group(group_dict)
