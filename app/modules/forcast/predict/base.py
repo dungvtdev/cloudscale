@@ -38,6 +38,7 @@ class Predictor():
         out_pred = self.neural.predict(in_test)
         return out_pred
 
-    def predict(self, data):
+    def predict_one(self, data):
+        # data is list
         df = pd.DataFrame([data, ])
-        return self.neural.predict(df)
+        return self.neural.predict(df)[0][0]
