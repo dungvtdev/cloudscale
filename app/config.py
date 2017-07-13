@@ -66,5 +66,14 @@ FORECAST = {
     'threshold': 0.1,
     'fs': 144,
     'predict_plugin': 'predictplugin',
-    'feeder_plugin': 'feederplugin'
+    'feeder_plugin': 'feederplugin',
+}
+
+GROUPCACHE = {
+    'cache_plugin': {
+        'plugin': 'influxdb_series',
+        'config': {
+            'endpoint': '192.168.122.124',
+        }
+    }
 }

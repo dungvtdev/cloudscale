@@ -86,6 +86,8 @@ class ForecastControllerBase(object):
         self.datacache = DataLoop(
             max_length, base_length, data[len(data) - base_length:])
 
+        return periods
+
     def add_last_point(self, value):
         self.datacache.append(value)
 

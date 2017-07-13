@@ -9,8 +9,8 @@ from . import MonitorController
 from . import ForecastCpuController
 from core.seriesutils import join_series
 
-WAIT_FOR_TRAIN_STATE = 'training'
-PREDICT_STATE = 'predicting'
+# WAIT_FOR_TRAIN_STATE = 'training'
+# PREDICT_STATE = 'predicting'
 
 forecast_map = {
     'cpu_usage_total': ForecastCpuController
@@ -66,6 +66,28 @@ class GroupController(threading.Thread):
         self.wait_cycle_update = self.data['update_in_time']
 
         self.forecast_model = None
+
+        # self.local_timestamp = 0
+
+        self.setup_cache()
+
+    def setup_cache(self):
+        # setup cache
+        cache_config = self.app.config['GROUPCACHE']['cache_plugin']
+        cache_plugin = getattr(self.app, cache_config['plugin'])
+        config = {
+            'endpoint': cache_config['config']['endpoint'],
+            'metric': self.data['metric'],
+            'db': 'monitor_%s' % self.data['name'],
+            'epoch': 'm',
+            'tags': {
+                'result': 'predict'
+            }
+        }
+        self.cache_predict = cache_plugin.create(config)
+
+    def cache_predict(self, timestamp, value):
+        self.cache_predict.write([(timestamp, value)])
 
     @property
     def interval_minute(self):
@@ -164,7 +186,9 @@ class GroupController(threading.Thread):
                     data = series
                 if data is None:
                     raise Exception("Can't get data from influxdb to train.")
-                forecast.train(data)
+                periods = forecast.train(data)
+                self.log.info(
+                    'Group %s data periods = %s' % (self.logname, periods))
                 finish.append('success')
             except Exception as e:
                 finish.append(e.message)
@@ -256,14 +280,19 @@ class GroupController(threading.Thread):
             if cache_list_when_train is not None:
                 cache_list_when_train.append(value)
 
-            # them 1 point va du doan
-            if self.forecast_model:
-                self.forecast_model.add_last_point(value)
-                pr = self.forecast_model.predict()
-                print(pr)
-
             if timestamp is not None and value is not None:
                 self.log.debug('Group %s get new value success' % self.logname)
+
+                # them 1 point va du doan
+                if self.forecast_model:
+                    self.forecast_model.add_last_point(value)
+                    pr = self.forecast_model.predict() or 0
+                    self.log.debug('Group %s forecast value %s' %
+                                   (self.logname, pr))
+                    t = timestamp + self.interval_minute * \
+                        self.data['predict_length']
+                    t = t * 1000000000 * 60
+                    self.cache_predict.write([(t, pr)])
             else:
                 self.log.debug('Group %s get new value fail' % self.logname)
 
