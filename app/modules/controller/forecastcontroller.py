@@ -116,7 +116,7 @@ class ForecastCpuController(ForecastControllerBase):
         return ForecastControllerBase.train(self, data)
 
     def add_last_point(self, value):
-        if value is None or np.nan:
+        if value is None or value is np.nan:
             value = np.nan
         else:
             if value < 0:

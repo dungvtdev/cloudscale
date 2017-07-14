@@ -143,25 +143,22 @@ class GroupController(threading.Thread):
     # return cache list neu data du de train
     def _run_init(self):
         interval = self.interval_minute
-        try:
-            result = self.monitorcontroller.init_data()
-            interval = result['first_interval']
-            total = result['total']
+        result = self.monitorcontroller.init_data()
+        interval = result['first_interval']
+        total = result['total']
 
-            # check time to wait to predict
-            data_length = self.data['data_length']
-            self.wait_cycle_training = data_length - total if data_length > total else 0
+        # check time to wait to predict
+        data_length = self.data['data_length']
+        self.wait_cycle_training = data_length - total if data_length > total else 0
 
-            if self.wait_cycle_training > 0:
-                del result['cache']
-                return interval, None
-            else:
-                # cache o day la pandas.core.series.Series
-                return interval, result['cache']
+        if self.wait_cycle_training > 0:
+            del result['cache']
+            return interval, None
+        else:
+            # cache o day la pandas.core.series.Series
+            return interval, result['cache']
 
-            # values = self.monitorcontroller.get_data_series()
-        except Exception as e:
-            raise e
+        # values = self.monitorcontroller.get_data_series()
 
     def _run_train_data(self, data_cache):
         # data_cache la 1 mang pd.Series
