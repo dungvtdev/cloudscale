@@ -1,4 +1,6 @@
 from core import seriesutils as su
+from core.exceptions import InstanceNotValid, ServiceIOException
+from requests.exceptions import ConnectionError
 
 
 class MonitorController():
@@ -7,7 +9,7 @@ class MonitorController():
         self.logger = app.logger
 
         endpoint = group_config['endpoint']
-        to_db = group_config['to_db']
+        # to_db = group_config['to_db']
         metric = group_config['metric']
         self.interval_minute = group_config['interval_minute']
 
@@ -35,6 +37,9 @@ class MonitorController():
         cache_plugin_config = app_config['cache_plugin']
         cache_plugin = getattr(app, cache_plugin_config['plugin'])
         def_cache_config = cache_plugin_config['config']
+        db_name = def_cache_config['db']
+        if '%s' in db_name:
+            db_name = db_name % group_config['name']
         cache_config = {
             'endpoint': def_cache_config['endpoint'],
             'metric': metric,
@@ -42,7 +47,7 @@ class MonitorController():
             'tags': {
                 'container_name': '/'
             },
-            'db': to_db
+            'db': db_name
         }
         self.cacher = cache_plugin.create(cache_config)
 
@@ -84,9 +89,12 @@ class MonitorController():
 
                 # convert to time value pair to write
                 self.write_data_series(newest, last, self.interval_minute)
+
                 is_finish = len(df) != len(newest)
                 if(is_finish):
                     break
+            except ConnectionError as e:
+                raise InstanceNotValid()
             except Exception as e:
                 if 'Got Data is None' in e.message:
                     break
@@ -120,8 +128,10 @@ class MonitorController():
                     last_time = last
             # ghi lai last time value
             # print(last_time)
-            self.cacher.write_value('last_time', last_time)
-
+            self.write_cache_value('last_time', last_time)
+            # self.cacher.write_value('last_time', last_time)
+        except ConnectionError as e:
+            raise InstanceNotValid()
         except Exception as e:
             if 'Got Data is None' not in e.message:
                 raise e
@@ -148,7 +158,22 @@ class MonitorController():
         begin = last - len(series) * step + 1
         values = [((begin + i * step) * 1000000000 * 60, series[i])
                   for i in range(len(series))]
-        self.cacher.write(values)
+        try:
+            self.cacher.write(values)
+        except ConnectionError:
+            raise ServiceIOException()
+
+    def write_cache_value(self, key, value):
+        try:
+            self.cacher.write_value(key, value)
+        except ConnectionError:
+            raise ServiceIOException()
+
+    def read_cache_value(self, key):
+        try:
+            return self.cacher.read_value(key)
+        except ConnectionError:
+            raise ServiceIOException()
 
     def get_data_series(self):
         # max_time_length = self.max_batch_size * self.interval_minute
@@ -157,7 +182,7 @@ class MonitorController():
 
         # TODO can than cho nay neu khong read duoc value
         try:
-            time_to = int(self.cacher.read_value('last_time'))
+            time_to = int(self.read_cache_value('last_time'))
         except:
             time_to = None
 

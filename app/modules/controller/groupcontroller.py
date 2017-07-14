@@ -4,7 +4,8 @@ import copy
 
 # from threading import Lock
 import time
-from core.exceptions import NotEnoughParams, ExistsException
+from core.exceptions import NotEnoughParams, ExistsException, \
+    InstanceNotValid, ServiceIOException
 from . import MonitorController
 from . import ForecastCpuController
 from core.seriesutils import join_series
@@ -75,10 +76,13 @@ class GroupController(threading.Thread):
         # setup cache
         cache_config = self.app.config['GROUPCACHE']['cache_plugin']
         cache_plugin = getattr(self.app, cache_config['plugin'])
+        db_name = cache_config['config']['db']
+        if '%s' in db_name:
+            db_name = db_name % self.data['name']
         config = {
             'endpoint': cache_config['config']['endpoint'],
             'metric': self.data['metric'],
-            'db': 'monitor_%s' % self.data['name'],
+            'db': db_name,
             'epoch': 'm',
             'tags': {
                 'result': 'predict'
@@ -128,9 +132,10 @@ class GroupController(threading.Thread):
     def create_monitorcontroller(self, vm):
         group_config = {
             'endpoint': vm['endpoint'],
-            'to_db': 'monitor_%s' % self.data['name'],
+            # 'to_db': 'monitor_%s' % self.data['name'],
             'metric': self.data['metric'],
             'interval_minute': self.data['interval_minute'],
+            'name': self.data['name']
         }
         return MonitorController(group_config, self.app)
 
@@ -190,6 +195,10 @@ class GroupController(threading.Thread):
                 self.log.info(
                     'Group %s data periods = %s' % (self.logname, periods))
                 finish.append('success')
+            except ServiceIOException as e:
+                raise e
+            except InstanceNotValid as e:
+                raise e
             except Exception as e:
                 finish.append(e.message)
             finally:
@@ -208,7 +217,7 @@ class GroupController(threading.Thread):
 
         return get_forecast
 
-    def run(self):
+    def _run(self):
         self.log.info('Group %s start' % self.logname)
 
         interval, cache = self._run_init()
@@ -282,10 +291,12 @@ class GroupController(threading.Thread):
 
             if timestamp is not None and value is not None:
                 self.log.debug('Group %s get new value success' % self.logname)
+            else:
+                self.log.debug('Group %s get new value fail' % self.logname)
 
-                # them 1 point va du doan
-                if self.forecast_model:
-                    self.forecast_model.add_last_point(value)
+            if self.forecast_model:
+                self.forecast_model.add_last_point(value)
+                if value is not None:
                     pr = self.forecast_model.predict() or 0
                     self.log.debug('Group %s forecast value %s' %
                                    (self.logname, pr))
@@ -293,12 +304,16 @@ class GroupController(threading.Thread):
                         self.data['predict_length']
                     t = t * 1000000000 * 60
                     self.cache_predict.write([(t, pr)])
-            else:
-                self.log.debug('Group %s get new value fail' % self.logname)
-
-            # if self.forecast_model:
 
         self.log.info('Group %s stop' % self.logname)
+
+    def run(self):
+        try:
+            self._run()
+        except ServiceIOException as e:
+            raise e
+        except InstanceNotValid as e:
+            raise e
 
     """ Status region
     """

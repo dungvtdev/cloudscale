@@ -21,3 +21,11 @@ class ExistsException(BaseWrapperException):
 
 class NotEnoughParams(BaseWrapperException):
     __ex_name__ = 'NotEnoughParams'
+
+
+class InstanceNotValid(BaseWrapperException):
+    __ex_name__ = 'InstanceNotValid'
+
+
+class ServiceIOException(BaseWrapperException):
+    __ex_name__ = 'ServiceIOException'

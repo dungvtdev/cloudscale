@@ -12,8 +12,8 @@ DB_PATH = 'sqlite:///db.sqlite'
 DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
-        "data_length": 1117,
-        "update_in_time": 1,   # tinh nhu tren
+        "data_length": 300,
+        "update_in_time": 2,  # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
         "periodic_number": 1,
@@ -39,7 +39,7 @@ OPS_ACCOUNT = {
     'auth_url': 'http://controller:5000/v3',
     'user_domain_name': 'default',
     'username': 'admin',
-    'password': '123',
+    'password': 'Welcome123',
     'project_domain_name': 'default',
     'project_name': 'admin',
     'nova_version': '2.1'
@@ -47,7 +47,7 @@ OPS_ACCOUNT = {
 
 MONITOR = {
     'max_batch_size': 10000,
-    'max_fault_point': 8,
+    'max_fault_point': 2,
     'read_plugin': {
         'plugin': 'cadvisor_influxdb_series_read',
         'config': {
@@ -57,14 +57,16 @@ MONITOR = {
     'cache_plugin': {
         'plugin': 'influxdb_series',
         'config': {
-            'endpoint': '192.168.122.124'
+            'endpoint': '192.168.122.124',
+            'db': 'cache_%s',
+            # 'endpoint': '127.0.0.1'
         }
     }
 }
 
 FORECAST = {
     'threshold': 0.1,
-    'fs': 144,
+    'fs': 360,
     'predict_plugin': 'predictplugin',
     'feeder_plugin': 'feederplugin',
 }
@@ -74,6 +76,8 @@ GROUPCACHE = {
         'plugin': 'influxdb_series',
         'config': {
             'endpoint': '192.168.122.124',
+            'db': 'cache_%s',
+            # 'endpoint': '127.0.0.1'
         }
     }
 }

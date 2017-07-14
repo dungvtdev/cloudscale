@@ -21,7 +21,7 @@ def test_simple():
     }
     predictor = Predictor(**d)
 
-    data = [1.0 / i for i in range(1, 100)]
+    data = [1.0 / i for i in range(1, 20000)]
     in_train, out_train = feeder.generate(data, k)
     predictor.train(in_train, out_train)
     out_test = feeder.generate_train_one(data, k)
@@ -29,7 +29,8 @@ def test_simple():
     print(pr)
 
 
-# test_simple()
+test_simple()
+
 
 def test_data():
     k = 1
@@ -66,4 +67,4 @@ def test_data():
     plot_figure(out_pred, out_test)
 
 
-test_data()
+# test_data()

@@ -73,21 +73,21 @@ class BaseFeeder():
             training.append(temp)
         return training
 
-    # def generate_extend(self, data, extend):
-    #     # idxs = list(range(0, self.n_input))
-    #     idxs = []
-    #     for m in range(1, self.n_periodic + 1):
-    #         idxs.append(m * self.period)
+        # def generate_extend(self, data, extend):
+        #     # idxs = list(range(0, self.n_input))
+        #     idxs = []
+        #     for m in range(1, self.n_periodic + 1):
+        #         idxs.append(m * self.period)
 
-    #     n_d = len(data)
-    #     rl = [data[n_d - i - 1] for i in range(0, self.n_input)]
-    #     n_ex = len(extend)
-    #     for idx in idxs:
-    #         if idx >= n_ex:
-    #             rl.append(data[n_d - (idx - n_ex) - 1])
-    #         else:
-    #             rl.append(extend[-idx - 1])
-    #     return rl
+        #     n_d = len(data)
+        #     rl = [data[n_d - i - 1] for i in range(0, self.n_input)]
+        #     n_ex = len(extend)
+        #     for idx in idxs:
+        #         if idx >= n_ex:
+        #             rl.append(data[n_d - (idx - n_ex) - 1])
+        #         else:
+        #             rl.append(extend[-idx - 1])
+        #     return rl
 
 
 class SimpleFeeder(BaseFeeder):
