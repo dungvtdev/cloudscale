@@ -220,13 +220,17 @@ class MonitorController():
         return accum
 
     def get_last_one(self):
-        values = self.reader.read(time_length=self.interval_minute)
-        if values:
-            self.data_total = self.data_total + 1
-            t = values[-1][0]
-            v = sum(v[1] for v in values) / len(values)
+        try:
+            values = self.reader.read(time_length=self.interval_minute)
+            if values:
+                self.data_total = self.data_total + 1
+                t = values[-1][0]
+                t = t - t % self.interval_minute
+                v = sum(v[1] for v in values) / len(values)
 
-            # write to database
-            self.cacher.write([(t, v), ])
-            return t, v
-        return None, None
+                # write to database
+                self.cacher.write([(t, v), ])
+                return t, v
+            return None, None
+        except ConnectionError as e:
+            raise InstanceNotValid()

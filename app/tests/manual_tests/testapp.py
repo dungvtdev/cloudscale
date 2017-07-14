@@ -16,8 +16,8 @@ group_dict = {
     'selfservice': 's1',
     'provider': 'p1',
     'instances': [{
-        # 'endpoint': '192.168.122.124',
-        'endpoint': '192.168.122.224',
+        'endpoint': '192.168.122.124',
+        # 'endpoint': '192.168.122.224',
         'instance_id': 'is1'
     }]
 }

@@ -46,6 +46,7 @@ class ForecastControllerBase(object):
             'fs': self.config['fs']
         }
         periods = self.predict_plugin.period_detect(data, **pd_params)
+        # periods = [1.02, ]
         if not periods:
             periodic_number = 0
             period = 0
@@ -81,7 +82,7 @@ class ForecastControllerBase(object):
 
         # cache lai data
         base_length = max(periodic_number * period -
-                          predict_length, self.config['recent_point'])
+                          predict_length + 1, self.config['recent_point'])
         max_length = int(1.2 * base_length)
         self.datacache = DataLoop(
             max_length, base_length, data[len(data) - base_length:])
@@ -115,10 +116,13 @@ class ForecastCpuController(ForecastControllerBase):
         return ForecastControllerBase.train(self, data)
 
     def add_last_point(self, value):
-        if value < 0:
-            value = 0
-        if value > 1:
-            value = 1
+        if value is None or np.nan:
+            value = np.nan
+        else:
+            if value < 0:
+                value = 0
+            if value > 1:
+                value = 1
         return ForecastControllerBase.add_last_point(self, value)
 
     def predict(self):
@@ -134,7 +138,7 @@ class DataLoop(object):
     def check_length(self):
         len_data = len(self.data)
         if len_data > self.max_length:
-            delta = len_data - self.max_length
+            delta = len_data - self.base_length
             new_data = pd.Series([]).append(
                 self.data[delta:], ignore_index=True)
             del self.data
@@ -143,7 +147,9 @@ class DataLoop(object):
     def append(self, value):
         need_interpolate = np.isnan(
             self.data[len(self.data) - 1]) and not np.isnan(value)
-        self.data.append(pd.Series([value, ]), ignore_index=True)
+        newdata = self.data.append(pd.Series([value, ]), ignore_index=True)
+        del self.data
+        self.data = newdata
         if need_interpolate:
             self.data = self.data.interpolate()
         self.check_length()

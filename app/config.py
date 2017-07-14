@@ -12,7 +12,7 @@ DB_PATH = 'sqlite:///db.sqlite'
 DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
-        "data_length": 300,
+        "data_length": 100,
         "update_in_time": 2,  # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
@@ -66,7 +66,7 @@ MONITOR = {
 
 FORECAST = {
     'threshold': 0.1,
-    'fs': 360,
+    'fs': 144,
     'predict_plugin': 'predictplugin',
     'feeder_plugin': 'feederplugin',
 }

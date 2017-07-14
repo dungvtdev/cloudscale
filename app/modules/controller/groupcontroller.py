@@ -283,7 +283,13 @@ class GroupController(threading.Thread):
             time.sleep(interval * 60)
             interval = self.interval_minute
 
-            timestamp, value = self.monitorcontroller.get_last_one()
+            timestamp, value = None, None
+            try:
+                timestamp, value = self.monitorcontroller.get_last_one()
+            except InstanceNotValid as e:
+                # health check
+            except Exception as e:
+                self.log.error('Group %s error when get last point. Er %s' % (self.logname, e.message))
             # luu lai value neu model dang train, trong truong hop thoi gian train
             # lon hon thoi gian interval_minute
             if cache_list_when_train is not None:
