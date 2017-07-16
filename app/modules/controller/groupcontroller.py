@@ -316,12 +316,15 @@ class GroupController(threading.Thread):
                     self.cache_predict.write([(t, pr)])
 
                     # scale
-                    self.scale_decide(value, pr)
+                    type_scale = self.scale_decide(value, pr)
+                    if type_scale:
+                        self.log.info('Group %s detect scale %s' %(self.logname, type_scale))
 
         self.log.info('Group %s stop' % self.logname)
 
     def scale_decide(self, value, pr):
-        self.scalecontroller.add_point(value, pr)
+        type_scale = self.scalecontroller.add_point(value, pr)
+
         result = self.scalecontroller.receive()
         if result and result['is_finish']:
             if result['type'] == 'up':
@@ -334,6 +337,7 @@ class GroupController(threading.Thread):
                 vm = result['vm']
                 self.groupservice.db_drop_group(vm)
 
+        return type_scale
 
     def run(self):
         try:

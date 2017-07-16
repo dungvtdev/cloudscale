@@ -45,7 +45,7 @@ class ScaleControllerBase(object):
         if self.max_length and len(self.data) > self.max_length:
             start = len(self.data) - self.max_length
             self.data = self.data[start:]
-        self.check(self.data, predict)
+        return self.check(self.data, predict)
 
     def check(self, data, predict):
         raise NotImplementedError('check method must be implement.')
@@ -63,15 +63,17 @@ class ScaleControllerBase(object):
 
 class SimpleScaleController(ScaleControllerBase):
     def check(self, data, predict):
+        scale_msg = ''
         if self.last_scale_time:
             wait_enough = time.time() - self.last_scale_time > self.warm_up_minutes * 60
             if not wait_enough:
                 return
-            
+
         if predict >= self.max_value:
             if len(self.instances) >= self.max_scale:
                 return
             self.scale_up()
+            scale_msg = 'up'
             # test
             # print('up')
             # self.instances.append('')
@@ -80,8 +82,12 @@ class SimpleScaleController(ScaleControllerBase):
             f_number = self.base_vm_count + len(self.instances) - 1
             if f_number > 0 and average < 0.8 * self.max_value / f_number:
                 self.scale_down()
+                scale_msg = 'down'
                 # test
                 # print('down')
+
+        # return co the scale khong, va trang thai scale
+        return scale_msg
 
     def test_scale_up(self):
         func = self.scale_up(self.group_data)
@@ -143,7 +149,7 @@ class SimpleScaleController(ScaleControllerBase):
                 'error': vmthread.exception,
                 'vm': result.get('vm', None),
                 'type': 'up',
-                'is_finish': vmthread.state == 'success' or vmthread.state == 'fail'
+                'is_finish': vmthread.state == 'success' or vmthread.state == 'fail',
             }
 
         return check_status
