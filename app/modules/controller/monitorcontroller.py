@@ -233,7 +233,7 @@ class MonitorController():
                 v = sum(v[1] for v in values) / len(values)
 
                 # write to database
-                self.cacher.write([(t, v), ])
+                self.cacher.write([(t * 1000000000 * 60, v), ])
                 return t, v
             return None, None
         except ConnectionError as e:
