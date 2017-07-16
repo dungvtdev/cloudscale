@@ -116,19 +116,12 @@ class MonitorController():
                 delta = amount_time % interval_minute
                 extra = int(amount_time / interval_minute)
                 first_interval = self.interval_minute - delta
-                print(first_interval)
                 if extra > 0:
                     # cache lai du lieu
-                    print('check point 2')
                     df = su.minutevaluepair_to_pdseries(tv)
                     # last = df[-1][0]
-                    print('check point 3')
                     df = su.resample(df, self.interval_minute)
                     newest = su.get_newestseries(df, max_fault_point)
-                    # bo di phan tu cuoi vi chua du chu ky
-                    print('check point 4')
-                    print(df)
-                    print(newest)
                     # truong hop interval_minute > 1, delta la phan thua ra khong du chu ky
                     # neu interval_minute = 1 thi delta = 0
                     if delta > 0:
@@ -136,7 +129,6 @@ class MonitorController():
                     cache = [newest, ] + cache
                     # last = newest[-1][0]
                     last = time_from_begin + extra * interval_minute
-                    print('check point 5')
                     self.write_data_series(newest, last, self.interval_minute)
 
                     last_time = last
