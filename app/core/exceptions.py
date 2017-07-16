@@ -29,3 +29,7 @@ class InstanceNotValid(BaseWrapperException):
 
 class ServiceIOException(BaseWrapperException):
     __ex_name__ = 'ServiceIOException'
+
+
+class BadInputParams(BaseWrapperException):
+    __ex_name__ = 'BadInputParams'

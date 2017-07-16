@@ -5,7 +5,7 @@ import copy
 # from threading import Lock
 import time
 from core.exceptions import NotEnoughParams, ExistsException, \
-    InstanceNotValid, ServiceIOException
+    InstanceNotValid, ServiceIOException, BadInputParams
 from . import MonitorController
 from . import ForecastCpuController
 from core.seriesutils import join_series
@@ -104,9 +104,9 @@ class GroupController(threading.Thread):
     def test(self, group_dict):
         return self.data['group_id'] == group_dict['group_id']
 
-    @property
-    def state(self):
-        return WAIT_FOR_TRAIN_STATE
+    # @property
+    # def state(self):
+    #     return WAIT_FOR_TRAIN_STATE
 
     @property
     def vms(self):
@@ -142,7 +142,7 @@ class GroupController(threading.Thread):
     # return interval dau tien
     # return cache list neu data du de train
     def _run_init(self):
-        interval = self.interval_minute
+        # interval = self.interval_minute
         result = self.monitorcontroller.init_data()
         interval = result['first_interval']
         total = result['total']
@@ -217,8 +217,15 @@ class GroupController(threading.Thread):
     def _run(self):
         self.log.info('Group %s start' % self.logname)
 
-        interval, cache = self._run_init()
-        print(interval)
+        try:
+            interval, cache = self._run_init()
+        except BadInputParams as e:
+            if "too short data" in e.message:
+                cache = None
+                interval = self.interval_minute
+            else:
+                raise e
+        # print(interval)
         if not cache and self.wait_cycle_training > 0:
             self.log.debug('Group %s wait %s cycle to train data' %
                            (self.logname, self.wait_cycle_training))
