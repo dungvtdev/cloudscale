@@ -125,6 +125,8 @@ class MonitorController():
                     newest = su.get_newestseries(df, max_fault_point)
                     # bo di phan tu cuoi vi chua du chu ky
                     print('check point 4')
+                    print(df)
+                    print(newest)
                     newest = newest[:len(newest) - 1]
                     cache = [newest, ] + cache
                     last = newest[-1][0]
