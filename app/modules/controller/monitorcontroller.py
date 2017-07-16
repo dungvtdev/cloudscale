@@ -108,21 +108,27 @@ class MonitorController():
 
         try:
             tv = self.reader.read(time_from=time_from_begin)
+            print(tv)
             if tv:
+                print('check point 1')
                 last_tv = tv[-1][0]
                 amount_time = last_tv - time_from_begin
                 delta = amount_time % interval_minute
                 first_interval = self.interval_minute - delta
                 if amount_time >= interval_minute:
                     # cache lai du lieu
+                    print('check point 2')
                     df = su.minutevaluepair_to_pdseries(tv)
                     # last = df[-1][0]
+                    print('check point 3')
                     df = su.resample(df, self.interval_minute)
                     newest = su.get_newestseries(df, max_fault_point)
                     # bo di phan tu cuoi vi chua du chu ky
+                    print('check point 4')
                     newest = newest[:len(newest) - 1]
                     cache = [newest, ] + cache
                     last = newest[-1][0]
+                    print('check point 5')
                     self.write_data_series(newest, last, self.interval_minute)
 
                     last_time = last
