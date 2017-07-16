@@ -318,7 +318,7 @@ class GroupController(threading.Thread):
                     # scale
                     type_scale = self.scale_decide(value, pr)
                     if type_scale:
-                        self.log.info('Group %s detect scale %s' %(self.logname, type_scale))
+                        self.log.info('Group %s detect scale %s' % (self.logname, type_scale))
 
         self.log.info('Group %s stop' % self.logname)
 
@@ -327,15 +327,19 @@ class GroupController(threading.Thread):
 
         result = self.scalecontroller.receive()
         if result and result['is_finish']:
-            if result['type'] == 'up':
-                # them vao danh sach
-                vm = result['vm']
-                vm['is_monitoring'] = False
-                self.groupservice.db_create_vm(vm)
-                # self.data['instances'].append(vm_dict)
-            elif result['type'] == 'down':
-                vm = result['vm']
-                self.groupservice.db_drop_group(vm)
+            if result['state'] == 'success':
+                if result['type'] == 'up':
+                    # them vao danh sach
+                    vm = result['vm']
+                    vm['is_monitoring'] = False
+                    self.groupservice.db_create_vm(vm)
+                    # self.data['instances'].append(vm_dict)
+                elif result['type'] == 'down':
+                    vm = result['vm']
+                    self.groupservice.db_drop_group(vm)
+                self.log.info('Group % finish scale instance' % self.logname)
+            else:
+                self.log.info('Group % fail to scale instance' % self.logname)
 
         return type_scale
 
