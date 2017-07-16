@@ -115,7 +115,7 @@ class MonitorController():
                 first_interval = self.interval_minute - delta
                 if amount_time >= interval_minute:
                     # cache lai du lieu
-                    df = su.minutevaluepair_to_pdseries(timevalues)
+                    df = su.minutevaluepair_to_pdseries(tv)
                     # last = df[-1][0]
                     df = su.resample(df, self.interval_minute)
                     newest = su.get_newestseries(df, max_fault_point)
