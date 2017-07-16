@@ -6,8 +6,10 @@ from plugins.sqlbackend import SQLBackend
 from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin, \
     InfluxdbSeriesPlugin
 from plugins.forecast import PredictPlugin, FeederPlugin
+from plugins.opsvm import OpsVmService
 from modules.group import GroupUtils
 from modules.controller import Controller
+from modules.scale import ScaleFactory
 
 
 def configure_log(app):
@@ -42,6 +44,11 @@ def configure_predict_plugin(app):
     feeder.init_app(app)
 
 
+def configure_opsclient_plugin(app):
+    opsvm = OpsVmService()
+    opsvm.init_app(app)
+
+
 def configure_group_module(app):
     grouputils = GroupUtils()
     grouputils.init_app(app)
@@ -50,6 +57,9 @@ def configure_group_module(app):
 def configure_controller(app):
     controller = Controller()
     controller.init_app(app)
+
+    scalectrl = ScaleFactory()
+    scalectrl.init_app(app)
 
 
 app = application = app_module.App()
@@ -60,6 +70,7 @@ configure_info_manager_plugin(application)
 configure_sqlbackend_plugin(application)
 configure_influxdb_plugin(application)
 configure_predict_plugin(application)
+configure_opsclient_plugin(application)
 
 configure_group_module(application)
 configure_controller(application)

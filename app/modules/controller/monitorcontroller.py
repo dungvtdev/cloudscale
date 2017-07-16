@@ -7,6 +7,7 @@ class MonitorController():
     def __init__(self, group_config, app):
         self.group_config = group_config
         self.logger = app.logger
+        self.logname = "Group %s" % group_config['name']
 
         endpoint = group_config['endpoint']
         # to_db = group_config['to_db']
@@ -68,7 +69,7 @@ class MonitorController():
         self.data_total = 0
 
         max_time_length = max_batch_size / 47
-        while(True):
+        while (True):
             try:
                 timevalues = self.reader.read(time_length=max_time_length,
                                               time_to=time_to)
@@ -91,7 +92,7 @@ class MonitorController():
                 self.write_data_series(newest, last, self.interval_minute)
 
                 is_finish = len(df) != len(newest)
-                if(is_finish):
+                if (is_finish):
                     break
             except ConnectionError as e:
                 raise InstanceNotValid()
@@ -147,8 +148,8 @@ class MonitorController():
         total = sum(len(c) for c in cache)
         self.data_total = total
 
-        self.logger.info('Get %s point from %s' %
-                         (total, self.group_config['endpoint']))
+        self.logger.info('%s Get %s point from %s' %
+                         (self.logname, self.group_config['endpoint']))
 
         # print(total)
         # with open('/home/dungvt/read.cache', 'w') as f:
@@ -193,7 +194,7 @@ class MonitorController():
             time_to = None
 
         accum = []
-        while(True):
+        while (True):
             try:
                 values = self.cacher.read(
                     time_to=time_to, time_length=max_time_length)
@@ -208,7 +209,7 @@ class MonitorController():
 
                 is_finish = len(values) < max_batch_size
 
-                if(is_finish):
+                if (is_finish):
                     break
             except Exception as e:
                 if 'Got Data is None' in e.message:

@@ -36,7 +36,7 @@ t = ops.make_createvm_thread(vm)
 t.start()
 
 count = 1000
-while(not t.is_finish() and count > 0):
+while not t.is_finish() and count > 0:
     print(t.state)
     time.sleep(1)
     count = count - 1

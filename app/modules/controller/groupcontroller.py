@@ -67,6 +67,7 @@ class GroupController(threading.Thread):
         self.wait_cycle_update = self.data['update_in_time']
 
         self.forecast_model = None
+        self.scalecontroller = self.create_scalecontroller()
 
         # self.local_timestamp = 0
 
@@ -105,10 +106,6 @@ class GroupController(threading.Thread):
         return self.data['group_id'] == group_dict['group_id']
 
     @property
-    def state(self):
-        return WAIT_FOR_TRAIN_STATE
-
-    @property
     def vms(self):
         return self.data['instances']
 
@@ -139,6 +136,11 @@ class GroupController(threading.Thread):
         }
         return MonitorController(group_config, self.app)
 
+    def create_scalecontroller(self):
+        metric = self.data['metric']
+        def_config = self.app.config['SCALE']['scale_controller'][metric]
+        return self.app.scalefactory.create(def_config)
+
     # return interval dau tien
     # return cache list neu data du de train
     def _run_init(self):
@@ -158,7 +160,7 @@ class GroupController(threading.Thread):
             # cache o day la pandas.core.series.Series
             return interval, result['cache']
 
-        # values = self.monitorcontroller.get_data_series()
+            # values = self.monitorcontroller.get_data_series()
 
     def _run_train_data(self, data_cache):
         # data_cache la 1 mang pd.Series
@@ -306,9 +308,11 @@ class GroupController(threading.Thread):
                     self.log.debug('Group %s forecast value %s' %
                                    (self.logname, pr))
                     t = timestamp + self.interval_minute * \
-                        self.data['predict_length']
+                                    self.data['predict_length']
                     t = t * 1000000000 * 60
                     self.cache_predict.write([(t, pr)])
+
+                    self.scalecontroller.add_point(value, pr)
 
         self.log.info('Group %s stop' % self.logname)
 
@@ -388,22 +392,7 @@ class GroupController(threading.Thread):
     """
 
     def scale_up(self):
-        vm_name_ex = str(uuid.uuid4())[:8]
-        name = "%s.%s" % (self.data['name'], vm_name_ex)
-
-        data = {
-            'name': name,
-            'image': self.data['image'],
-            'flavor': self.data['flavor'],
-            'selfservice': self.data['selfservice'],
-            'provider_name': self.data['provider'],
-            'user_data': self.data['user_data'],
-        }
-
-        vmthread = self.opsvm.make_createvm_thread(data)
-
-        self._scaling_threads.append(vmthread)
-        thread.start_new_thread(self._scale_up_thread, (vmthread, ))
+        pass
 
     def _scale_up_thread(self, vmthread):
         vmthread.start()
@@ -439,7 +428,7 @@ class GroupController(threading.Thread):
             vmthread = self.opsvm.make_dropvm_thread(vm)
 
             self._scaling_threads.append(vmthread)
-            thread.start_new_thread(self._scale_down_thread, (vmthread, ))
+            thread.start_new_thread(self._scale_down_thread, (vmthread,))
 
     def _scale_down_thread(self, vmthread):
         vmthread.start()
