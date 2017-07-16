@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 
 
+# Ham nay doi timestamp index sang number index nen rat quan trong
+# la cho duy nhat trong code lam viec nay
+#
 def join_series(series_list):
     if not series_list:
         return None
-    if len(series_list) == 1:
-        return series_list[0]
 
-    s = series_list[0]
-    series_list = series_list[1:]
+    s = pd.Series([])
     for si in series_list:
         s = s.append(si, ignore_index=True)
     return s
@@ -18,7 +18,7 @@ def join_series(series_list):
 def minutevaluepair_to_pdseries(timevalues):
     df = timevalues if isinstance(timevalues, pd.DataFrame) \
         else pd.DataFrame(timevalues)
-    convert = 1000000000 * 60   # tinh theo minute
+    convert = 1000000000 * 60  # tinh theo minute
     df = df.set_index(pd.to_datetime(df[0] * convert))[1]
     return df
 
