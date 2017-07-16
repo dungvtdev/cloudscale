@@ -2,6 +2,7 @@ from core import DependencyModule
 import thread
 import uuid
 import time
+import copy
 
 
 class ScaleControllerBase(object):
@@ -12,7 +13,14 @@ class ScaleControllerBase(object):
         self.app = app
         self.group_data = group_data
 
-        self.max_length = config.get('max_length', None)
+        self.max_value = config['max_value']
+        self.sum_length = config['sum_length']
+        self.max_scale = config['max_scale']
+        self.warm_up_minutes = config['warm_up_minutes']
+        self.max_length = self.sum_length
+
+        self.base_vm_count = len(group_data['instances'])
+
         self.data = []
         # self.result = {
         #     'state': '',
@@ -21,7 +29,12 @@ class ScaleControllerBase(object):
         #     'type': ''
         # }
         self.running_func = None
-        self.instances = []
+        self.last_scale_time = None
+        self._instances = []
+
+    @property
+    def instances(self):
+        return self._instances
 
     def log(self, method, message):
         if self.logger is not None:
@@ -50,9 +63,25 @@ class ScaleControllerBase(object):
 
 class SimpleScaleController(ScaleControllerBase):
     def check(self, data, predict):
-        # if not self.running_func:
-        #     self.running_func = self.scale_up(self.group_data)
-        pass
+        if self.last_scale_time:
+            wait_enough = time.time() - self.last_scale_time > self.warm_up_minutes * 60
+            if not wait_enough:
+                return
+            
+        if predict >= self.max_value:
+            if len(self.instances) >= self.max_scale:
+                return
+            self.scale_up()
+            # test
+            # print('up')
+            # self.instances.append('')
+        else:
+            average = sum(data) / len(data)
+            f_number = self.base_vm_count + len(self.instances) - 1
+            if f_number > 0 and average < 0.8 * self.max_value / f_number:
+                self.scale_down()
+                # test
+                # print('down')
 
     def test_scale_up(self):
         func = self.scale_up(self.group_data)
@@ -133,7 +162,7 @@ class SimpleScaleController(ScaleControllerBase):
             thrd.join()
 
             if vmthread.state == 'success':
-                self._last_scale_time = time.time()
+                self.last_scale_time = time.time()
 
                 self.instances.remove(vm)
 
@@ -169,5 +198,8 @@ class ScaleFactory(DependencyModule):
 
     def create(self, group_data, config):
         controller_cls = self.map[config['controller']]
-        controller = controller_cls(group_data, config['config'], self.app)
+        cf = copy.copy(config['config'])
+        cf['max_scale'] = config['max_scale']
+        cf['warm_up_minutes'] = config['warm_up_minutes']
+        controller = controller_cls(group_data, cf, self.app)
         return controller

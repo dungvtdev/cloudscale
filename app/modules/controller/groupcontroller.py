@@ -139,7 +139,10 @@ class GroupController(threading.Thread):
     def create_scalecontroller(self):
         metric = self.data['metric']
         def_config = self.app.config['SCALE']['scale_controller'][metric]
-        return self.app.scalefactory.create(def_config)
+        cf = copy.copy(def_config)
+        cf['max_scale'] = self.app.config['SCALE']['max_scale']
+        cf['warm_up_minutes'] = self.app.config['SCALE']['warm_up'] * self.interval_minute
+        return self.app.scalefactory.create(self.data, cf)
 
     # return interval dau tien
     # return cache list neu data du de train
@@ -312,9 +315,25 @@ class GroupController(threading.Thread):
                     t = t * 1000000000 * 60
                     self.cache_predict.write([(t, pr)])
 
-                    self.scalecontroller.add_point(value, pr)
+                    # scale
+                    self.scale_decide(value, pr)
 
         self.log.info('Group %s stop' % self.logname)
+
+    def scale_decide(self, value, pr):
+        self.scalecontroller.add_point(value, pr)
+        result = self.scalecontroller.receive()
+        if result and result['is_finish']:
+            if result['type'] == 'up':
+                # them vao danh sach
+                vm = result['vm']
+                vm['is_monitoring'] = False
+                self.groupservice.db_create_vm(vm)
+                # self.data['instances'].append(vm_dict)
+            elif result['type'] == 'down':
+                vm = result['vm']
+                self.groupservice.db_drop_group(vm)
+
 
     def run(self):
         try:
@@ -390,33 +409,6 @@ class GroupController(threading.Thread):
 
     """ VM regions
     """
-
-    def scale_up(self):
-        pass
-
-    def _scale_up_thread(self, vmthread):
-        vmthread.start()
-        vmthread.join()
-
-        self._scaling_threads.remove(vmthread)
-
-        if vmthread.status == 'success':
-            self._last_scale_time = time.time()
-            vm = vmthread.vm
-            vm_dict = {
-                'instance_id': vm['instance_id'],
-                'endpoint': 'ip',
-                'user_id': self.data['user_id'],
-                'is_monitoring': False
-            }
-            vm_dict = self.groupservice.db_create_vm(vm_dict)
-
-            self.data['instances'].append(vm_dict)
-
-            self.log.info('success scale new vm id=%s' % vm['instance_id'])
-
-        if vmthread.status == 'fail':
-            self.log.error('fail to scale new vm')
 
     def scale_down(self):
         # tu chon ra 1 vm khong monitor de xoa

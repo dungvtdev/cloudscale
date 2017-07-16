@@ -88,8 +88,10 @@ SCALE = {
             'controller': 'simple_scale',
             'config': {
                 'max_value': 0.65,
-                'max_length': 20,
+                'sum_length': 10,
             }
         }
-    }
+    },
+    'max_scale': 1,
+    'warm_up': 2
 }

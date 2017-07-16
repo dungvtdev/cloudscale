@@ -149,7 +149,7 @@ class MonitorController():
         self.data_total = total
 
         self.logger.info('%s Get %s point from %s' %
-                         (self.logname, self.group_config['endpoint']))
+                         (self.logname, total, self.group_config['endpoint']))
 
         # print(total)
         # with open('/home/dungvt/read.cache', 'w') as f:
