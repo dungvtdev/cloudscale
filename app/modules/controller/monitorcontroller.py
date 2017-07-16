@@ -87,10 +87,12 @@ class MonitorController():
                 newest = su.get_newestseries(df, max_fault_point)
                 is_finish = len(df) != len(newest)
 
+                last = timevalues[-1][0]
+
                 if is_last_chunk:
                     is_last_chunk = False
                     # cat dau duoi
-                    last = timevalues[-1][0]
+                    # last = timevalues[-1][0]
                     # la time cuoi cung cua chunk cuoi cung
                     time_from_begin = last
 
@@ -206,6 +208,8 @@ class MonitorController():
                     max_time_length = max_time_length - max_time_length % interval_minute
                 else:
                     time_to = time_to - len(newest) * interval_minute
+                    last = timevalues[-1][0]
+                    last = last - last % interval_minute
                 # cache lai de dung ngay khi du dieu kien train data
                 cache.append(newest)
 
