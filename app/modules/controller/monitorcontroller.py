@@ -114,8 +114,10 @@ class MonitorController():
                 last_tv = tv[-1][0]
                 amount_time = last_tv - time_from_begin
                 delta = amount_time % interval_minute
+                extra = int(amount_time / interval_minute)
                 first_interval = self.interval_minute - delta
-                if amount_time >= interval_minute:
+                print(first_interval)
+                if extra > 0:
                     # cache lai du lieu
                     print('check point 2')
                     df = su.minutevaluepair_to_pdseries(tv)
@@ -127,9 +129,13 @@ class MonitorController():
                     print('check point 4')
                     print(df)
                     print(newest)
-                    newest = newest[:len(newest) - 1]
+                    # truong hop interval_minute > 1, delta la phan thua ra khong du chu ky
+                    # neu interval_minute = 1 thi delta = 0
+                    if delta > 0:
+                        newest = newest[:len(newest) - 1]
                     cache = [newest, ] + cache
-                    last = newest[-1][0]
+                    # last = newest[-1][0]
+                    last = time_from_begin + extra * interval_minute
                     print('check point 5')
                     self.write_data_series(newest, last, self.interval_minute)
 
