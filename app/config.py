@@ -13,7 +13,7 @@ DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
         "data_length": 100,
-        "update_in_time": 2,  # tinh nhu tren
+        "update_in_time": 1000  ,  # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
         "periodic_number": 1,
@@ -87,11 +87,11 @@ SCALE = {
         'cpu_usage_total': {
             'controller': 'simple_scale',
             'config': {
-                'max_value': 0.65,
+                'max_value': 0.6,
                 'sum_length': 10,
             }
         }
     },
-    'max_scale': 1,
+    'max_scale': 2,
     'warm_up': 2
 }

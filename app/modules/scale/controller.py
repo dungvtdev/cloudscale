@@ -72,8 +72,10 @@ class SimpleScaleController(ScaleControllerBase):
         if predict >= self.max_value:
             if len(self.instances) >= self.max_scale:
                 return
-            self.scale_up()
-            scale_msg = 'up'
+            func = self.scale_up()
+            if func:
+                self.running_func = func
+                scale_msg = 'up'
             # test
             # print('up')
             # self.instances.append('')
@@ -81,8 +83,10 @@ class SimpleScaleController(ScaleControllerBase):
             average = sum(data) / len(data)
             f_number = self.base_vm_count + len(self.instances) - 1
             if f_number > 0 and average < 0.8 * self.max_value / f_number:
-                self.scale_down()
-                scale_msg = 'down'
+                func = self.scale_down()
+                if func:
+                    self.running_func = func
+                    scale_msg = 'down'
                 # test
                 # print('down')
 
@@ -90,7 +94,7 @@ class SimpleScaleController(ScaleControllerBase):
         return scale_msg
 
     def test_scale_up(self):
-        func = self.scale_up(self.group_data)
+        func = self.scale_up()
         if func:
             self.running_func = func
 

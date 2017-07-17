@@ -19,7 +19,8 @@ forecast_map = {
 
 
 class GroupController(threading.Thread):
-    WARM_UP_TIME_SECS = 240
+    i = 0.55
+    step = 0.1
 
     def __init__(self, app, group_dict):
         threading.Thread.__init__(self)
@@ -316,6 +317,14 @@ class GroupController(threading.Thread):
                     self.cache_predict.write([(t, pr)])
 
                     # scale
+                    value = self.i
+                    print('value fake %s' % value)
+                    self.i = self.i + self.step
+                    pr = self.i
+                    if self.i > 0.8:
+                        self.step = -abs(self.step)
+                    elif self.i < 0.1:
+                        self.step = abs(self.step)
                     type_scale = self.scale_decide(value, pr)
                     if type_scale:
                         self.log.info('Group %s detect scale %s' % (self.logname, type_scale))
@@ -326,6 +335,7 @@ class GroupController(threading.Thread):
         type_scale = self.scalecontroller.add_point(value, pr)
 
         result = self.scalecontroller.receive()
+        print(result)
         if result and result['is_finish']:
             if result['state'] == 'success':
                 if result['type'] == 'up':
@@ -337,9 +347,10 @@ class GroupController(threading.Thread):
                 elif result['type'] == 'down':
                     vm = result['vm']
                     self.groupservice.db_drop_group(vm)
-                self.log.info('Group % finish scale instance' % self.logname)
+                self.log.info('Group %s finish scale instance' % self.logname)
             else:
-                self.log.info('Group % fail to scale instance' % self.logname)
+                self.log.info('Group %s fail to scale instance. Err %s' %
+                              (self.logname, result['error'].message))
 
         return type_scale
 
@@ -417,36 +428,6 @@ class GroupController(threading.Thread):
 
     """ VM regions
     """
-
-    def scale_down(self):
-        # tu chon ra 1 vm khong monitor de xoa
-        vm = next((v for v in self.data['instances']
-                   if not v['is_monitoring']), None)
-        if not vm:
-            self.log.error('Logic Error, khong tim thay vm de scale down')
-        else:
-            vmthread = self.opsvm.make_dropvm_thread(vm)
-
-            self._scaling_threads.append(vmthread)
-            thread.start_new_thread(self._scale_down_thread, (vmthread,))
-
-    def _scale_down_thread(self, vmthread):
-        vmthread.start()
-        vmthread.stop()
-
-        self._scaling_threads.remove(vmthread)
-
-        if vmthread.status == 'success':
-            self._last_scale_time = time.time()
-
-            self.data['instances'].remove(vmthread.data)
-
-            self.log.info('success scale down vm id=%s' %
-                          vmthread.data['instance_id'])
-
-        if vmthread.status == 'fail':
-            self.log.error('fail to scale down vm id=%s' %
-                           vmthread.data['instance_id'])
 
     def run_up(self):
         self.is_running = True
