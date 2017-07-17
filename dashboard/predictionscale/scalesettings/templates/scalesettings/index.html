@@ -1,0 +1,31 @@
+{% extends 'predictionscale/base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Scale Settings" %}{% endblock %}
+
+{% block page_header %}
+  {% include "horizon/common/_page_header.html" with title=_("Scale Settings") %}
+{% endblock page_header %}
+
+{% block main %}
+{% include 'predictionscale/scalesettings/_step_header.html' %}
+<div class="row setup-content" id="step-1">
+    <div class="col-md-12">
+        <h3> {{ step_title }} </h3>
+        {% block step_content %}
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+  {% include "horizon/_scripts.html" %}
+  {% include "predictionscale/scalesettings/_scripts.html" %}
+  {% block self_js %}{% endblock %}
+{% endblock %}
+
+{% block css %}
+    {% include "_stylesheets.html" %}
+    {% include "predictionscale/scalesettings/_stylesheets.html" %}
+{% endblock %}
+

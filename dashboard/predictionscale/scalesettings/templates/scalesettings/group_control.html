@@ -1,0 +1,42 @@
+{% extends 'predictionscale/scalesettings/index.html' %} {% block step_content %}
+    <div id="group-control" class="apply-parent"
+         data-url="{% url 'horizon:predictionscale:scalesettings:poll_process_data' id=group.id %}"
+         data-url-predict="{% url 'horizon:predictionscale:scalesettings:get_last_predict' id=group.id %}">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>Server Name</th>
+                    <th>Status</th>
+                    <th>State</th>
+                    <th>CPU Predict</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for inst in instances %}
+                    <tr class="instance-process" data-id={{ inst.id }}>
+                        <td>{{ inst.name }}</td>
+                        <td>
+                            <p class="instance-message"></p>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-danger" style="width: 0%">
+                                    0 %
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <p class="instance-status"></p>
+                        </td>
+                        <td>
+                            <p class="instance-predict"></p>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block self_js %}
+    <script src="{{ STATIC_URL }}predictionscale/js/group_control.js" type='text/javascript' charset='utf-8'></script>
+{% endblock %}

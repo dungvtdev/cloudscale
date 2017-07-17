@@ -1,0 +1,22 @@
+{% extends 'predictionscale/scalesettings/index.html' %} 
+{% block step_content %} 
+{% include 'predictionscale/scalesettings/_service_setting_data.html' %}
+
+<div id="setting-content">
+    <div class="col-md-6 col-md-offset-3">
+        {% include 'predictionscale/scalesettings/_service_params.html' %}
+    </div>
+
+    <div class="col-md-6">
+
+    </div>
+
+    <div class="col-md-12">
+        <div class="btn-group">
+            <a class="btn btn-primary" href="{% url 'horizon:predictionscale:scalesettings:step1' %}">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block self_js %}
+<script src="{{ STATIC_URL }}predictionscale/js/service_setting.js" type='text/javascript' charset='utf-8'></script>
+{% endblock %}
