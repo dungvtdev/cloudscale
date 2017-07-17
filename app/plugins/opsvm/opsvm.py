@@ -24,6 +24,8 @@ class OpsVmService(DependencyModule):
 class VmScaleBaseThread(threading.Thread):
     # state = processing, fail, success
     def __init__(self, *args, **kwargs):
+        threading.Thread.__init__(self)
+
         self.daemon = False
 
         self.save_exception = None
@@ -51,7 +53,7 @@ class VmCreaterThread(VmScaleBaseThread):
         self.data = data
         self.osclient = osclient
 
-        self._vm = None      # {'instance_id', 'ip'}
+        self._vm = None  # {'instance_id', 'ip'}
 
     @property
     def vm(self):
