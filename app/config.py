@@ -24,7 +24,7 @@ DEFAULT_PARAMS = {
     },
     "monitor": {
         # "db_name": "cadvisor",
-        'interval_minute': 4,
+        'interval_minute': 4,   
         "metric": "cpu_usage_total"
     },
     "scale": {
