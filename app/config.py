@@ -85,3 +85,10 @@ GROUPCACHE = {
         }
     }
 }
+
+
+API = {
+    'version': ['v1', ],
+    'address': '0.0.0.0',
+    'port': 8008
+}
