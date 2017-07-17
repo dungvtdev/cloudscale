@@ -21,13 +21,13 @@ class APIHandler(DependencyModule):
         self.handler.add_error_handler(Exception, self._error_handler)
 
         for ver, ep in endpoints:
-            if(ver in self._conf['version']):
+            if ver in self._conf['version']:
                 for route, res in ep:
                     self.handler.add_route(ver + route, res)
 
     def _get_endpoints(self):
         return [
-            ('/v1', v1.endpoint)
+            ('/v1', v1.init_endpoints(self._app))
         ]
 
     def _get_middlewares(self):

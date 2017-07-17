@@ -8,7 +8,6 @@ from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin, \
 from plugins.forecast import PredictPlugin, FeederPlugin
 from modules.group import GroupUtils
 from modules.controller import Controller
-from modules.api import APIHandler
 
 
 def configure_log(app):
@@ -54,6 +53,8 @@ def configure_controller(app):
 
 
 def configure_api(app):
+    from modules.api import APIHandler
+
     api = APIHandler()
     api.init_app(app)
 
@@ -70,3 +71,5 @@ configure_predict_plugin(application)
 configure_group_module(application)
 configure_controller(application)
 configure_api(application)
+
+app.apihandler.listen()
