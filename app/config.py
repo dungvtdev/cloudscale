@@ -27,8 +27,12 @@ DEFAULT_PARAMS = {
         'interval_minute': 4,
         "metric": "cpu_usage_total"
     },
+    "scale": {
+        'max_scale_vm': 1,
+        'port': 8000
+    },
     "group": [
-        "pdgabp", "monitor"
+        "pdgabp", "monitor", "scale"
     ],
     "vm": [
         # "monitor"
