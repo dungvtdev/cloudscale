@@ -20,7 +20,7 @@ forecast_map = {
 
 class GroupController(threading.Thread):
     i = 0.55
-    step = 0.1
+    step = 0.2
 
     def __init__(self, app, group_dict):
         threading.Thread.__init__(self)

@@ -76,19 +76,21 @@ class SimpleScaleController(ScaleControllerBase):
             if func:
                 self.running_func = func
                 scale_msg = 'up'
-            # test
-            # print('up')
-            # self.instances.append('')
+                # test
+                # print('up')
+                # self.instances.append('')
         else:
-            average = sum(data) / len(data)
-            f_number = self.base_vm_count + len(self.instances) - 1
-            if f_number > 0 and average < 0.8 * self.max_value / f_number:
+            average = sum(data) * 1.0 / len(data)
+            number = self.base_vm_count + len(self.instances)
+            total_load = average * number
+            total_load_down_max = 0.8 * self.max_value * (number - 1)
+            if total_load < total_load_down_max:
                 func = self.scale_down()
                 if func:
                     self.running_func = func
                     scale_msg = 'down'
-                # test
-                # print('down')
+                    # test
+                    # print('down')
 
         # return co the scale khong, va trang thai scale
         return scale_msg
