@@ -6,9 +6,9 @@ from . import GroupController
 
 
 def compare_groupctrl(g1, g2):
-    if not isinstanceof(g1, GroupController):
+    if not isinstance(g1, GroupController):
         return False
-    g2_dict = g2 if isinstanceof(g2, dict) else g2.data
+    g2_dict = g2 if isinstance(g2, dict) else g2.data
     return g1.test(g2_dict)
 
 
@@ -32,7 +32,7 @@ class Controller(DependencyModule):
     def create_group(self, group_dict):
         # khoi tao group moi, neu group da ton tai bao loi
         if self.is_group_exists(group_dict):
-            raise InvalidActionException('Can\'t create a exists group')
+            raise ActionInvalidException('Can\'t create a exists group')
 
         try:
             groupctrl = GroupController(self._app, group_dict)
