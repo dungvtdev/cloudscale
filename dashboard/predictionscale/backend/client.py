@@ -59,7 +59,7 @@ class Client(object):
         r, ok = self.request_get(url)
         if ok:
             group_dicts = json.loads(r.text)['groups']
-            groups = [GroupData.create(g) for g in group_dicts]
+            groups = [GroupData.parse_dict(g) for g in group_dicts]
             return groups
         else:
             return []
