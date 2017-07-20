@@ -181,20 +181,20 @@ def get_group_context(view, request, context, *args, **kwargs):
     return context
 
 
+# class Step2View(views.APIView):
+#     template_name = 'predictionscale/scalesettings/service_setting.html'
+#     step_title = _('Service Settings')
+#     step_index = 2
+#
+#     def get_data(self, request, context, *args, **kwargs):
+#         context = super(Step2View, self).get_context_data(**kwargs)
+#         return get_group_context(self, request, context, *args, **kwargs)
+
+
 class Step2View(views.APIView):
-    template_name = 'predictionscale/scalesettings/service_setting.html'
-    step_title = _('Service Settings')
-    step_index = 2
-
-    def get_data(self, request, context, *args, **kwargs):
-        context = super(Step2View, self).get_context_data(**kwargs)
-        return get_group_context(self, request, context, *args, **kwargs)
-
-
-class Step3View(views.APIView):
     template_name = 'predictionscale/scalesettings/group_control.html'
     step_title = _('Group Control')
-    step_index = 3
+    step_index = 2
 
     # def get_data(self, request, context, *args, **kwargs):
     #     context = super(Step3View, self).get_context_data(**kwargs)
@@ -202,7 +202,7 @@ class Step3View(views.APIView):
     #     context['step_index'] = self.step_index
     #     return context
     def get_data(self, request, context, *args, **kwargs):
-        context = super(Step3View, self).get_context_data(**kwargs)
+        context = super(Step2View, self).get_context_data(**kwargs)
         return get_group_context(self, request, context, *args, **kwargs)
 
         # class IndexView(views.APIView):
@@ -214,15 +214,15 @@ class Step3View(views.APIView):
         #         return context
 
 
-class ReportView(views.APIView):
-    template_name = 'predictionscale/scalesettings/report.html'
-
-    def get_data(self, request, context, *args, **kwargs):
-        context = super(ReportView, self).get_context_data(**kwargs)
-        id = kwargs['id']
-        name = 'test'
-        context['inst'] = {
-            'id': id,
-            'name': name,
-        }
-        return context
+# class ReportView(views.APIView):
+#     template_name = 'predictionscale/scalesettings/report.html'
+#
+#     def get_data(self, request, context, *args, **kwargs):
+#         context = super(ReportView, self).get_context_data(**kwargs)
+#         id = kwargs['id']
+#         name = 'test'
+#         context['inst'] = {
+#             'id': id,
+#             'name': name,
+#         }
+#         return context

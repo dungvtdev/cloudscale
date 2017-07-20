@@ -76,7 +76,7 @@ class ScaleGroupTable(tables.DataTable):
     #                              link="horizon:project:instances:detail",
     #                              verbose_name=_("Group Name"))
     name = tables.Column("name",
-                         link="horizon:predictionscale:scalesettings:step3",
+                         link="horizon:predictionscale:scalesettings:step2",
                          verbose_name=_("Group Name"))
     # group_id = tables.Column("group_id", verbose_name=_("ID"))
 
