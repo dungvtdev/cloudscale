@@ -57,6 +57,13 @@ class GroupUtils(DependencyModule):
         exists_group = self.dbutils_get_group_model(
             session, group_dict=group_dict)
         if exists_group:
+            try:
+                del group_dict['id']
+                del group_dict['created']
+                del group_dict['instances']
+                del group_dict['proxy_url']
+            except:
+                pass
             exists_group.parse_dict(group_dict)
             # rl_group_id = exists_group.group_id
         else:
@@ -72,7 +79,10 @@ class GroupUtils(DependencyModule):
     @dbsession_method
     def db_get_group(self, session, group_dict):
         group = self.dbutils_get_group_model(session, group_dict=group_dict)
-        return group.to_dict()
+        g = group.to_dict()
+        vms = self.dbutils_get_group_vms(session, g['group_id']) or []
+        g['instances'] = [v.to_dict() for v in vms]
+        return g
 
     @dbsession_method
     def db_drop_group(self, session, group_dict):

@@ -1,5 +1,5 @@
 from core import DependencyModule
-from core.exceptions import ActionInvalidException, ActionErrorException,\
+from core.exceptions import ActionInvalidException, ActionErrorException, \
     BaseWrapperException
 from core import TSList
 from . import GroupController
@@ -44,13 +44,16 @@ class Controller(DependencyModule):
 
     def update_group(self, group_dict):
         # sua group, update cac param nhung khong duoc update vm
-        group_dict.set_default('instances', None)
+        old_group = self.group.db_get_group(group_dict)
+        old_instances = old_group['instances']
+        group_dict['instances'] = [[o['instance_id'], o['endpoint']] for o in old_instances]
+        # old_group va group_dict da co cung group_id
+        # self.group.db_drop_group(old_group)
         self.group.db_create_group(group_dict)
 
     def drop_group(self, group_dict):
         # xoa group
         self.group.db_drop_group(group_dict)
-
 
     """ ***************************** helper methods *****************************
     ***************************************************************************

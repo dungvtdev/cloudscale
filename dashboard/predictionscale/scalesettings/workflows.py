@@ -319,7 +319,7 @@ class UpdateGroupInfoAction(AddGroupInfoAction):
 
     def clean(self):
         name = self.cleaned_data.get('name')
-        group_id = int(self.cleaned_data.get('group_id'))
+        group_id = self.cleaned_data.get('group_id')
         try:
             groups = client(self.request).get_groups()
         except Exception:
@@ -332,7 +332,7 @@ class UpdateGroupInfoAction(AddGroupInfoAction):
         if groups is not None and name is not None:
             for group in groups:
                 if (group.name.lower() == name.lower() and
-                            group.id != group_id):
+                            group.group_id != group_id):
                     raise forms.ValidationError(
                         _('The name "%s" is already used by another '
                           'group.') % name)
@@ -379,18 +379,18 @@ class UpdateGroup(workflows.Workflow):
         return message % self.context['name']
 
     def handle(self, request, data):
-        try:
-            if not data['instances']:
-                raise
+        # try:
+        #     if not data['instances']:
+        #         raise
+        #
+        # except:
+        #     exceptions.handle(request, 'Instances must be assigned.')
+        #     return False
 
-        except:
-            exceptions.handle(request, 'Instances must be assigned.')
-            return False
-
         try:
-            group = GroupData.create(data)
-            id = group.group_id  # cai nay trick, la id chu khong phai group_id, duoc lay tu url
-            ok = update_group(request, group, id)
+            group = GroupData(data)
+            group_id = group.group_id # cai nay trick, la id chu khong phai group_id, duoc lay tu url
+            ok = update_group(request, group, group_id)
             return ok
         except:
             msg = _('Can\'t create group. Try again later')

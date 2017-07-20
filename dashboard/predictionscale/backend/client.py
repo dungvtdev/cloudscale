@@ -64,14 +64,15 @@ class Client(object):
         else:
             return []
 
-    def get_group(self, group_id):
-        addr_tmpl = '/v1/users/{user_id}/groups/{group_id}'
-        url = self.get_url(addr_tmpl, group_id=group_id)
+    def get_group(self, id):
+        addr_tmpl = '/v1/users/{user_id}/groups/{id}'
+        url = self.get_url(addr_tmpl, id=id)
         r, ok = self.request_get(url)
         if ok:
             group_dicts = json.loads(r.text)['groups']
-            group = GroupData.create(group_dicts[0])
-            return group
+            if group_dicts:
+                group = GroupData(group_dicts[0])
+                return group
 
     def drop_group(self, id):
         addr_tmpl = '/v1/users/{user_id}/groups/{id}'
@@ -95,18 +96,19 @@ class Client(object):
         return ok
 
     def update_group(self, group, id):
-        ips = utils.get_instances_ip(self.request_obj, group.instances)
-        addr_tmpl = '/v1/users/{user_id}/groups/{id}'
+        # khong update lai instance
+        # ips = utils.get_instances_ip(self.request_obj, group.instances)
+        addr_tmpl = '/v1/users/{user_id}/groups/{id}/update_group'
         url = self.get_url(addr_tmpl, id=id)
-        inst_data = []
-        for inst in group.instances:
-            inst_data.append((inst, ips.get(inst, None)))
+        # inst_data = []
+        # for inst in group.instances:
+        #     inst_data.append((inst, ips.get(inst, None)))
         group_dict = group.to_dict()
-        group_dict['instances'] = inst_data
+        # group_dict['instances'] = inst_data
         payload = {
-            'group': group_dict
+            'groups': [group_dict, ]
         }
-        r, ok = self.request_put(url, data=payload)
+        r, ok = self.request_post(url, data=payload)
         return ok
 
     def pings(self):

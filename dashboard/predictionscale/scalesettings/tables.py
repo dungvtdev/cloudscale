@@ -95,6 +95,8 @@ class ScaleGroupTable(tables.DataTable):
                             filters=(filters.parse_isotime,
                                      filters.timesince_sortable),
                             attrs={'data-type': 'timesince'})
+    proxy_url = tables.Column("proxy_url",
+                              verbose_name=_("URL"))
     process = tables.Column("process",
                             verbose_name=_("Process"))
     number_vm = tables.Column("number_vm",

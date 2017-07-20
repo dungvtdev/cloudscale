@@ -30,5 +30,12 @@ class Backend(object):
             return False
 
     def get_groups(self, user_id):
-        group = self.controller.group.db_get_groups(user_id)
+        groups = self.controller.group.db_get_groups(user_id)
+        return groups
+
+    def get_group(self, group_dict):
+        group = self.controller.group.db_get_group(group_dict)
         return group
+
+    def update_group(self, group_dict):
+        self.controller.update_group(group_dict)

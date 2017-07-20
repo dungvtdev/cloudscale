@@ -96,15 +96,18 @@ class UpdateView(workflows.WorkflowView):
     page_title = _("Update Group")
 
     def get_initial(self):
-        group_id = self.kwargs['id']
+        id = self.kwargs['id']
 
         try:
             # Get initial group information
-            group = client(self.request).get_group(group_id)
-        except Exception:
+            group = client(self.request).get_group(id)
+            if not group:
+                raise
+        except Exception as e:
+            print(e)
             group = None
             exceptions.handle(self.request,
-                              _('Unable to retrieve flavor details.'),
+                              _('Unable to retrieve group details.'),
                               redirect=reverse_lazy(INDEX_URL))
         if group is not None:
             group = get_group_view_data(self.request, [group, ])[0]

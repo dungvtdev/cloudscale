@@ -24,11 +24,15 @@ def init_route(app):
                 raise falcon.HTTP_BAD_REQUEST('Can\'t create group')
 
     class ResourceGroup(object):
-        def on_delete(self, req, resp, user_id, group_id):
+        def on_delete(self, req, resp, user_id, id):
             pass
 
-        def on_get(self, req, resp, user_id, group_id):
-            pass
+        def on_get(self, req, resp, user_id, id):
+            group = backend.get_group({'id': id})
+            groups = [group, ] if group else []
+            req.context['result'] = {
+                'groups': groups
+            }
 
     class ResourceGroupAction(object):
         post_map = ['update_group', 'purge_group', ]
@@ -48,13 +52,20 @@ def init_route(app):
             else:
                 raise falcon.HTTPBadRequest('Method get not allow')
 
-        def _update_group_action(self, req, resp, user_id, group_id):
+        def _update_group_action(self, req, resp, user_id, id):
+            body = req.context['doc']
+            try:
+                group = body['groups'][0]
+                backend.update_group(group)
+            except:
+                raise falcon.HTTPBadRequest('update none group')
+
+
+
+        def _purge_group_action(self, req, resp, user_id, id):
             pass
 
-        def _purge_group_action(self, req, resp, user_id, group_id):
-            pass
-
-        def _status_action(self, req, resp, user_id, group_id):
+        def _status_action(self, req, resp, user_id, id):
             pass
 
     class ResourceInstances(object):
@@ -63,8 +74,8 @@ def init_route(app):
 
     routes = [
         ('/users/{user_id}/groups', ResourceGroups()),
-        ('/users/{user_id}/groups/{group_id}', ResourceGroup()),
-        ('/users/{user_id}/groups/{group_id}/{action}', ResourceGroupAction()),
+        ('/users/{user_id}/groups/{id}', ResourceGroup()),
+        ('/users/{user_id}/groups/{id}/{action}', ResourceGroupAction()),
         ('/users/{user_id}/vms', ResourceInstances())
     ]
 
