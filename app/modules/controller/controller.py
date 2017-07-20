@@ -51,6 +51,7 @@ class Controller(DependencyModule):
         # xoa group
         self.group.db_drop_group(group_dict)
 
+
     """ ***************************** helper methods *****************************
     ***************************************************************************
     """

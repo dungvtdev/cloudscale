@@ -30,7 +30,7 @@ class Group(Base):
     # predict_length = Column(Integer)
 
     max_scale_vm = Column(Integer)
-    port = Column(Integer)
+    proxy_url = Column(String(100))
 
     instances = relationship(
         "Instance", backref=backref('group', lazy='joined'))
@@ -39,7 +39,7 @@ class Group(Base):
              'selfservice', 'provider', 'script_data', 'created', 'data_length',
              'recent_point', 'periodic_number', 'update_in_time',
              # 'predict_length',
-             'max_scale_vm', 'port']
+             'max_scale_vm', 'proxy_url']
 
     def parse_dict(self, group_dict):
         for k, v in group_dict.items():
@@ -49,7 +49,10 @@ class Group(Base):
     def to_dict(self):
         d = {}
         for k in self.attrs:
-            d[k] = getattr(self, k)
+            v = getattr(self, k)
+            if k == 'created':
+                v = v.isoformat()
+            d[k] = v
         return d
 
     def __repr__(self):

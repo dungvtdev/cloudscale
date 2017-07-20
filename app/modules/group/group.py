@@ -34,16 +34,31 @@ class GroupUtils(DependencyModule):
         return vm_dict
 
     @dbsession_method
+    def db_get_groups_ports(self, session, user_id):
+        return self.dbutils_get_groups_port(session, user_id)
+
+    @dbsession_method
+    def db_get_groups(self, session, user_id):
+        group_models = self.dbutils_get_groups(session, user_id)
+        if group_models:
+            g_d = [g.to_dict() for g in group_models]
+            for g in g_d:
+                vms = self.dbutils_get_group_vms(session, g['group_id']) or []
+                g['instances'] = [v.to_dict() for v in vms]
+            return g_d
+
+    @dbsession_method
     def db_create_group(self, session, group_dict):
         group_dict = self.patch_group(group_dict)
 
-        group_dict.setdefault('group_id', str(uuid.uuid4()))
+        if not group_dict['group_id'] or group_dict['group_id'] == 'auto':
+            group_dict['group_id'] = str(uuid.uuid4())
 
         exists_group = self.dbutils_get_group_model(
             session, group_dict=group_dict)
         if exists_group:
             exists_group.parse_dict(group_dict)
-            rl_group_id = exists_group.group_id
+            # rl_group_id = exists_group.group_id
         else:
             group = models.Group()
             group.parse_dict(group_dict)
@@ -152,3 +167,16 @@ class GroupUtils(DependencyModule):
             group = session.query(models.Group).filter(
                 models.Group.group_id == group_id).first()
             return group
+
+    def dbutils_get_groups(self, session, user_id):
+        groups = session.query(models.Group).filter(models.Group.user_id == user_id).all()
+        return groups
+
+    def dbutils_get_groups_port(self, session, user_id):
+        groups = self.dbutils_get_groups(session, user_id)
+        ports = [int(g.proxy_url.split(':')[-1]) for g in groups]
+        return ports
+
+    def dbutils_get_group_vms(self, session, group_id):
+        vms = session.query(models.Instance).filter(models.Instance.group_id == group_id)
+        return vms

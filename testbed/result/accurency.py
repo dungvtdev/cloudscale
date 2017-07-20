@@ -13,10 +13,10 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
 
 file_name = 'real.data.csv'
-real_data = pd.read_csv(file_name, header=None)
+real_data = pd.read_csv(file_name, header=None)[:400]
 
 file_name = 'predict.data.csv'
-predict_data = pd.read_csv(file_name, header=None)
+predict_data = pd.read_csv(file_name, header=None)[:400]
 
 mae = mean_absolute_error(real_data, predict_data)
 mse = mean_squared_error(real_data, predict_data)

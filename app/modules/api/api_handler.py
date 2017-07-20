@@ -23,16 +23,16 @@ class APIHandler(DependencyModule):
         for ver, ep in endpoints:
             if ver in self._conf['version']:
                 for route, res in ep:
-                    self.handler.add_route(ver + route, res)
+                    self.handler.add_route('/' + ver + route, res)
 
     def _get_endpoints(self):
         return [
-            ('/v1', v1.init_endpoints(self._app))
+            ('v1', v1.init_endpoints(self._app))
         ]
 
     def _get_middlewares(self):
         return [
-            middlewares.JwtAuth(),
+            # middlewares.JwtAuth(),
             middlewares.RequireJSON(),
             middlewares.JSONTranslator(),
         ]

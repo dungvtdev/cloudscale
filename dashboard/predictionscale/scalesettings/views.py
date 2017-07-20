@@ -63,9 +63,9 @@ def get_group_view_data(request, groups):
 
         if group.instances and instances:
             inst_names = []
-            for inst_id in group.instances:
-                name = next((inst.name for inst in instances if inst.id == inst_id), None)
-                inst_names.append(name or inst_id)
+            for inst_dict in group.instances:
+                name = next((inst.name for inst in instances if inst.id == inst_dict['instance_id']), None)
+                inst_names.append(name or inst_dict['instance_id'])
 
             group.instances = inst_names
 
@@ -136,6 +136,7 @@ class Step1View(tables.DataTableView):
     def get_data(self):
         try:
             groups = client(self.request).get_groups()
+            print(groups)
             if not groups:
                 return []
             groups = get_group_view_data(self.request, groups)

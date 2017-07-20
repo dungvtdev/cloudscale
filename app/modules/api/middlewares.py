@@ -56,15 +56,13 @@ class JwtAuth(object):
             description = ('Please provide an auth token '
                            'as part of the request.')
             raise falcon.HTTPUnauthorized('Auth token required',
-                                          description,
-                                          challenges)
+                                          description)
         if not self._token_is_valid(token):
             description = ('The provided auth token is not valid. '
                            'Please request a new token and try again.')
 
             raise falcon.HTTPUnauthorized('Authentication required',
-                                          description,
-                                          challenges)
+                                          description)
 
     def process_resource(self, req, resp, resource, params):
         token = req.get_header('Authorization')

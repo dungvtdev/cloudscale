@@ -12,20 +12,9 @@ def create_group(request, group):
 def update_group(request, group, id):
     return client(request).update_group(group, id)
 
-def enable_group(request, id):
-    return client(request).enable_group(id)
-
-
-def disable_group(request, id):
-    return client(request).disable_group(id)
-
     
 def get_data_length(request, id, *args):
     return client(request).get_data_length(id, *args)
-
-
-def run_group(request, id, params):
-    return client(request).run_group(id, params)
 
 
 def poll_process_data(request, id):

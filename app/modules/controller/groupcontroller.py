@@ -34,12 +34,20 @@ class GroupController(threading.Thread):
         if not group_dict.get('instances', None):
             raise NotEnoughParams('Create new group must containt vms')
         # tao group
+        ports = self.groupservice.db_get_groups_ports(group_dict['user_id'])
+        if not ports:
+            port = self.app.config['LOADBALANCER']['port_begin']
+        else:
+            port = max(ports) + 1
+
+        group_dict['proxy_url'] = 'http://%s:%s' %(self.app.config['LOADBALANCER']['ip'], port)
         group_dict = self.groupservice.db_create_group(group_dict)
 
         # tao cac vm lien quan
         for vm in group_dict['instances']:
             vm['is_monitoring'] = False
             vm['user_id'] = group_dict['user_id']
+            vm['group_id'] = group_dict['group_id']
 
         try:
             vm_dicts = self.groupservice.db_create_vms_onlynew(

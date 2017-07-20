@@ -1,16 +1,27 @@
 import falcon
+from .backend import Backend
+
 
 def init_route(app):
-
-    controller = app.controller
+    # controller = app.controller
+    backend = Backend(app)
 
     class ResourceGroups(object):
         def on_get(self, req, resp, user_id):
-            pass
+            groups = backend.get_groups(user_id) or []
+            req.context['result'] = {
+                'groups': groups
+            }
 
         def on_post(self, req, resp, user_id):
-            pass
+            body = req.context['doc']
+            if 'groups' not in body:
+                raise falcon.HTTP_BAD_REQUEST(
+                    "Create group must have 'group' in body")
 
+            rl = backend.add_group(user_id, body['groups'])
+            if not rl:
+                raise falcon.HTTP_BAD_REQUEST('Can\'t create group')
 
     class ResourceGroup(object):
         def on_delete(self, req, resp, user_id, group_id):
@@ -18,7 +29,6 @@ def init_route(app):
 
         def on_get(self, req, resp, user_id, group_id):
             pass
-
 
     class ResourceGroupAction(object):
         post_map = ['update_group', 'purge_group', ]
@@ -47,17 +57,15 @@ def init_route(app):
         def _status_action(self, req, resp, user_id, group_id):
             pass
 
-
     class ResourceInstances(object):
         def on_get(self, req, resp, user_id):
             pass
 
-
     routes = [
-        ('users/{user_id}/groups', ResourceGroups()),
-        ('users/{user_id}/groups/{group_id}', ResourceGroup()),
-        ('users/{user_id}/groups/{group_id}/{action}', ResourceGroupAction()),
-        ('users/{user_id}/vms', ResourceInstances())
+        ('/users/{user_id}/groups', ResourceGroups()),
+        ('/users/{user_id}/groups/{group_id}', ResourceGroup()),
+        ('/users/{user_id}/groups/{group_id}/{action}', ResourceGroupAction()),
+        ('/users/{user_id}/vms', ResourceInstances())
     ]
 
     return routes

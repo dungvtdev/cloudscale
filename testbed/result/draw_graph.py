@@ -11,11 +11,11 @@ if __name__ == '__main__':
     file_name = 'real.data.csv'
 
     real_data = pd.read_csv(file_name, header=None)
-    ax.plot(real_data.index, real_data[0], label='Real')
+    ax.plot(real_data.index, real_data[0], c='red', label='Real')
 
     file_name = 'predict.data.csv'
 
     predict_data = pd.read_csv(file_name, header=None)
-    ax.plot(predict_data.index, predict_data[0], label='predict')
+    ax.plot(predict_data.index, predict_data[0], '--', c='blue', label='predict')
 
     plt.show()

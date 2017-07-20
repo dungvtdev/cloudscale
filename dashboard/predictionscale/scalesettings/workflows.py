@@ -248,6 +248,37 @@ class UpdateGroupInstances(workflows.UpdateMembersStep):
         return context
 
 
+class UpdateGroupParamsAction(workflows.MembershipAction):
+    data_length = forms.IntegerField(label=_("Data Length"), required=True, help_text="")
+    recent_point = forms.IntegerField(label=_("Window Size"), required=True, help_text="")
+    periodic_number = forms.IntegerField(label=_("Periodic Number"), required=True, help_text="")
+    update_in_time = forms.IntegerField(label=_("Update Time"), required=True, help_text="")
+    max_scale_vm = forms.IntegerField(label=_("Max Scale VM"), required=True, help_text="")
+
+    # def clean(self):
+    #     return {
+    #         'data_length': 10,
+    #         'recent_point': 10,
+    #         'periodic_number': 11,
+    #         'update_in_time': 100
+    #     }
+
+    class Meta(object):
+        name = _("Group Forecast Params")
+        slug = "update_group_forecast_params"
+        help_text = _("Group define forecast params.")
+
+
+class UpdateGroupParams(workflows.Step):
+    action_class = UpdateGroupParamsAction
+    depends_on = ("group_id",)
+    contributes = ("data_length",
+                   "recent_point",
+                   "periodic_number",
+                   "update_in_time",
+                   "max_scale_vm")
+
+
 class AddGroup(workflows.Workflow):
     slug = "add_group"
     name = _("Add Group")
@@ -255,7 +286,7 @@ class AddGroup(workflows.Workflow):
     success_message = _('Created new group "%s".')
     failure_message = _('Unable to create group "%s".')
     success_url = "horizon:predictionscale:scalesettings:index"
-    default_steps = (AddGroupInfo, UpdateGroupInstances,)
+    default_steps = (AddGroupInfo, UpdateGroupParams, UpdateGroupInstances)
 
     def format_status_message(self, message):
         return message % self.context['name']
@@ -274,7 +305,7 @@ class AddGroup(workflows.Workflow):
             return False
 
         try:
-            group = GroupData.create(data)
+            group = GroupData(data)
             ok = create_group(request, group)
             return ok
         except:
@@ -322,7 +353,6 @@ class UpdateGroupInfoAction(AddGroupInfoAction):
         help_text = _("Group define name, description, image, flavor")
 
 
-
 class UpdateGroupInfo(workflows.Step):
     action_class = UpdateGroupInfoAction
     depends_on = ("group_id",)
@@ -343,7 +373,7 @@ class UpdateGroup(workflows.Workflow):
     failure_message = _('Unable to modify group "%s".')
     success_url = "horizon:predictionscale:scalesettings:index"
     default_steps = (UpdateGroupInfo,
-                     UpdateGroupInstances)
+                     UpdateGroupParams)
 
     def format_status_message(self, message):
         return message % self.context['name']

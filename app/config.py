@@ -92,3 +92,8 @@ API = {
     'address': '0.0.0.0',
     'port': 8008
 }
+
+LOADBALANCER = {
+    'ip': 'localhost',
+    'port_begin': 1120
+}
