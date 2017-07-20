@@ -25,7 +25,7 @@ def init_route(app):
 
     class ResourceGroup(object):
         def on_delete(self, req, resp, user_id, id):
-            pass
+            backend.drop_group({'id': id})
 
         def on_get(self, req, resp, user_id, id):
             group = backend.get_group({'id': id})
@@ -53,14 +53,13 @@ def init_route(app):
                 raise falcon.HTTPBadRequest('Method get not allow')
 
         def _update_group_action(self, req, resp, user_id, id):
+            # cho nay confuse giua id va group_id nen chua check
             body = req.context['doc']
             try:
                 group = body['groups'][0]
                 backend.update_group(group)
             except:
                 raise falcon.HTTPBadRequest('update none group')
-
-
 
         def _purge_group_action(self, req, resp, user_id, id):
             pass

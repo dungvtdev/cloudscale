@@ -39,3 +39,6 @@ class Backend(object):
 
     def update_group(self, group_dict):
         self.controller.update_group(group_dict)
+
+    def drop_group(self, group_dict):
+        self.controller.drop_group(group_dict)
