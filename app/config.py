@@ -24,7 +24,7 @@ DEFAULT_PARAMS = {
     },
     "monitor": {
         # "db_name": "cadvisor",
-        'interval_minute': 4,   
+        'interval_minute': 4,
         "metric": "cpu_usage_total"
     },
     "scale": {
@@ -86,7 +86,6 @@ GROUPCACHE = {
     }
 }
 
-
 API = {
     'version': ['v1', ],
     'address': '0.0.0.0',
@@ -96,4 +95,11 @@ API = {
 LOADBALANCER = {
     'ip': 'localhost',
     'port_begin': 1120
+}
+
+EVENTLOG = {
+    'path': base_path,
+    'prefix': 'eventlog',
+    'maxBytes': 10000000,
+    'backupCount': 3
 }
