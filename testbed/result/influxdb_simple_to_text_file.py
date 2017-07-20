@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 import json
 
-endpoint = 'vm2:8086'
-db_name = 'cpu_usage_total'
+endpoint = 'localhost:8086'
+db_name = 'cache_test_group_v1'
 
 
 def get_data(begin, end):
@@ -21,6 +21,7 @@ def get_data(begin, end):
     }
 
     r = requests.get(url, params=payload)
+    print(r.text)
     return r.text
 
 
@@ -33,8 +34,8 @@ def convert_to_dataframe(values):
 
 
 if __name__ == '__main__':
-    begin = '2017-05-27 7:27:00'
-    end = '2017-05-27 11:04:00'
+    begin = '2017-07-16 13:16:00'
+    end = '2017-07-19 13:59:00'
 
     data = get_data(begin, end)
     data = json.loads(data)
