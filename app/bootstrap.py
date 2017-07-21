@@ -6,8 +6,10 @@ from plugins.sqlbackend import SQLBackend
 from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin, \
     InfluxdbSeriesPlugin
 from plugins.forecast import PredictPlugin, FeederPlugin
+from plugins.haproxy import HAProxyCtrl
 from modules.group import GroupUtils
 from modules.controller import Controller
+from modules.eventlog import EventLogFactory
 
 
 def configure_log(app):
@@ -42,6 +44,11 @@ def configure_predict_plugin(app):
     feeder.init_app(app)
 
 
+def config_haproxy_plugin(app):
+    haproxy = HAProxyCtrl()
+    haproxy.init_app(app)
+
+
 def configure_group_module(app):
     grouputils = GroupUtils()
     grouputils.init_app(app)
@@ -50,6 +57,11 @@ def configure_group_module(app):
 def configure_controller(app):
     controller = Controller()
     controller.init_app(app)
+
+
+def configure_eventlog(app):
+    eventlog = EventLogFactory()
+    eventlog.init_app(app)
 
 
 def configure_api(app):
