@@ -16,8 +16,8 @@ class TSList(object):
             self.list.append(it)
 
     def remove(self, it):
+        cit = self.get(it)
         with self.lock:
-            cit = self.get(it)
             if cit:
                 self.list.remove(cit)
 
