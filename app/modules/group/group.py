@@ -101,6 +101,13 @@ class GroupUtils(DependencyModule):
         session.commit()
 
     @dbsession_method
+    def db_drop_vms_in_group(self, session, group_id):
+        vms = session.query(models.Instance).filter(models.Instance.group_id == group_id).all()
+        for vm in vms:
+            session.delete(vm)
+        session.commit()
+
+    @dbsession_method
     def db_create_vm(self, session, vm_dict):
         vm_dict = self.dbutils_create_vm_model(session, vm_dict)
         session.commit()

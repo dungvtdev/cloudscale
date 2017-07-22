@@ -26,11 +26,42 @@ class GroupController(threading.Thread):
 
         self.app = app
         self.logname = group_dict['name']
-
-        self.is_running = False
-
         self.groupservice = self.app.grouputils
 
+        self.monitorcontroller = None
+
+        # co thread scale anh huong toi self.data, self._last_scale_time,
+        # nhung dong bo la khong can thiet vi khong can duyet self.data va
+        # self._last_scale_time chi luu thoi diem cuoi cung scale
+        self.data = group_dict
+        self.is_running = False
+
+        # self._last_scale_time = 0
+        # khong dung Boolean vi co the co nhieu thread cung chay, thuc ra
+        # khong can dong bo nhung van la giai phap an toan
+        # self._scaling_threads = []
+
+        self.wait_cycle_training = self.data['data_length']
+        self.wait_cycle_update = self.data['update_in_time']
+
+        self.forecast_model = None
+
+        # self.local_timestamp = 0
+
+        self.cache_predict = None
+        self.eventlog = None
+        self._state = 'init'
+
+        self.setup_cache()
+        self.setup_eventlog()
+
+        self.eventlog.write('group', 'Init Group %s' % self.data['name'])
+
+    def _init(self):
+        pass
+
+    def _init_database(self):
+        group_dict = self.data
         if not group_dict.get('instances', None):
             raise NotEnoughParams('Create new group must containt vms')
         # tao group
@@ -40,7 +71,7 @@ class GroupController(threading.Thread):
         else:
             port = max(ports) + 1
 
-        group_dict['proxy_url'] = 'http://%s:%s' %(self.app.config['LOADBALANCER']['ip'], port)
+        group_dict['proxy_url'] = 'http://%s:%s' % (self.app.config['LOADBALANCER']['ip'], port)
         group_dict = self.groupservice.db_create_group(group_dict)
 
         # tao cac vm lien quan
@@ -58,27 +89,6 @@ class GroupController(threading.Thread):
             raise e
 
         group_dict['instances'] = vm_dicts
-
-        self.monitorcontroller = None
-
-        # co thread scale anh huong toi self.data, self._last_scale_time,
-        # nhung dong bo la khong can thiet vi khong can duyet self.data va
-        # self._last_scale_time chi luu thoi diem cuoi cung scale
-        self.data = group_dict
-
-        # self._last_scale_time = 0
-        # khong dung Boolean vi co the co nhieu thread cung chay, thuc ra
-        # khong can dong bo nhung van la giai phap an toan
-        # self._scaling_threads = []
-
-        self.wait_cycle_training = self.data['data_length']
-        self.wait_cycle_update = self.data['update_in_time']
-
-        self.forecast_model = None
-
-        # self.local_timestamp = 0
-
-        self.setup_cache()
 
     def setup_cache(self):
         # setup cache
@@ -98,12 +108,27 @@ class GroupController(threading.Thread):
         }
         self.cache_predict = cache_plugin.create(config)
 
+    def setup_eventlog(self):
+        name = self.data['user_id']
+        self.eventlog = self.app.eventlogfactory.create(name)
+
     def cache_predict(self, timestamp, value):
         self.cache_predict.write([(timestamp, value)])
+
+    def clear(self):
+        # remove all vm scale
+
+        # remove database
+        self.groupservice.db_drop_group(group_dict=self.data)
+        self.groupservice.db_drop_vms_in_group(self.data['group_id'])
 
     @property
     def interval_minute(self):
         return self.data['interval_minute']
+
+    @property
+    def state(self):
+        return self._state
 
     def init_group(self):
         # chon 1 vm bat ky lam key de monitor
@@ -166,7 +191,7 @@ class GroupController(threading.Thread):
             # cache o day la pandas.core.series.Series
             return interval, result['cache']
 
-        # values = self.monitorcontroller.get_data_series()
+            # values = self.monitorcontroller.get_data_series()
 
     def _run_train_data(self, data_cache):
         # data_cache la 1 mang pd.Series
@@ -321,7 +346,7 @@ class GroupController(threading.Thread):
                     self.log.debug('Group %s forecast value %s' %
                                    (self.logname, pr))
                     t = timestamp + self.interval_minute * \
-                        self.data['predict_length']
+                                    self.data['predict_length']
                     t = t * 1000000000 * 60
                     self.cache_predict.write([(t, pr)])
 
@@ -329,11 +354,19 @@ class GroupController(threading.Thread):
 
     def run(self):
         try:
+            self.eventlog.write('group', 'Group %s startup.' % self.data['name'])
+            self._state = 'running'
             self._run()
         except ServiceIOException as e:
+            self.eventlog.write('group', 'Group %s fail with error ServiceIO Exception' % self.data['name'])
             raise e
         except InstanceNotValid as e:
+            self.eventlog.write('group', 'Group %s fail with error Instance Not Valid Exception' % self.data['name'])
             raise e
+        finally:
+            self.eventlog.write('group', 'Group %s finish' % self.data['name'])
+            self._state = 'finish'
+            self.clear()
 
     """ Status region
     """
@@ -418,7 +451,7 @@ class GroupController(threading.Thread):
         vmthread = self.opsvm.make_createvm_thread(data)
 
         self._scaling_threads.append(vmthread)
-        thread.start_new_thread(self._scale_up_thread, (vmthread, ))
+        thread.start_new_thread(self._scale_up_thread, (vmthread,))
 
     def _scale_up_thread(self, vmthread):
         vmthread.start()
@@ -454,7 +487,7 @@ class GroupController(threading.Thread):
             vmthread = self.opsvm.make_dropvm_thread(vm)
 
             self._scaling_threads.append(vmthread)
-            thread.start_new_thread(self._scale_down_thread, (vmthread, ))
+            thread.start_new_thread(self._scale_down_thread, (vmthread,))
 
     def _scale_down_thread(self, vmthread):
         vmthread.start()

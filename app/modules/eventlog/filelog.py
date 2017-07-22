@@ -1,6 +1,5 @@
 import logging
 from logging.handlers import RotatingFileHandler
-import sys
 import os
 from core import DependencyModule
 
@@ -25,6 +24,7 @@ class EventLog(object):
 
         logname = '%s_%s.log' % (name_prefix, name)
         path = os.path.join(path, logname)
+        self.path = path
 
         directory = os.path.dirname(path)
         if directory and not os.path.exists(directory):
@@ -47,3 +47,8 @@ class EventLog(object):
 
     def write(self, tag, message):
         self.logger.info('%s|%s' % (tag, message))
+
+    def get_log(self):
+        with open(self.path, 'r') as f:
+            text = f.read()
+            return text
