@@ -6,9 +6,11 @@ from plugins.sqlbackend import SQLBackend
 from plugins.influxdb import CadvisorInfluxdbSeriesReadPlugin, \
     InfluxdbSeriesPlugin
 from plugins.forecast import PredictPlugin, FeederPlugin
+from plugins.opsvm import OpsVmService
 from plugins.haproxy import HAProxyCtrl
 from modules.group import GroupUtils
 from modules.controller import Controller
+from modules.scale import ScaleFactory
 from modules.eventlog import EventLogFactory
 
 
@@ -44,6 +46,11 @@ def configure_predict_plugin(app):
     feeder.init_app(app)
 
 
+def configure_opsclient_plugin(app):
+    opsvm = OpsVmService()
+    opsvm.init_app(app)
+
+
 def config_haproxy_plugin(app):
     haproxy = HAProxyCtrl()
     haproxy.init_app(app)
@@ -58,6 +65,8 @@ def configure_controller(app):
     controller = Controller()
     controller.init_app(app)
 
+    scalectrl = ScaleFactory()
+    scalectrl.init_app(app)
 
 def configure_eventlog(app):
     eventlog = EventLogFactory()
@@ -79,6 +88,7 @@ configure_info_manager_plugin(application)
 configure_sqlbackend_plugin(application)
 configure_influxdb_plugin(application)
 configure_predict_plugin(application)
+configure_opsclient_plugin(application)
 
 configure_group_module(application)
 configure_controller(application)

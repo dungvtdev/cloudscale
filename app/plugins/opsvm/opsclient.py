@@ -91,10 +91,11 @@ class OSClient(object):
                                  user_data=user_data)
             timeout = time_out or 20
             success = False
-            while(timeout >= 0):
+            while timeout >= 0:
                 time.sleep(check_interval)
                 timeout = timeout - check_interval
                 s_status = self._show(server.id)
+                print(vars(s_status))
                 if s_status.status == 'ACTIVE':
                     success = True
                     break

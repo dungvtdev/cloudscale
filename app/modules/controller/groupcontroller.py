@@ -19,7 +19,8 @@ forecast_map = {
 
 
 class GroupController(threading.Thread):
-    WARM_UP_TIME_SECS = 240
+    i = 0.55
+    step = 0.2
 
     def __init__(self, app, group_dict):
         threading.Thread.__init__(self)
@@ -137,10 +138,6 @@ class GroupController(threading.Thread):
     def test(self, group_dict):
         return self.data['group_id'] == group_dict['group_id']
 
-    # @property
-    # def state(self):
-    #     return WAIT_FOR_TRAIN_STATE
-
     @property
     def vms(self):
         return self.data['instances']
@@ -171,6 +168,14 @@ class GroupController(threading.Thread):
             'name': self.data['name']
         }
         return MonitorController(group_config, self.app)
+
+    def create_scalecontroller(self):
+        metric = self.data['metric']
+        def_config = self.app.config['SCALE']['scale_controller'][metric]
+        cf = copy.copy(def_config)
+        cf['max_scale'] = self.app.config['SCALE']['max_scale']
+        cf['warm_up_minutes'] = self.app.config['SCALE']['warm_up'] * self.interval_minute
+        return self.app.scalefactory.create(self.data, cf)
 
     # return interval dau tien
     # return cache list neu data du de train
@@ -350,7 +355,43 @@ class GroupController(threading.Thread):
                     t = t * 1000000000 * 60
                     self.cache_predict.write([(t, pr)])
 
+                    # scale
+                    value = self.i
+                    print('value fake %s' % value)
+                    self.i = self.i + self.step
+                    pr = self.i
+                    if self.i > 0.8:
+                        self.step = -abs(self.step)
+                    elif self.i < 0.1:
+                        self.step = abs(self.step)
+                    type_scale = self.scale_decide(value, pr)
+                    if type_scale:
+                        self.log.info('Group %s detect scale %s' % (self.logname, type_scale))
+
         self.log.info('Group %s stop' % self.logname)
+
+    def scale_decide(self, value, pr):
+        type_scale = self.scalecontroller.add_point(value, pr)
+
+        result = self.scalecontroller.receive()
+        print(result)
+        if result and result['is_finish']:
+            if result['state'] == 'success':
+                if result['type'] == 'up':
+                    # them vao danh sach
+                    vm = result['vm']
+                    vm['is_monitoring'] = False
+                    self.groupservice.db_create_vm(vm)
+                    # self.data['instances'].append(vm_dict)
+                elif result['type'] == 'down':
+                    vm = result['vm']
+                    self.groupservice.db_drop_group(vm)
+                self.log.info('Group %s finish scale instance' % self.logname)
+            else:
+                self.log.info('Group %s fail to scale instance. Err %s' %
+                              (self.logname, result['error'].message))
+
+        return type_scale
 
     def run(self):
         try:
@@ -434,78 +475,6 @@ class GroupController(threading.Thread):
 
     """ VM regions
     """
-
-    def scale_up(self):
-        vm_name_ex = str(uuid.uuid4())[:8]
-        name = "%s.%s" % (self.data['name'], vm_name_ex)
-
-        data = {
-            'name': name,
-            'image': self.data['image'],
-            'flavor': self.data['flavor'],
-            'selfservice': self.data['selfservice'],
-            'provider_name': self.data['provider'],
-            'user_data': self.data['user_data'],
-        }
-
-        vmthread = self.opsvm.make_createvm_thread(data)
-
-        self._scaling_threads.append(vmthread)
-        thread.start_new_thread(self._scale_up_thread, (vmthread,))
-
-    def _scale_up_thread(self, vmthread):
-        vmthread.start()
-        vmthread.join()
-
-        self._scaling_threads.remove(vmthread)
-
-        if vmthread.status == 'success':
-            self._last_scale_time = time.time()
-            vm = vmthread.vm
-            vm_dict = {
-                'instance_id': vm['instance_id'],
-                'endpoint': 'ip',
-                'user_id': self.data['user_id'],
-                'is_monitoring': False
-            }
-            vm_dict = self.groupservice.db_create_vm(vm_dict)
-
-            self.data['instances'].append(vm_dict)
-
-            self.log.info('success scale new vm id=%s' % vm['instance_id'])
-
-        if vmthread.status == 'fail':
-            self.log.error('fail to scale new vm')
-
-    def scale_down(self):
-        # tu chon ra 1 vm khong monitor de xoa
-        vm = next((v for v in self.data['instances']
-                   if not v['is_monitoring']), None)
-        if not vm:
-            self.log.error('Logic Error, khong tim thay vm de scale down')
-        else:
-            vmthread = self.opsvm.make_dropvm_thread(vm)
-
-            self._scaling_threads.append(vmthread)
-            thread.start_new_thread(self._scale_down_thread, (vmthread,))
-
-    def _scale_down_thread(self, vmthread):
-        vmthread.start()
-        vmthread.stop()
-
-        self._scaling_threads.remove(vmthread)
-
-        if vmthread.status == 'success':
-            self._last_scale_time = time.time()
-
-            self.data['instances'].remove(vmthread.data)
-
-            self.log.info('success scale down vm id=%s' %
-                          vmthread.data['instance_id'])
-
-        if vmthread.status == 'fail':
-            self.log.error('fail to scale down vm id=%s' %
-                           vmthread.data['instance_id'])
 
     def run_up(self):
         self.is_running = True

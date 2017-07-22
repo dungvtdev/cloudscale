@@ -43,7 +43,7 @@ OPS_ACCOUNT = {
     'auth_url': 'http://controller:5000/v3',
     'user_domain_name': 'default',
     'username': 'admin',
-    'password': 'Welcome123',
+    'password': '123',
     'project_domain_name': 'default',
     'project_name': 'admin',
     'nova_version': '2.1'
@@ -83,7 +83,21 @@ GROUPCACHE = {
             'db': 'cache_%s',
             # 'endpoint': '127.0.0.1'
         }
-    }
+    },
+}
+
+SCALE = {
+    'scale_controller': {
+        'cpu_usage_total': {
+            'controller': 'simple_scale',
+            'config': {
+                'max_value': 0.6,
+                'sum_length': 10,
+            }
+        }
+    },
+    'max_scale': 2,
+    'warm_up': 2
 }
 
 API = {

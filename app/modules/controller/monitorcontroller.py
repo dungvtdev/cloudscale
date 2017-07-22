@@ -7,6 +7,7 @@ class MonitorController():
     def __init__(self, group_config, app):
         self.group_config = group_config
         self.logger = app.logger
+        self.logname = "Group %s" % group_config['name']
 
         endpoint = group_config['endpoint']
         # to_db = group_config['to_db']
@@ -274,8 +275,8 @@ class MonitorController():
         total = sum(len(c) for c in cache)
         self.data_total = total
 
-        self.logger.info('Get %s point from %s' %
-                         (total, self.group_config['endpoint']))
+        self.logger.info('%s Get %s point from %s' %
+                         (self.logname, total, self.group_config['endpoint']))
 
         # print(total)
         # with open('/home/dungvt/read.cache', 'w') as f:

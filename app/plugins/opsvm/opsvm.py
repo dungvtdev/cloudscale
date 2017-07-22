@@ -25,7 +25,6 @@ class VmScaleBaseThread(threading.Thread):
     # state = processing, fail, success
     def __init__(self, *args, **kwargs):
         threading.Thread.__init__(self)
-
         self.daemon = False
 
         self.save_exception = None
@@ -53,7 +52,8 @@ class VmCreaterThread(VmScaleBaseThread):
         self.data = data
         self.osclient = osclient
 
-        self._vm = None  # {'instance_id', 'ip'}
+        self._vm = None      # {'instance_id', 'ip'}
+        self.save_state = 'none'
 
     @property
     def vm(self):
@@ -68,7 +68,7 @@ class VmCreaterThread(VmScaleBaseThread):
             provider_name = self.data['provider_name']
             user_data = self.data['user_data']
 
-            self._state = 'processing'
+            self.save_state = 'processing'
 
             self._vm = self.osclient.create_new_instance(name=name, image_id=image_id,
                                                          flavor_id=flavor_id,
@@ -84,7 +84,7 @@ class VmCreaterThread(VmScaleBaseThread):
 
 
 class VmDropThread(VmScaleBaseThread):
-    def __init__(self, data):
+    def __init__(self, data, osclient):
         VmScaleBaseThread.__init__(self, data)
         self.data = data
         self.osclient = osclient
