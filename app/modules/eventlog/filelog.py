@@ -1,6 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+import time
 from core import DependencyModule
 
 
@@ -25,6 +26,9 @@ class EventLog(object):
         logname = '%s_%s.log' % (name_prefix, name)
         path = os.path.join(path, logname)
         self.path = path
+
+        # check path da co thi doi ten file truoc
+        self.cache_old_path(self.path)
 
         directory = os.path.dirname(path)
         if directory and not os.path.exists(directory):
@@ -52,3 +56,8 @@ class EventLog(object):
         with open(self.path, 'r') as f:
             text = f.read()
             return text
+
+    def cache_old_path(self, path):
+        if os.path.exists(path):
+            extend = time.strftime('%Y_%m_%d_%H_%M_%S', time.gmtime())
+            os.rename(path, '%s.%s' % (path, extend))

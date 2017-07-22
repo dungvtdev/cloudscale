@@ -68,12 +68,13 @@ class Instance(Base):
     instance_id = Column(String(250), nullable=False, unique=True)
     endpoint = Column(String(20))
     is_monitoring = Column(Boolean)
+    is_origin = Column(Boolean, default=False)
     # db_name = Column(String(20))
 
     group_id = Column(Integer, ForeignKey('group.group_id'))
 
     attrs = ['id', 'user_id', 'instance_id', 'endpoint', 'is_monitoring',
-             'group_id', ]
+             'group_id', 'is_origin']
     #  'db_name']
 
     def parse_dict(self, vm_dict):

@@ -19,11 +19,13 @@ forecast_map = {
 
 
 class GroupController(threading.Thread):
-    i = 0.55
+    i = 0.65
     step = 0.2
 
-    def __init__(self, app, group_dict):
+    def __init__(self, app, group_dict, delete_callback):
         threading.Thread.__init__(self)
+
+        self.delete_callback = delete_callback
 
         self.app = app
         self.logname = group_dict['name']
@@ -46,6 +48,7 @@ class GroupController(threading.Thread):
         self.wait_cycle_update = self.data['update_in_time']
 
         self.forecast_model = None
+        self.scalecontroller = None
 
         # self.local_timestamp = 0
 
@@ -53,14 +56,15 @@ class GroupController(threading.Thread):
         self.eventlog = None
         self._state = 'init'
 
+        self._init_database()
+
         self.setup_cache()
         self.setup_eventlog()
 
-        self.eventlog.write('group', 'Init Group %s' % self.data['name'])
+        # self.eventlog.write('group', 'Init Group %s' % self.data['name'])
 
-    def _init(self):
-        pass
-
+    # def _init(self):
+    #     pass
     def _init_database(self):
         group_dict = self.data
         if not group_dict.get('instances', None):
@@ -73,6 +77,7 @@ class GroupController(threading.Thread):
             port = max(ports) + 1
 
         group_dict['proxy_url'] = 'http://%s:%s' % (self.app.config['LOADBALANCER']['ip'], port)
+        group_dict['port'] = port
         group_dict = self.groupservice.db_create_group(group_dict)
 
         # tao cac vm lien quan
@@ -80,7 +85,7 @@ class GroupController(threading.Thread):
             vm['is_monitoring'] = False
             vm['user_id'] = group_dict['user_id']
             vm['group_id'] = group_dict['group_id']
-
+            vm['is_origin'] = True
         try:
             vm_dicts = self.groupservice.db_create_vms_onlynew(
                 group_dict['instances'])
@@ -118,6 +123,14 @@ class GroupController(threading.Thread):
 
     def clear(self):
         # remove all vm scale
+        # group_dict = self.groupservice.db_get_group(self.data)
+        if self.scalecontroller:
+            insts = self.scalecontroller.instances
+            for vm in insts:
+                # delete in openstack
+                self.opsvm.remove_instances(vm['instance_id'])
+                self.eventlog.write('group',
+                                    'Group %s delete instance in ops %s' % (self.data['name'], vm['instance_id']))
 
         # remove database
         self.groupservice.db_drop_group(group_dict=self.data)
@@ -134,6 +147,7 @@ class GroupController(threading.Thread):
     def init_group(self):
         # chon 1 vm bat ky lam key de monitor
         self.enable_monitor_vm()
+        self.create_scalecontroller()
 
     def test(self, group_dict):
         return self.data['group_id'] == group_dict['group_id']
@@ -154,7 +168,8 @@ class GroupController(threading.Thread):
     """
 
     def enable_monitor_vm(self):
-        vm = self.data['instances'][0]
+        # cho nay khong kiem soat vm
+        vm = next((inst for inst in self.data['instances'] if inst['is_origin']), None)
         vm['is_monitoring'] = True
         self.groupservice.db_update_vm(vm)
         self.monitorcontroller = self.create_monitorcontroller(vm)
@@ -173,9 +188,9 @@ class GroupController(threading.Thread):
         metric = self.data['metric']
         def_config = self.app.config['SCALE']['scale_controller'][metric]
         cf = copy.copy(def_config)
-        cf['max_scale'] = self.app.config['SCALE']['max_scale']
+        # cf['max_scale'] = self.app.config['SCALE']['max_scale']
         cf['warm_up_minutes'] = self.app.config['SCALE']['warm_up'] * self.interval_minute
-        return self.app.scalefactory.create(self.data, cf)
+        self.scalecontroller = self.app.scalefactory.create(self.data, cf)
 
     # return interval dau tien
     # return cache list neu data du de train
@@ -322,7 +337,8 @@ class GroupController(threading.Thread):
                                    (self.logname, e.message))
 
             # self.thread_up_forcast_model =
-            time.sleep(interval * 60)
+            # time.sleep(interval * 60)
+            time.sleep(1)
             interval = self.interval_minute
 
             timestamp, value = None, None
@@ -365,7 +381,11 @@ class GroupController(threading.Thread):
                     elif self.i < 0.1:
                         self.step = abs(self.step)
                     type_scale = self.scale_decide(value, pr)
+
+                    # type_scale = self.scale_decide(value, pr)
                     if type_scale:
+                        self.eventlog.write('group', 'Group %s detect scale %s in %s value, next value %s'
+                                            % (self.logname, type_scale, value, pr))
                         self.log.info('Group %s detect scale %s' % (self.logname, type_scale))
 
         self.log.info('Group %s stop' % self.logname)
@@ -381,15 +401,20 @@ class GroupController(threading.Thread):
                     # them vao danh sach
                     vm = result['vm']
                     vm['is_monitoring'] = False
+                    vm['is_origin'] = False
                     self.groupservice.db_create_vm(vm)
                     # self.data['instances'].append(vm_dict)
                 elif result['type'] == 'down':
                     vm = result['vm']
                     self.groupservice.db_drop_group(vm)
                 self.log.info('Group %s finish scale instance' % self.logname)
+                self.eventlog.write('group', 'Group %s scale %s success with vm %s'
+                                    % (self.logname, result['type'], vm['instance_id']))
             else:
                 self.log.info('Group %s fail to scale instance. Err %s' %
                               (self.logname, result['error'].message))
+                self.eventlog.write('group', 'Group %s scale %s success with vm %s'
+                                    % (self.logname, result['type'], vm['instance_id']))
 
         return type_scale
 
@@ -404,9 +429,14 @@ class GroupController(threading.Thread):
         except InstanceNotValid as e:
             self.eventlog.write('group', 'Group %s fail with error Instance Not Valid Exception' % self.data['name'])
             raise e
+        except Exception as e:
+            self.log.error(e.message)
+            self.eventlog.write('group', 'Group %s fail with unknown exception' % self.data['name'])
         finally:
             self.eventlog.write('group', 'Group %s finish' % self.data['name'])
             self._state = 'finish'
+            if self.delete_callback:
+                self.delete_callback(self)
             self.clear()
 
     """ Status region
@@ -477,8 +507,10 @@ class GroupController(threading.Thread):
     """
 
     def run_up(self):
+        # print(self.data)
         self.is_running = True
         self.start()
 
     def shutdown(self):
         self.is_running = False
+        self.clear()

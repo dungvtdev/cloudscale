@@ -51,7 +51,8 @@ class GroupUtils(DependencyModule):
     def db_create_group(self, session, group_dict):
         group_dict = self.patch_group(group_dict)
 
-        if not group_dict['group_id'] or group_dict['group_id'] == 'auto':
+        group_id = group_dict.setdefault('group_id', None)
+        if not group_id or group_id == 'auto':
             group_dict['group_id'] = str(uuid.uuid4())
 
         exists_group = self.dbutils_get_group_model(

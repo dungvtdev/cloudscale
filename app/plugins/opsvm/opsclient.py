@@ -95,7 +95,7 @@ class OSClient(object):
                 time.sleep(check_interval)
                 timeout = timeout - check_interval
                 s_status = self._show(server.id)
-                print(vars(s_status))
+                # print(vars(s_status))
                 if s_status.status == 'ACTIVE':
                     success = True
                     break
@@ -121,7 +121,7 @@ class OSClient(object):
         return True
 
     def get_instance_info(self, instance_id):
-        status = ['BUILD', 'SHUTOFF', 'ACTIVE', ]
+        # status = ['BUILD', 'SHUTOFF', 'ACTIVE', ]
         try:
             s_status = self._show(instance_id)
             ip = None

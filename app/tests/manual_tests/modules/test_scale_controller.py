@@ -3,13 +3,13 @@ from bootstrap import app
 import time
 
 config = {
-    'name': 'test_name',
     'controller': 'simple_scale',
     'config': {
-        'max_value': 0.65,
-        'sum_length': 5,
-        'max_scale': 1
-    }
+        'max_value': 0.6,
+        'sum_length': 10,
+    },
+    'max_scale': 2,
+    'warm_up_minutes': 2
 }
 
 group_config = {
@@ -20,7 +20,7 @@ group_config = {
     'selfservice': 'bb87469e-183e-4d89-a287-5397d6bac5e4',
     'provider': 'provider',
     'user_data': '',
-    'instances': ['']
+    'instances': ['123']
 }
 
 scalecontroller = app.scalefactory.create(group_config, config)
@@ -54,7 +54,6 @@ def test_2():
         n = d.pop(0)
         p = d[0]
         scalecontroller.add_point(n, p)
-        time.sleep(0.5)
-
+        time.sleep(1)
 
 test_2()

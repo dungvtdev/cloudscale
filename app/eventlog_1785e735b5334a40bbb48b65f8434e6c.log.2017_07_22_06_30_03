@@ -1,0 +1,5 @@
+2017-07-22 13:26:55,931|group|Group test_group startup.
+2017-07-22 13:27:02,284|group|Group test_group detect scale up in 0.65 value, next value 0.85
+2017-07-22 13:27:14,890|group|Group test_group scale up success with vm bb149184-a135-4df2-983f-09ae2dc5fa1a
+2017-07-22 13:27:22,888|group|Group test_group finish
+2017-07-22 13:27:38,207|group|Group test_group delete instance in ops bb149184-a135-4df2-983f-09ae2dc5fa1a

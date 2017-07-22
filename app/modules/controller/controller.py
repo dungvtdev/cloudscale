@@ -35,12 +35,15 @@ class Controller(DependencyModule):
             raise ActionInvalidException('Can\'t create a exists group')
 
         try:
-            groupctrl = GroupController(self._app, group_dict)
+            groupctrl = GroupController(self._app, group_dict, self.on_group_kill)
             self.group_ctrls.add(groupctrl)
             groupctrl.init_group()
             groupctrl.run_up()
         except BaseWrapperException as e:
             raise ActionErrorException(e)
+
+    def on_group_kill(self, group):
+        self.group_ctrls.remove(group)
 
     def update_group(self, group_dict):
         # sua group, update cac param nhung khong duoc update vm
@@ -52,7 +55,14 @@ class Controller(DependencyModule):
         self.group.db_create_group(group_dict)
 
     def drop_group(self, group_dict):
+        # group dict dau vao la id
         # xoa group
+        group_data = self.group.db_get_group(group_dict)
+        if group_data:
+            # stop group
+            group = self.group_ctrls.get(group_data)
+            if group:
+                group.shutdown()
         self.group.db_drop_group(group_dict)
 
     """ ***************************** helper methods *****************************

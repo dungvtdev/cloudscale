@@ -15,8 +15,12 @@ class ScaleControllerBase(object):
 
         self.max_value = config['max_value']
         self.sum_length = config['sum_length']
-        self.max_scale = config['max_scale']
+        # self.max_scale = config['max_scale']
+        self.max_scale = group_data['max_scale_vm']
         self.warm_up_minutes = config['warm_up_minutes']
+        # self.app_port = config['port']
+        self.app_port = group_data['port']
+
         self.max_length = self.sum_length
 
         self.base_vm_count = len(group_data['instances'])
@@ -119,7 +123,7 @@ class SimpleScaleController(ScaleControllerBase):
             'flavor': group_data['flavor'],
             'selfservice': group_data['selfservice'],
             'provider_name': group_data['provider'],
-            'user_data': group_data['user_data'],
+            'user_data': group_data['script_data'],
         }
 
         result = {}
@@ -143,6 +147,10 @@ class SimpleScaleController(ScaleControllerBase):
                 # vm_dict = self.groupservice.db_create_vm(vm_dict)
                 self.instances.append(vm_dict)
                 self.log('info', '%s success scale new vm id=%s' % (self.logname, vm['instance_id']))
+
+                # them endpoint trong haproxy
+                port = self.group_data['port']
+                self.app.haproxy.add_server(vm['ip'], self.app_port, port)
 
             if thrd.state == 'fail':
                 self.log('error', '%s fail to scale new vm' % self.logname)
@@ -178,6 +186,9 @@ class SimpleScaleController(ScaleControllerBase):
 
                 self.instances.remove(vm)
 
+                port = self.group_data['port']
+                self.app.haproxy.remove_server(vm['instance_id'], self.app_port, port)
+
                 self.log('info', '%s success scale down vm id=%s' %
                          (self.logname, vm['instance_id']))
 
@@ -209,9 +220,11 @@ class ScaleFactory(DependencyModule):
         self.app = app
 
     def create(self, group_data, config):
+        # print(config)
         controller_cls = self.map[config['controller']]
         cf = copy.copy(config['config'])
-        cf['max_scale'] = config['max_scale']
+        # cf['max_scale'] = config['max_scale']
+        # cf['max_scale'] = group_data['max_scale_vm']
         cf['warm_up_minutes'] = config['warm_up_minutes']
         controller = controller_cls(group_data, cf, self.app)
         return controller

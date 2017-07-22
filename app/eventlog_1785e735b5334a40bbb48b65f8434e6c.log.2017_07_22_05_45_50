@@ -1,0 +1,3 @@
+2017-07-22 12:36:06,645|group|Group test_vm startup.
+2017-07-22 12:36:44,897|group|Group test_vm detect scale up in 0.65 value, next value 0.85
+2017-07-22 12:36:55,826|group|Group test_vm scale up success with vm 7e0a6278-100c-4af4-a83e-4f17b67bc7d2

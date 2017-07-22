@@ -20,6 +20,10 @@ class OpsVmService(DependencyModule):
         vmthread = VmDropThread(data, self.osclient)
         return vmthread
 
+    def remove_instances(self, instance_id):
+        self.osclient.delete(instance_id)
+
+
 
 class VmScaleBaseThread(threading.Thread):
     # state = processing, fail, success

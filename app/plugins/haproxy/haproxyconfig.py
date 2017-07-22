@@ -3,9 +3,9 @@ from pyhaproxy.render import Render
 from pyhaproxy import config
 from subprocess import call
 from core import DependencyModule
+
 # from core.exceptions import ExistsException
 
-cf_path = '/home/dungvt/haproxy.cfg'
 frontend_prefix = 'localnodes'
 backend_prefix = 'backendnodes'
 
@@ -14,16 +14,16 @@ class HAProxyCtrl(DependencyModule):
     __module_name__ = 'haproxy'
 
     def on_register_app(self, app):
-        pass
+        self.cf_path = app.config['LOADBALANCER']['config_path']
 
     def add_server(self, endpoint_addr, endpoint_port, port):
         endpoint_port = str(endpoint_port)
         port = str(port)
 
-        cfg_parser = Parser(cf_path)
+        cfg_parser = Parser(self.cf_path)
         configuration = cfg_parser.build_configuration()
 
-        backend = HAProxyCtrl.get_backend(configuration, port)
+        backend = self.get_backend(configuration, port)
         servers = backend.servers()
 
         # check server
@@ -38,7 +38,7 @@ class HAProxyCtrl(DependencyModule):
             backend.servers().append(config.Server(sname, endpoint_addr, endpoint_port, ['check', ]))
 
         cfg_render = Render(configuration)
-        cfg_render.dumps_to(cf_path)
+        cfg_render.dumps_to(self.cf_path)
 
         HAProxyCtrl.restart_service()
 
@@ -46,7 +46,7 @@ class HAProxyCtrl(DependencyModule):
         endpoint_port = str(endpoint_port)
         port = str(port)
 
-        cfg_parser = Parser(cf_path)
+        cfg_parser = Parser(self.cf_path)
         configuration = cfg_parser.build_configuration()
 
         name = HAProxyCtrl.get_backend_name(port)
@@ -72,12 +72,11 @@ class HAProxyCtrl(DependencyModule):
                 configuration.frontends.remove(frontend)
 
         cfg_render = Render(configuration)
-        cfg_render.dumps_to(cf_path)
+        cfg_render.dumps_to(self.cf_path)
 
         HAProxyCtrl.restart_service()
 
-    @classmethod
-    def get_backend(cls, configuration, port):
+    def get_backend(self, configuration, port):
         # cfg_parser = Parser(cf_path)
         # configuration = cfg_parser.build_configuration()
 

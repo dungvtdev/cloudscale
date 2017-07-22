@@ -51,7 +51,7 @@ def configure_opsclient_plugin(app):
     opsvm.init_app(app)
 
 
-def config_haproxy_plugin(app):
+def configure_haproxy_plugin(app):
     haproxy = HAProxyCtrl()
     haproxy.init_app(app)
 
@@ -89,7 +89,8 @@ configure_sqlbackend_plugin(application)
 configure_influxdb_plugin(application)
 configure_predict_plugin(application)
 configure_opsclient_plugin(application)
-
+configure_eventlog(application)
+configure_haproxy_plugin(application)
 configure_group_module(application)
 configure_controller(application)
 configure_api(application)

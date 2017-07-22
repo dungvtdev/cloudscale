@@ -197,7 +197,7 @@ class UpdateGroupInstancesAction(workflows.MembershipAction):
         for g in groups:
             if g.id == group_id:
                 continue
-            except_inst_ids = except_inst_ids + [id for id in g.instances]
+            except_inst_ids = except_inst_ids + [inst['instance_id'] for inst in g.instances]
 
         instances_list = [(inst.id, inst.name)
                           for inst in all_instances \

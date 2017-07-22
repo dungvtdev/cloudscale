@@ -1,0 +1,4 @@
+2017-07-22 12:28:57,038|group|Group test_group startup.
+2017-07-22 12:29:05,830|group|Group test_group detect scale up in 0.65 value, next value 0.85
+2017-07-22 12:29:07,062|group|Group test_group fail with unknown exception
+2017-07-22 12:29:07,062|group|Group test_group finish

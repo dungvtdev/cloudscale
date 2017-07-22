@@ -24,11 +24,11 @@ DEFAULT_PARAMS = {
     },
     "monitor": {
         # "db_name": "cadvisor",
-        'interval_minute': 4,
+        'interval_minute': 1,
         "metric": "cpu_usage_total"
     },
     "scale": {
-        'max_scale_vm': 1,
+        # 'max_scale_vm': 1,
         'port': 8000
     },
     "group": [
@@ -96,8 +96,9 @@ SCALE = {
             }
         }
     },
-    'max_scale': 2,
-    'warm_up': 2
+    # 'max_scale': 2,
+    'warm_up': 2,
+    # 'port': 8080
 }
 
 API = {
@@ -108,7 +109,8 @@ API = {
 
 LOADBALANCER = {
     'ip': 'localhost',
-    'port_begin': 1120
+    'port_begin': 1120,
+    'config_path': '/home/dungvt/haproxy.cfg'
 }
 
 EVENTLOG = {

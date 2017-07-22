@@ -1,0 +1,4 @@
+2017-07-22 12:31:48,575|group|Group vm_test startup.
+2017-07-22 12:31:52,449|group|Group vm_test detect scale up in 0.65 value, next value 0.85
+2017-07-22 12:31:53,697|group|Group vm_test fail with unknown exception
+2017-07-22 12:31:53,698|group|Group vm_test finish
