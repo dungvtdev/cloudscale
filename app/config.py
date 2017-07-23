@@ -12,8 +12,8 @@ DB_PATH = 'sqlite:///db.sqlite'
 DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
-        "data_length": 10,
-        "update_in_time": 10,  # tinh nhu tren
+        "data_length": 100,
+        "update_in_time": 120,  # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
         "periodic_number": 1,
@@ -24,7 +24,7 @@ DEFAULT_PARAMS = {
     },
     "monitor": {
         # "db_name": "cadvisor",
-        'interval_minute': 1,
+        'interval_minute': 4,
         "metric": "cpu_usage_total"
     },
     "scale": {
@@ -43,7 +43,7 @@ OPS_ACCOUNT = {
     'auth_url': 'http://controller:5000/v3',
     'user_domain_name': 'default',
     'username': 'admin',
-    'password': '123',
+    'password': 'Welcome123',
     'project_domain_name': 'default',
     'project_name': 'admin',
     'nova_version': '2.1'
@@ -51,7 +51,7 @@ OPS_ACCOUNT = {
 
 MONITOR = {
     'max_batch_size': 10000,
-    'max_fault_point': 2,
+    'max_fault_point': 10,
     'read_plugin': {
         'plugin': 'cadvisor_influxdb_series_read',
         'config': {
@@ -61,7 +61,7 @@ MONITOR = {
     'cache_plugin': {
         'plugin': 'influxdb_series',
         'config': {
-            'endpoint': '192.168.122.124',
+            'endpoint': 'localhost',
             'db': 'cache_%s',
             # 'endpoint': '127.0.0.1'
         }
@@ -70,7 +70,7 @@ MONITOR = {
 
 FORECAST = {
     'threshold': 0.1,
-    'fs': 144,
+    'fs': 360,
     'predict_plugin': 'predictplugin',
     'feeder_plugin': 'feederplugin',
 }
@@ -79,7 +79,7 @@ GROUPCACHE = {
     'cache_plugin': {
         'plugin': 'influxdb_series',
         'config': {
-            'endpoint': '192.168.122.124',
+            'endpoint': 'localhost',
             'db': 'cache_%s',
             # 'endpoint': '127.0.0.1'
         }
@@ -91,13 +91,13 @@ SCALE = {
         'cpu_usage_total': {
             'controller': 'simple_scale',
             'config': {
-                'max_value': 0.6,
-                'sum_length': 3,
+                'max_value': 0.5,
+                'sum_length': 5,
             }
         }
     },
     # 'max_scale': 2,
-    'warm_up': 0.05,
+    'warm_up': 2,
     # 'port': 8080
 }
 
@@ -109,7 +109,7 @@ API = {
 
 LOADBALANCER = {
     'ip': 'localhost',
-    'port_begin': 1120,
+    'port_begin': 8888,
     'config_path': '/etc/haproxy/haproxy.cfg',
 }
 
