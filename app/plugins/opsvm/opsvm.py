@@ -69,7 +69,7 @@ class VmCreaterThread(VmScaleBaseThread):
             image_id = self.data['image']
             flavor_id = self.data['flavor']
             net_selfservice_id = self.data['selfservice']
-            provider_name = self.data['provider_name']
+            provider_name = self.data['provider']
             user_data = self.data['user_data']
 
             self.save_state = 'processing'

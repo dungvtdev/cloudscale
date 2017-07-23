@@ -30,4 +30,7 @@ group_dict = {
     'metric': 'cpu_usage_total',
     'max_scale_vm': 1
 }
-app.controller.create_group(group_dict)
+# app.controller.create_group(group_dict)
+
+from tests.manual_tests import test_env
+test_env.check_all(app, group_dict)
