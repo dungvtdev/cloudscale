@@ -131,13 +131,16 @@ class SimpleScaleController(ScaleControllerBase):
         vm_name_ex = str(uuid.uuid4())[:8]
         name = "%sui%s" % (self.group_data['name'], vm_name_ex)
 
+        try_again = self.app.config['SCALE']['try_scale_when_fail']
+
         data = {
             'name': name,
             'image': group_data['image'],
             'flavor': group_data['flavor'],
             'selfservice': group_data['selfservice'],
-            'provider_name': group_data['provider'],
+            'provider': group_data['provider'],
             'user_data': group_data['user_data'],
+            'try_again': try_again
         }
 
         result = {}

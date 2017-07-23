@@ -81,26 +81,33 @@ class OSClient(object):
         return True
 
     def create_new_instance(self, name, image_id, flavor_id, net_selfservice_id,
-                            provider_name, user_data=None, time_out=None, check_interval=None):
+                            provider_name, user_data=None, time_out=None, check_interval=None, try_again=None):
+        try_again = try_again or 0
         try:
-            # create new instance
-            server = self.create(image_id=image_id,
-                                 flavor_id=flavor_id,
-                                 network_id=net_selfservice_id,
-                                 name=name,
-                                 user_data=user_data)
-            timeout = time_out or 20
-            success = False
-            while timeout >= 0:
-                time.sleep(check_interval)
-                timeout = timeout - check_interval
-                s_status = self._show(server.id)
-                # print(vars(s_status))
-                if s_status.status == 'ACTIVE':
-                    success = True
-                    break
-                elif s_status.status == 'ERROR':
-                    self.delete(server.id)
+            count = try_again + 1
+            while count > 0:
+                count = count - 1
+                # create new instance
+                server = self.create(image_id=image_id,
+                                     flavor_id=flavor_id,
+                                     network_id=net_selfservice_id,
+                                     name=name,
+                                     user_data=user_data)
+                timeout = time_out or 20
+                success = False
+                while timeout >= 0:
+                    time.sleep(check_interval)
+                    timeout = timeout - check_interval
+                    s_status = self._show(server.id)
+                    # print(vars(s_status))
+                    if s_status.status == 'ACTIVE':
+                        success = True
+                        break
+                    elif s_status.status == 'ERROR':
+                        self.delete(server.id)
+                        break
+
+                if success:
                     break
 
             if not success:
