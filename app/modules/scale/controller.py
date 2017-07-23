@@ -19,7 +19,8 @@ class ScaleControllerBase(object):
         self.max_scale = group_data['max_scale_vm']
         self.warm_up_minutes = config['warm_up_minutes']
         # self.app_port = config['port']
-        self.app_port = group_data['port']
+        self.app_port = group_data['app_port']
+        self.group_port = group_data['port']
 
         self.max_length = self.sum_length
 
@@ -39,6 +40,9 @@ class ScaleControllerBase(object):
     @property
     def instances(self):
         return self._instances
+
+    def clear_instances(self):
+        self._instances = []
 
     def log(self, method, message):
         if self.logger is not None:
@@ -109,13 +113,21 @@ class SimpleScaleController(ScaleControllerBase):
         if func:
             self.running_func = func
 
+    def add_server(self, vm_dict):
+        ip = vm_dict['endpoint']
+        self.app.haproxy.add_server(ip, self.app_port, self.group_port)
+
+    def remove_server(self, vm_dict):
+        ip = vm_dict['endpoint']
+        self.app.haproxy.remove_server(ip, self.app_port, self.group_port)
+
     def scale_up(self, group_data=None):
         if self.running_func is not None:
             return
 
         group_data = group_data or self.group_data
         vm_name_ex = str(uuid.uuid4())[:8]
-        name = "%s.%s" % (self.group_data['name'], vm_name_ex)
+        name = "%sui%s" % (self.group_data['name'], vm_name_ex)
 
         data = {
             'name': name,
@@ -123,7 +135,7 @@ class SimpleScaleController(ScaleControllerBase):
             'flavor': group_data['flavor'],
             'selfservice': group_data['selfservice'],
             'provider_name': group_data['provider'],
-            'user_data': group_data['script_data'],
+            'user_data': group_data['user_data'],
         }
 
         result = {}
@@ -149,8 +161,7 @@ class SimpleScaleController(ScaleControllerBase):
                 self.log('info', '%s success scale new vm id=%s' % (self.logname, vm['instance_id']))
 
                 # them endpoint trong haproxy
-                port = self.group_data['port']
-                self.app.haproxy.add_server(vm['ip'], self.app_port, port)
+                self.add_server(vm_dict)
 
             if thrd.state == 'fail':
                 self.log('error', '%s fail to scale new vm' % self.logname)
@@ -186,8 +197,9 @@ class SimpleScaleController(ScaleControllerBase):
 
                 self.instances.remove(vm)
 
-                port = self.group_data['port']
-                self.app.haproxy.remove_server(vm['instance_id'], self.app_port, port)
+                # port = self.group_data['port']
+                # self.app.haproxy.remove_server(vm['instance_id'], self.app_port, port)
+                self.remove_server(vm)
 
                 self.log('info', '%s success scale down vm id=%s' %
                          (self.logname, vm['instance_id']))

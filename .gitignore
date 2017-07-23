@@ -1,6 +1,7 @@
 # idea
 **/.idea/*
 **/*.log
+**/*.log.2017*
 
 # vagrant
 **/.vagrant/*

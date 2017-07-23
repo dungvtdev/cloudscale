@@ -29,7 +29,7 @@ DEFAULT_PARAMS = {
     },
     "scale": {
         # 'max_scale_vm': 1,
-        'port': 8000
+        'app_port': 8000
     },
     "group": [
         "pdgabp", "monitor", "scale"
@@ -110,7 +110,7 @@ API = {
 LOADBALANCER = {
     'ip': 'localhost',
     'port_begin': 1120,
-    'config_path': '/home/dungvt/haproxy.cfg'
+    'config_path': '/etc/haproxy/haproxy.cfg',
 }
 
 EVENTLOG = {

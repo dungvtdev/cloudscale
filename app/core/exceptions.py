@@ -23,6 +23,14 @@ class NotEnoughParams(BaseWrapperException):
     __ex_name__ = 'NotEnoughParams'
 
 
+class ParamsError(BaseWrapperException):
+    __ex_name__ = "ParamsError"
+
+
+class ExtendServiceError(BaseWrapperException):
+    __ex_name__ = "ExtendServiceError"
+
+
 class InstanceNotValid(BaseWrapperException):
     __ex_name__ = 'InstanceNotValid'
 

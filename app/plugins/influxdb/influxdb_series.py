@@ -1,5 +1,6 @@
 import requests
 from core import DependencyModule
+from core.exceptions import ExtendServiceError
 import json
 
 
@@ -66,7 +67,7 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
 
         if r.status_code != 204 and r.status_code != 200:
             # raise Exception(body.get("error", ""))
-            raise Exception(r.text)
+            raise ExtendServiceError(r.text)
 
     def get_read_query(self, config, time_from, time_to, time_length):
         metric = config['metric']
@@ -109,9 +110,9 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
             try:
                 return body['results'][0]['series'][0]['values']
             except Exception as e:
-                raise Exception('Data not correct form or null')
+                raise ExtendServiceError('Data not correct form or null')
         else:
-            raise Exception(r.text)
+            raise ExtendServiceError(r.text)
 
     def read_value(self, config, tag):
         return self.read_write_value(config, 'read', tag)
@@ -146,7 +147,7 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
                 value = body['results'][0]['series'][0]['values'][0][1]
                 return value
             except Exception as e:
-                raise Exception('Get error')
+                raise ExtendServiceError('Get error')
         else:
             tags_str = ','.join("%s=%s" % (k, v) for k, v in tags.items())
             tags_str = '%s,value_tag=%s' % (tags_str, tag)
@@ -158,11 +159,10 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
             r = requests.post(url, data=data)
             success = r.status_code == 200 or r.status_code == 204
             if not success:
-                raise Exception('Error when write value')
+                raise ExtendServiceError('Error when write value')
 
 
 class SimpleInfluxdb():
-
     def __init__(self, config):
         # config = {'endpoint', 'db', 'metric', 'tags'}
         self.config = config

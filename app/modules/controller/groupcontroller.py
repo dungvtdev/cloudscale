@@ -5,7 +5,7 @@ import copy
 # from threading import Lock
 import time
 from core.exceptions import NotEnoughParams, ExistsException, \
-    InstanceNotValid, ServiceIOException, BadInputParams
+    InstanceNotValid, ServiceIOException, BadInputParams, ExtendServiceError
 from . import MonitorController
 from . import ForecastCpuController
 from core.seriesutils import join_series
@@ -118,23 +118,36 @@ class GroupController(threading.Thread):
         name = self.data['user_id']
         self.eventlog = self.app.eventlogfactory.create(name)
 
-    def cache_predict(self, timestamp, value):
-        self.cache_predict.write([(timestamp, value)])
+    def cache_predict_value(self, timestamp, value):
+        try:
+            self.cache_predict.write([(timestamp, value)])
+        except ExtendServiceError as e:
+            self.log.error('Group %s cache predict value with error %s' % (self.logname, e))
 
     def clear(self):
         # remove all vm scale
         # group_dict = self.groupservice.db_get_group(self.data)
         if self.scalecontroller:
-            insts = self.scalecontroller.instances
+            group = self.groupservice.db_get_group(self.data)
+            insts = group['instances']
+            # insts = self.scalecontroller.instances
+            self.scalecontroller.clear_instances()
             for vm in insts:
                 # delete in openstack
-                self.opsvm.remove_instances(vm['instance_id'])
-                self.eventlog.write('group',
-                                    'Group %s delete instance in ops %s' % (self.data['name'], vm['instance_id']))
+                if not vm['is_origin']:
+                    self.opsvm.remove_instances(vm['instance_id'])
+                    # self.groupservice.db_drop_vm(vm)
+                    self.eventlog.write('group',
+                                        'Group %s delete instance in ops %s' % (self.data['name'], vm['instance_id']))
 
         # remove database
         self.groupservice.db_drop_group(group_dict=self.data)
-        self.groupservice.db_drop_vms_in_group(self.data['group_id'])
+
+        # remove trong proxy
+        for inst in self.data['instances']:
+            self.scalecontroller.remove_server(inst)
+
+            # self.groupservice.db_drop_vms_in_group(self.data['group_id'])
 
     @property
     def interval_minute(self):
@@ -148,6 +161,11 @@ class GroupController(threading.Thread):
         # chon 1 vm bat ky lam key de monitor
         self.enable_monitor_vm()
         self.create_scalecontroller()
+
+        # them vao haproxy
+        if self.scalecontroller:
+            for inst in self.data['instances']:
+                self.scalecontroller.add_server(inst)
 
     def test(self, group_dict):
         return self.data['group_id'] == group_dict['group_id']
@@ -369,7 +387,8 @@ class GroupController(threading.Thread):
                     t = timestamp + self.interval_minute * \
                                     self.data['predict_length']
                     t = t * 1000000000 * 60
-                    self.cache_predict.write([(t, pr)])
+
+                    self.cache_predict_value(t, pr)
 
                     # scale
                     value = self.i
@@ -513,4 +532,4 @@ class GroupController(threading.Thread):
 
     def shutdown(self):
         self.is_running = False
-        self.clear()
+        # self.clear()

@@ -13,6 +13,6 @@ group_dict = {
     'flavor': 'm1',
     'selfservice': 's1',
     'provider': 'p1',
-    'script_data': ''
+    'user_data': '',
     'instances': instances
 }

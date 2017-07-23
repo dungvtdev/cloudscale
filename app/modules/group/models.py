@@ -20,7 +20,7 @@ class Group(Base):
     flavor = Column(String(250))
     selfservice = Column(String(250))
     provider = Column(String(250))
-    script_data = Column(Text)
+    user_data = Column(Text)
     created = Column(DateTime, default=datetime.datetime.utcnow)
 
     data_length = Column(Integer)
@@ -36,7 +36,7 @@ class Group(Base):
         "Instance", backref=backref('group', lazy='joined'))
 
     attrs = ['id', 'group_id', 'user_id', 'name', 'desc', 'image', 'flavor',
-             'selfservice', 'provider', 'script_data', 'created', 'data_length',
+             'selfservice', 'provider', 'user_data', 'created', 'data_length',
              'recent_point', 'periodic_number', 'update_in_time',
              # 'predict_length',
              'max_scale_vm', 'proxy_url']

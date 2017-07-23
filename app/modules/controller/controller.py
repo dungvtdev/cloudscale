@@ -46,13 +46,9 @@ class Controller(DependencyModule):
         self.group_ctrls.remove(group)
 
     def update_group(self, group_dict):
-        # sua group, update cac param nhung khong duoc update vm
-        old_group = self.group.db_get_group(group_dict)
-        old_instances = old_group['instances']
-        group_dict['instances'] = [[o['instance_id'], o['endpoint']] for o in old_instances]
-        # old_group va group_dict da co cung group_id
-        # self.group.db_drop_group(old_group)
-        self.group.db_create_group(group_dict)
+        # tim goup vao update group controller
+        groupctrl = self.group_ctrls.get(group_dict)
+        groupctrl.update_params(group_dict)
 
     def drop_group(self, group_dict):
         # group dict dau vao la id
@@ -63,6 +59,7 @@ class Controller(DependencyModule):
             group = self.group_ctrls.get(group_data)
             if group:
                 group.shutdown()
+                group.clear()
         self.group.db_drop_group(group_dict)
 
     """ ***************************** helper methods *****************************
