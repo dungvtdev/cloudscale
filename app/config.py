@@ -92,7 +92,7 @@ SCALE = {
             'controller': 'simple_scale',
             'config': {
                 'max_value': 0.6,
-                'sum_length': 10,
+                'sum_length': 8,
             }
         }
     },

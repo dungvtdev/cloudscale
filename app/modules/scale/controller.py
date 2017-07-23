@@ -72,12 +72,14 @@ class ScaleControllerBase(object):
 class SimpleScaleController(ScaleControllerBase):
     def check(self, data, predict):
         scale_msg = ''
-        if self.last_scale_time:
-            wait_enough = time.time() - self.last_scale_time > self.warm_up_minutes * 60
-            if not wait_enough:
-                return
 
         if predict >= self.max_value:
+            # khi scale up phai doi thoi gian warm_up cho lan scale truoc
+            if self.last_scale_time:
+                wait_enough = time.time() - self.last_scale_time > self.warm_up_minutes * 60
+                if not wait_enough:
+                    return
+
             if len(self.instances) >= self.max_scale:
                 return
             func = self.scale_up()
@@ -193,7 +195,8 @@ class SimpleScaleController(ScaleControllerBase):
             thrd.join()
 
             if vmthread.state == 'success':
-                self.last_scale_time = time.time()
+                # khong dinh nghia scale time vi chi scale up moi dinh nghia
+                # self.last_scale_time = time.time()
 
                 self.instances.remove(vm)
 

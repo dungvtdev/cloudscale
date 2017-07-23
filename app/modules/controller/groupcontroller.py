@@ -432,8 +432,8 @@ class GroupController(threading.Thread):
             else:
                 self.log.info('Group %s fail to scale instance. Err %s' %
                               (self.logname, result['error'].message))
-                self.eventlog.write('group', 'Group %s scale %s success with vm %s'
-                                    % (self.logname, result['type'], vm['instance_id']))
+                self.eventlog.write('group', 'Group %s scale %s vm fail'
+                                    % (self.logname, result['type']))
 
         return type_scale
 
