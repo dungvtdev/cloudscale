@@ -1,15 +1,15 @@
 import pandas as pd
 import numpy as np
+from core.seriesutils import clamp01
 
-
-def clamp01(data):
-    data[(data > 1) | (data < 0)] = np.nan
-    data = data.interpolate()
-    i = 0
-    while (np.isnan(data[i])):
-        data[i] = 0
-        i = i + 1
-    return data
+# def clamp01(data):
+#     data[(data > 1) | (data < 0)] = np.nan
+#     data = data.interpolate()
+#     i = 0
+#     while (np.isnan(data[i])):
+#         data[i] = 0
+#         i = i + 1
+#     return data
 
 
 class ForecastControllerBase(object):

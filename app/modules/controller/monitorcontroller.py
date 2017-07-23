@@ -189,6 +189,8 @@ class MonitorController():
                 df = su.minutevaluepair_to_pdseries(timevalues)
                 df = su.resample(df, self.interval_minute)
                 newest = su.get_newestseries(df, max_fault_point)
+                if newest and len(newest) > 0:
+                    newest = su.clamp01(newest)
                 is_finish = len(df) != len(newest)
 
                 if len(newest) <= 3:
@@ -336,7 +338,7 @@ class MonitorController():
 
                 is_finish = len(values) < max_batch_size
 
-                if (is_finish):
+                if is_finish:
                     break
             except Exception as e:
                 if 'Got Data is None' in e.message:
