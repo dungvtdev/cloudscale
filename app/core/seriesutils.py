@@ -56,3 +56,13 @@ def clamp01(data):
         data[i] = 0
         i = i + 1
     return data
+
+
+def force_positive(data):
+    data[(data < 0)] = np.nan
+    data = data.interpolate()
+    i = 0
+    while np.isnan(data[i]):
+        data[i] = 0
+        i = i + 1
+    return data
