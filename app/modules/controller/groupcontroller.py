@@ -380,8 +380,8 @@ class GroupController(threading.Thread):
                                    (self.logname, e.message))
 
             # self.thread_up_forcast_model =
-            # time.sleep(interval * 60)
-            time.sleep(1)
+            time.sleep(interval * 60)
+            # time.sleep(1)
             interval = self.interval_minute
 
             timestamp, value = None, None
@@ -416,14 +416,14 @@ class GroupController(threading.Thread):
                     self.cache_predict_value(t, pr)
 
                     # scale
-                    value = self.i
-                    print('value fake %s' % value)
-                    self.i = self.i + self.step
-                    pr = self.i
-                    if self.i > 0.8:
-                        self.step = -abs(self.step)
-                    elif self.i < 0.1:
-                        self.step = abs(self.step)
+                    # value = self.i
+                    # print('value fake %s' % value)
+                    # self.i = self.i + self.step
+                    # pr = self.i
+                    # if self.i > 0.8:
+                    #     self.step = -abs(self.step)
+                    # elif self.i < 0.1:
+                    #     self.step = abs(self.step)
                     type_scale = self.scale_decide(timestamp, value, pr)
 
                     # type_scale = self.scale_decide(value, pr)
