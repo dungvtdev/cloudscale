@@ -189,7 +189,7 @@ class MonitorController():
                 df = su.minutevaluepair_to_pdseries(timevalues)
                 df = su.resample(df, self.interval_minute)
                 newest = su.get_newestseries(df, max_fault_point)
-                if newest and len(newest) > 0:
+                if newest is not None and len(newest) > 0:
                     newest = su.force_positive(newest)
                 is_finish = len(df) != len(newest)
 
