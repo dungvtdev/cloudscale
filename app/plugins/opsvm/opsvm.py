@@ -72,6 +72,8 @@ class VmCreaterThread(VmScaleBaseThread):
             provider_name = self.data['provider']
             user_data = self.data['user_data']
 
+            try_again = self.data['try_again']
+
             self.save_state = 'processing'
 
             self._vm = self.osclient.create_new_instance(name=name, image_id=image_id,
@@ -80,7 +82,8 @@ class VmCreaterThread(VmScaleBaseThread):
                                                          provider_name=provider_name,
                                                          user_data=user_data,
                                                          time_out=self.TIME_OUT,
-                                                         check_interval=self.CHECK_INTERVAL)
+                                                         check_interval=self.CHECK_INTERVAL,
+                                                         try_again=try_again)
             self.save_state = 'success'
         except Exception as e:
             self.save_exception = e

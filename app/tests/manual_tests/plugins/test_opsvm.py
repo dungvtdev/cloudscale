@@ -39,7 +39,7 @@ vm = {
     'image': 'd0111621-ab84-47c3-9f4c-ebae9a8e8c91',
     'flavor': 'b6f1a774-a56c-47ec-b43c-ed67babe5da7',
     'selfservice': 'bb87469e-183e-4d89-a287-5397d6bac5e4',
-    'provider_name': 'provider',
+    'provider': 'provider',
     'user_data': user_data
 }
 

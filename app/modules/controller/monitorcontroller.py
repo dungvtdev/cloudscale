@@ -86,6 +86,9 @@ class MonitorController():
                 df = su.minutevaluepair_to_pdseries(timevalues)
                 df = su.resample(df, self.interval_minute)
                 newest = su.get_newestseries(df, max_fault_point)
+                if newest is not None and len(newest) > 0:
+                    newest = su.force_positive(newest)
+
                 is_finish = len(df) != len(newest)
 
                 last = timevalues[-1][0]
@@ -127,6 +130,8 @@ class MonitorController():
                 # last = df[-1][0]
                 df = su.resample(df, self.interval_minute)
                 newest = su.get_newestseries(df, max_fault_point)
+                if newest is not None and len(newest) > 0:
+                    newest = su.force_positive(newest)
 
                 if len(newest) > 0 and time_from_begin == tv[0][0]:
                     newest = newest[1:]
@@ -200,6 +205,9 @@ class MonitorController():
                     is_last_chunk = False
                     # cat dau duoi
                     newest = newest[1:len(newest) - 1]
+                    if newest is not None and len(newest) > 0:
+                        newest = su.force_positive(newest)
+
                     last = timevalues[-1][0]
                     # time cua chunk cuoi cung cua newest
                     temp_t = (int(last / interval_minute) - 1) * interval_minute

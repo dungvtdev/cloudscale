@@ -98,6 +98,7 @@ SCALE = {
     },
     # 'max_scale': 2,
     'warm_up': 2,
+    'try_scale_when_fail': 2
     # 'port': 8080
 }
 
