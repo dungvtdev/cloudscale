@@ -9,7 +9,8 @@ def check_ops(app, group_data):
     up_thread.start()
     up_thread.join()
     create_success = up_thread.state == 'success'
-    print('OPS scale up is ok %s' % create_success)
+    if not create_success:
+        print('FAIL: OPS scale up is fail')
     if create_success:
         print('Check OPS scale down')
         vm = up_thread.vm
@@ -17,7 +18,10 @@ def check_ops(app, group_data):
         down_thread.start()
         down_thread.join()
         down_success = down_thread.state
-        print('OPS scale down %s' % ('OK' if down_success else 'Fail'))
+        if not down_success:
+            print('FAIL: OPS scale down is fail')
+
+    print('OK')
 
 
 def check_vm(app, group_data):
@@ -30,12 +34,14 @@ def check_vm(app, group_data):
         # check app running
         r = requests.get('http://%s:%s/ping' % (inst['endpoint'], port))
         success = r.status_code == 200 and 'hostname' in r.text
-        print('Check vm app test %s' % success)
+        if not success:
+            print('FAIL: Check vm app test fail')
         # check influxdb
         r = requests.get('http://%s:8086/ping' % inst['endpoint'])
-        success = r.status_code == 201
-        print('Check influxdb running %s' % success)
-
+        success = r.status_code == 204
+        if not success:
+            print('FAIL: Check influxdb running is fail')
+    
 
 def check_haproxy(app):
     print('************ Check haproxy *********************')
@@ -47,8 +53,11 @@ def check_haproxy(app):
     with open(haconfig, 'r') as f:
         s = f.read()
         success = '1.1.1.1' in s
-    print('Check proxy %s' % success)
+    if not success:
+        print('FAIL: Check proxy fail')
+
     haproxy.remove_server('1.1.1.1', 8000, 8808)
+    print('OK')
 
 
 def check_cache(app, group_data):
@@ -58,13 +67,18 @@ def check_cache(app, group_data):
     cache_endpoint = app.config['GROUPCACHE']['cache_plugin']['config']['endpoint']
     r = requests.get('http://%s:8086/query?q=SHOW DATABASES' % cache_endpoint)
     success = r.status_code == 200
+    if not success:
+        print('FAIL: Cache endpoint running is False')
 
     if success:
         db_name = app.config['GROUPCACHE']['cache_plugin']['config']['db']
         cache_name = db_name % group_data['name']
         success = cache_name not in r.text
 
-    print('Check cache success is %s' % success)
+    if not success:
+        print('FAIL: Cache already has database for this group')
+
+    print('OK: Check cache success')
 
 
 def check_all(app, group_data):
