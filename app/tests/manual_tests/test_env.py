@@ -78,6 +78,22 @@ def check_cache(app, group_data):
     if not success:
         print('FAIL: Cache already has database for this group')
 
+    if success:
+        cache_endpoint = app.config['GROUPCACHE']['cache_plugin']['config']['endpoint']
+        r = requests.get('http://%s:8086/query?q=SHOW DATABASES' % cache_endpoint)
+        success = r.status_code == 200
+
+    if not success:
+        print('FAIL: Cache monitor endpoint running is False')
+
+    if success:
+        db_name = app.config['MONITOR']['cache_plugin']['config']['db']
+        cache_name = db_name % group_data['name']
+        success = cache_name not in r.text
+
+    if not success:
+        print('FAIL: Cache already has database for this group monitor')
+
     print('OK: Check cache success')
 
 
