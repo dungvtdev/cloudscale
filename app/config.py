@@ -92,12 +92,12 @@ SCALE = {
             'controller': 'simple_scale',
             'config': {
                 'max_value': 0.6,
-                'sum_length': 8,
+                'sum_length': 3,
             }
         }
     },
     # 'max_scale': 2,
-    'warm_up': 2,
+    'warm_up': 0.05,
     # 'port': 8080
 }
 

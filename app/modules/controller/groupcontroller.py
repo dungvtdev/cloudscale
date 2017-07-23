@@ -20,7 +20,7 @@ forecast_map = {
 
 class GroupController(threading.Thread):
     i = 0.65
-    step = 0.2
+    step = 0.05
 
     def __init__(self, app, group_dict, delete_callback):
         threading.Thread.__init__(self)
@@ -53,6 +53,9 @@ class GroupController(threading.Thread):
         # self.local_timestamp = 0
 
         self.cache_predict = None
+        self.cache_scale_up = None
+        self.cache_scale_down = None
+
         self.eventlog = None
         self._state = 'init'
 
@@ -114,6 +117,18 @@ class GroupController(threading.Thread):
         }
         self.cache_predict = cache_plugin.create(config)
 
+        scale_up_config = copy.copy(config)
+        scale_up_config['tags'] = {
+            'result': 'scale_up'
+        }
+        self.cache_scale_up = cache_plugin.create(scale_up_config)
+
+        scale_down_config = copy.copy(config)
+        scale_down_config['tags'] = {
+            'result': 'scale_down'
+        }
+        self.cache_scale_down = cache_plugin.create(scale_down_config)
+
     def setup_eventlog(self):
         name = self.data['user_id']
         self.eventlog = self.app.eventlogfactory.create(name)
@@ -123,6 +138,16 @@ class GroupController(threading.Thread):
             self.cache_predict.write([(timestamp, value)])
         except ExtendServiceError as e:
             self.log.error('Group %s cache predict value with error %s' % (self.logname, e))
+
+    def cache_scale_value(self, type_cache, timestamp, value):
+        types = {
+            'up': self.cache_scale_up,
+            'down': self.cache_scale_down
+        }
+        try:
+            types[type_cache].write([(timestamp, value)])
+        except ExtendServiceError as e:
+            self.log.error('Group %s cache scale fail with error %s' % (self.logname, e))
 
     def clear(self):
         # remove all vm scale
@@ -399,7 +424,7 @@ class GroupController(threading.Thread):
                         self.step = -abs(self.step)
                     elif self.i < 0.1:
                         self.step = abs(self.step)
-                    type_scale = self.scale_decide(value, pr)
+                    type_scale = self.scale_decide(timestamp, value, pr)
 
                     # type_scale = self.scale_decide(value, pr)
                     if type_scale:
@@ -409,13 +434,16 @@ class GroupController(threading.Thread):
 
         self.log.info('Group %s stop' % self.logname)
 
-    def scale_decide(self, value, pr):
+    def scale_decide(self, timestamp, value, pr):
         type_scale = self.scalecontroller.add_point(value, pr)
 
         result = self.scalecontroller.receive()
         print(result)
         if result and result['is_finish']:
             if result['state'] == 'success':
+                # cache scale
+                self.cache_scale_value(result['type'], timestamp * 1000000000 * 60, pr)
+
                 if result['type'] == 'up':
                     # them vao danh sach
                     vm = result['vm']
