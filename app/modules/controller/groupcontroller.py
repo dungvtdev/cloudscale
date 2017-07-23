@@ -476,7 +476,7 @@ class GroupController(threading.Thread):
         except InstanceNotValid as e:
             self.eventlog.write('group', 'Group %s fail with error Instance Not Valid Exception' % self.data['name'])
         except Exception as e:
-            self.log.error(e.message)
+            self.log.error(e)
             self.eventlog.write('group', 'Group %s fail with unknown exception' % self.data['name'])
         finally:
             self.eventlog.write('group', 'Group %s finish' % self.data['name'])
