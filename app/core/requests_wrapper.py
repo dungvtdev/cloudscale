@@ -9,4 +9,4 @@ def get(url, params=None):
 
 
 def post(url, data=None):
-    return requests.pos(url, data=data, timeout=TIMEOUT)
+    return requests.post(url, data=data, timeout=TIMEOUT)

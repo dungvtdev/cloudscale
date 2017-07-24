@@ -217,6 +217,20 @@ class GroupController(threading.Thread):
         self.groupservice.db_update_vm(vm)
         self.monitorcontroller = self.create_monitorcontroller(vm)
 
+    def reboot_monitor_vm(self):
+        vm = next((inst for inst in self.data['instances'] if inst['is_monitoring']), None)
+        if vm:
+            try:
+                state = self.app.healthcheck.reboot_server(vm)
+                if state == 'fail':
+                    # thu reboot lai ngay neu fail
+                    self.app.healthcheck.reboot_server(vm)
+                    self.log.error('Group %s fail to reboot monitor vm, retry' % self.logname)
+                else:
+                    self.log.debug('Group %s reboot monitor vm state %s' % (self.logname, state))
+            except Exception as e:
+                self.log.error('Group %s fail to reboot monitor vm %s' % (self.logname, e))
+
     def create_monitorcontroller(self, vm):
         group_config = {
             'endpoint': vm['endpoint'],
@@ -280,6 +294,8 @@ class GroupController(threading.Thread):
                         ita = [[it[1] for it in a] for a in accum]
                         del accum
                         data = join_series(ita)
+                        # lay data tu cache phai interpolate
+                        data = data.interpolate()
                 else:
                     data = series
                 if data is None:
@@ -389,7 +405,9 @@ class GroupController(threading.Thread):
                 timestamp, value = self.monitorcontroller.get_last_one()
             except InstanceNotValid as e:
                 # health check
-                pass
+                self.log.error('Group %s fail to connect monitor vm. Need reboot vm.' % (
+                    self.logname))
+                self.reboot_monitor_vm()
             except Exception as e:
                 self.log.error('Group %s error when get last point. Er %s' % (
                     self.logname, e.message))
@@ -404,7 +422,9 @@ class GroupController(threading.Thread):
                 self.log.debug('Group %s get new value fail' % self.logname)
 
             if self.forecast_model:
+                # them value vao forecast model ke ca value la none
                 self.forecast_model.add_last_point(value)
+                # khong them value None vao cache, value trong se duoc interpolate sau
                 if value is not None:
                     pr = self.forecast_model.predict() or 0
                     self.log.debug('Group %s forecast value %s' %

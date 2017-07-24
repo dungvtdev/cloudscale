@@ -12,6 +12,7 @@ from modules.group import GroupUtils
 from modules.controller import Controller
 from modules.scale import ScaleFactory
 from modules.eventlog import EventLogFactory
+from modules.healthcheck import HealthCheckController
 
 
 def configure_log(app):
@@ -61,12 +62,18 @@ def configure_group_module(app):
     grouputils.init_app(app)
 
 
+def configure_healthcheck_module(app):
+    hc = HealthCheckController()
+    hc.init_app(app)
+
+
 def configure_controller(app):
     controller = Controller()
     controller.init_app(app)
 
     scalectrl = ScaleFactory()
     scalectrl.init_app(app)
+
 
 def configure_eventlog(app):
     eventlog = EventLogFactory()
@@ -91,6 +98,7 @@ configure_predict_plugin(application)
 configure_opsclient_plugin(application)
 configure_eventlog(application)
 configure_haproxy_plugin(application)
+configure_healthcheck_module(application)
 configure_group_module(application)
 configure_controller(application)
 configure_api(application)
