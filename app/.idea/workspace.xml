@@ -31,203 +31,7 @@
     <favorites_list name="app" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="monitorcontroller.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/controller/monitorcontroller.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="101">
-              <caret line="237" column="27" lean-forward="true" selection-start-line="237" selection-start-column="27" selection-end-line="237" selection-end-column="27" />
-              <folding>
-                <element signature="e#0#34#0" expanded="true" />
-                <marker date="1500905722134" expanded="true" signature="192:13522" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="5872:10930" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="6250:8555" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="6267:8310" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="6953:7823" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="7845:8017" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="8427:8555" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="8837:10200" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="8917:10010" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="9218:10010" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="9511:9642" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="10023:10079" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="10305:10381" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="10666:10802" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="10819:10929" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="10984:11267" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="11049:11144" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="11313:11445" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="11483:11614" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="11646:12870" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="12028:12628" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="12045:12465" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="12500:12628" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="12666:12848" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="12899:13522" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="12912:13448" ph="..." />
-                <marker date="1500905722134" expanded="true" signature="13007:13418" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="forecastcontroller.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/controller/forecastcontroller.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="137" column="27" lean-forward="true" selection-start-line="137" selection-start-column="27" selection-end-line="137" selection-end-column="27" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="opsclient.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/plugins/opsvm/opsclient.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="52">
-              <caret line="83" column="104" lean-forward="false" selection-start-line="83" selection-start-column="95" selection-end-line="83" selection-end-column="104" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="opsvm.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/plugins/opsvm/opsvm.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="89" column="36" lean-forward="false" selection-start-line="89" selection-start-column="30" selection-end-line="89" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="testapp.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/manual_tests/testapp.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="138">
-              <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-              <folding>
-                <marker date="1500905750786" expanded="true" signature="329:375" ph="..." />
-                <marker date="1500905750786" expanded="true" signature="952:987" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="haproxyconfig.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/plugins/haproxy/haproxyconfig.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="74" column="41" lean-forward="false" selection-start-line="74" selection-start-column="40" selection-end-line="74" selection-end-column="41" />
-              <folding>
-                <marker date="1500905728410" expanded="true" signature="311:4287" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="508:1362" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="2467:2540" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="2589:3985" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="2598:2687" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="2820:2961" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="3159:3533" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="3215:3477" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="3244:3345" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="3376:3432" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="3705:3919" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="3828:3874" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="4033:4081" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="4137:4185" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="4240:4287" ph="..." />
-                <marker date="1500905728410" expanded="true" signature="4289:4621" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="controller.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/scale/controller.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="139" column="53" lean-forward="true" selection-start-line="139" selection-start-column="53" selection-end-line="139" selection-end-column="53" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-14">
-              <caret line="74" column="36" lean-forward="true" selection-start-line="74" selection-start-column="36" selection-end-line="74" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="groupcontroller.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/modules/controller/groupcontroller.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="202">
-              <caret line="477" column="30" lean-forward="true" selection-start-line="477" selection-start-column="30" selection-end-line="477" selection-end-column="30" />
-              <folding>
-                <element signature="e#1965#3098#0" expanded="false" />
-                <element signature="e#4906#5920#0" expanded="false" />
-                <element signature="e#5975#6010#0" expanded="false" />
-                <element signature="e#6055#6073#0" expanded="false" />
-                <element signature="e#6422#6476#0" expanded="false" />
-                <element signature="e#8590#10531#0" expanded="false" />
-                <marker date="1500905718550" expanded="true" signature="510:19956" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="10552:15809" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="11273:15754" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="14405:15754" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="14501:15754" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="15467:15754" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="15860:17257" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="16037:17230" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="16082:16924" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="16244:16531" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="16578:16672" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="16942:17230" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="17277:18156" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="17290:17432" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="17472:17601" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="17788:17919" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="17936:18156" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="18162:18187" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-                <marker date="1500905718550" expanded="false" signature="18229:18434" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="18246:18433" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="18299:18423" ph="..." />
-                <marker date="1500905718550" expanded="false" signature="18477:18734" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="18494:18733" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="18548:18723" ph="..." />
-                <marker date="1500905718550" expanded="false" signature="18776:19015" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="18793:19014" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="18846:19004" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19050:19254" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19067:19253" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19118:19243" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19292:19746" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19301:19471" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19485:19728" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19512:19718" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19752:19774" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-                <marker date="1500905718550" expanded="true" signature="19797:19876" ph="..." />
-                <marker date="1500905718550" expanded="true" signature="19901:19956" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.vscode/.ropeproject/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="49">
-              <caret line="71" column="42" lean-forward="true" selection-start-line="71" selection-start-column="42" selection-end-line="71" selection-end-column="42" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -303,15 +107,15 @@
         <option value="$PROJECT_DIR$/tests/manual_tests/test_env.py" />
         <option value="$PROJECT_DIR$/modules/controller/forecastcontroller.py" />
         <option value="$PROJECT_DIR$/core/seriesutils.py" />
-        <option value="$PROJECT_DIR$/plugins/opsvm/opsclient.py" />
-        <option value="$PROJECT_DIR$/plugins/opsvm/opsvm.py" />
         <option value="$PROJECT_DIR$/tests/manual_tests/testapp.py" />
         <option value="$PROJECT_DIR$/plugins/haproxy/haproxyconfig.py" />
         <option value="$PROJECT_DIR$/modules/scale/controller.py" />
-        <option value="$PROJECT_DIR$/tests/manual_tests/plugins/test_opsvm.py" />
         <option value="$PROJECT_DIR$/modules/controller/monitorcontroller.py" />
         <option value="$PROJECT_DIR$/modules/controller/groupcontroller.py" />
         <option value="$PROJECT_DIR$/config.py" />
+        <option value="$PROJECT_DIR$/plugins/opsvm/opsvm.py" />
+        <option value="$PROJECT_DIR$/tests/manual_tests/plugins/test_opsvm.py" />
+        <option value="$PROJECT_DIR$/plugins/opsvm/opsclient.py" />
       </list>
     </option>
   </component>
@@ -395,6 +199,28 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="manual_tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="plugins" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="plugins" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -414,88 +240,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="opsvm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="haproxy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scale" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -793,7 +537,7 @@
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2747604" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290735" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3913738" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31948882" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24357034" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -858,11 +602,6 @@
           <url>file://$USER_HOME$/.virtualenvs/tensorflow/local/lib/python2.7/site-packages/pyhaproxy/render.py</url>
           <line>27</line>
           <option name="timeStamp" value="97" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/plugins/opsvm/opsvm.py</url>
-          <line>71</line>
-          <option name="timeStamp" value="159" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1072,7 +811,7 @@
         <state relative-caret-position="200">
           <caret line="49" column="0" lean-forward="false" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="false" />
             <marker date="1500802858482" expanded="true" signature="2470:2546" ph="SELECT value... metric" />
             <marker date="1500802858482" expanded="true" signature="2846:2950" ph="SELECT value... metric" />
             <marker date="1500802858482" expanded="true" signature="4700:4733" ph="SELECT value... missing_value" />
@@ -1148,7 +887,7 @@
         <state relative-caret-position="1334">
           <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#19#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1177,22 +916,6 @@
             <marker date="1500905750786" expanded="true" signature="329:375" ph="..." />
             <marker date="1500905750786" expanded="true" signature="952:987" ph="..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/opsvm/opsvm.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="89" column="36" lean-forward="false" selection-start-line="89" selection-start-column="30" selection-end-line="89" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/manual_tests/plugins/test_opsvm.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="41" column="13" lean-forward="true" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1249,14 +972,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/opsvm/opsclient.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="52">
-          <caret line="83" column="104" lean-forward="false" selection-start-line="83" selection-start-column="95" selection-end-line="83" selection-end-column="104" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/plugins/haproxy/haproxyconfig.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -1287,7 +1002,7 @@
         <state relative-caret-position="68">
           <caret line="137" column="27" lean-forward="true" selection-start-line="137" selection-start-column="27" selection-end-line="137" selection-end-column="27" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#19#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1346,8 +1061,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-14">
-          <caret line="74" column="36" lean-forward="true" selection-start-line="74" selection-start-column="36" selection-end-line="74" selection-end-column="36" />
+        <state relative-caret-position="147">
+          <caret line="81" column="36" lean-forward="true" selection-start-line="81" selection-start-column="36" selection-end-line="81" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/opsvm/opsclient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="116" column="36" lean-forward="false" selection-start-line="116" selection-start-column="36" selection-end-line="116" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/manual_tests/plugins/test_opsvm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="65" column="28" lean-forward="false" selection-start-line="65" selection-start-column="28" selection-end-line="65" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/opsvm/opsvm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="108" column="8" lean-forward="false" selection-start-line="108" selection-start-column="8" selection-end-line="108" selection-end-column="8" />
           <folding />
         </state>
       </provider>

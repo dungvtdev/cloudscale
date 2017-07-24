@@ -51,6 +51,9 @@ class OSClient(object):
         )
         return server
 
+    def _reboot(self, instance_id):
+        self.client.servers.reboot(instance_id)
+
     def create(self, image_id, flavor_id,
                network_id, name=None, user_data=None, **kargs):
         server = self.client.servers.create(
@@ -80,6 +83,23 @@ class OSClient(object):
 
         return True
 
+    def reboot_instance(self, instance_id, time_out, check_interval):
+        self._reboot(instance_id)
+        success = self._check_instance_booting(instance_id, time_out, check_interval)
+        return success
+
+    def _check_instance_booting(self, instance_id, timeout, check_interval):
+        while timeout >= 0:
+            time.sleep(check_interval)
+            timeout = timeout - check_interval
+            s_status = self._show(instance_id)
+            # print(vars(s_status))
+            if s_status.status == 'ACTIVE':
+                return True
+            elif s_status.status == 'ERROR':
+                return False
+        return False
+
     def create_new_instance(self, name, image_id, flavor_id, net_selfservice_id,
                             provider_name, user_data=None, time_out=None, check_interval=None, try_again=None):
         try_again = try_again or 0
@@ -94,21 +114,12 @@ class OSClient(object):
                                      name=name,
                                      user_data=user_data)
                 timeout = time_out or 20
-                success = False
-                while timeout >= 0:
-                    time.sleep(check_interval)
-                    timeout = timeout - check_interval
-                    s_status = self._show(server.id)
-                    # print(vars(s_status))
-                    if s_status.status == 'ACTIVE':
-                        success = True
-                        break
-                    elif s_status.status == 'ERROR':
-                        self.delete(server.id)
-                        break
+                success = self._check_instance_booting(server.id, timeout, check_interval)
 
                 if success:
                     break
+                else:
+                    self.delete(server.id)
 
             if not success:
                 raise Exception('Create vm fails')

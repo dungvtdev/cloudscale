@@ -23,6 +23,10 @@ class OpsVmService(DependencyModule):
     def remove_instances(self, instance_id):
         self.osclient.delete(instance_id)
 
+    def make_reboot_thread(self, data):
+        thrd = VmRebootThread(data, self.osclient)
+        return thrd
+
 
 
 class VmScaleBaseThread(threading.Thread):
@@ -48,7 +52,7 @@ class VmScaleBaseThread(threading.Thread):
 
 class VmCreaterThread(VmScaleBaseThread):
     CHECK_INTERVAL = 1
-    TIME_OUT = 30
+    TIME_OUT = 120
 
     def __init__(self, data, osclient):
         VmScaleBaseThread.__init__(self, data, osclient)
@@ -99,3 +103,21 @@ class VmDropThread(VmScaleBaseThread):
     def run(self):
         self.osclient.delete(self.data['instance_id'])
         self.save_state = 'success'
+
+
+class VmRebootThread(VmScaleBaseThread):
+    def __init__(self, data, osclient):
+        VmScaleBaseThread.__init__(self)
+        self.instance_id = data['instance_id']
+        self.osclient = osclient
+
+    def run(self):
+        self.save_state = 'processing'
+        try:
+            timeout = 120
+            interval = 1
+            success = self.osclient.reboot_instance(self.instance_id, timeout, interval)
+            self.save_state = 'success' if success else 'fail'
+        except Exception as e:
+            self.save_state = 'fail'
+            self.save_exception = e
