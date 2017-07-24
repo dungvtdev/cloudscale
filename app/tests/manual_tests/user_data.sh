@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt update
 sudo apt install python-falcon -y
 sudo apt install gunicorn -y
 
