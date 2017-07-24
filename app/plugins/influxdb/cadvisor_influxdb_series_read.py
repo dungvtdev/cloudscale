@@ -1,5 +1,6 @@
 import json
-import requests
+# import requests
+from core import requests_wrapper as requests
 
 from core import DependencyModule
 from core.exceptions import NotEnoughParams

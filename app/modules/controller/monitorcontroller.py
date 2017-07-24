@@ -1,6 +1,6 @@
 from core import seriesutils as su
 from core.exceptions import InstanceNotValid, ServiceIOException, BadInputParams
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, Timeout
 
 
 class MonitorController():
@@ -111,7 +111,7 @@ class MonitorController():
 
                 if is_finish:
                     break
-            except ConnectionError as e:
+            except (ConnectionError, Timeout) as e:
                 raise InstanceNotValid()
             except Exception as e:
                 if 'Got Data is None' in e.message:
@@ -146,7 +146,7 @@ class MonitorController():
             # print(last_time)
             self.write_cache_value('last_time', last_time)
             # self.cacher.write_value('last_time', last_time)
-        except ConnectionError as e:
+        except (ConnectionError, Timeout) as e:
             raise InstanceNotValid()
         except Exception as e:
             if 'Got Data is None' not in e.message:
@@ -229,7 +229,7 @@ class MonitorController():
 
                 if is_finish:
                     break
-            except ConnectionError as e:
+            except (ConnectionError, Timeout) as e:
                 raise InstanceNotValid()
             except Exception as e:
                 if 'Got Data is None' in e.message:
@@ -274,7 +274,7 @@ class MonitorController():
             # print(last_time)
             self.write_cache_value('last_time', last_time)
             # self.cacher.write_value('last_time', last_time)
-        except ConnectionError as e:
+        except (ConnectionError, Timeout) as e:
             raise InstanceNotValid()
         except Exception as e:
             if 'Got Data is None' not in e.message:
@@ -304,19 +304,19 @@ class MonitorController():
                   for i in range(len(series))]
         try:
             self.cacher.write(values)
-        except ConnectionError:
+        except (ConnectionError, Timeout):
             raise ServiceIOException()
 
     def write_cache_value(self, key, value):
         try:
             self.cacher.write_value(key, value)
-        except ConnectionError:
+        except (ConnectionError, Timeout):
             raise ServiceIOException()
 
     def read_cache_value(self, key):
         try:
             return self.cacher.read_value(key)
-        except ConnectionError:
+        except (ConnectionError, Timeout):
             raise ServiceIOException()
 
     def get_data_series(self):
@@ -380,5 +380,5 @@ class MonitorController():
 
                 return t, v
             return None, None
-        except ConnectionError as e:
+        except (ConnectionError, Timeout) as e:
             raise InstanceNotValid()

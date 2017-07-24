@@ -12,10 +12,10 @@ def mean_absolute_percentage_error(y_true, y_pred):
     return np.mean(np.abs((y_true - y_pred) / y_true))
 
 
-file_name = 'real.data.csv'
+file_name = 'cache_2.real.data.csv'
 real_data = pd.read_csv(file_name, header=None)[:400]
 
-file_name = 'predict.data.csv'
+file_name = 'cache_2.predict.data.csv'
 predict_data = pd.read_csv(file_name, header=None)[:400]
 
 mae = mean_absolute_error(real_data, predict_data)
