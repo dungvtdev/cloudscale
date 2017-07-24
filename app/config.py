@@ -91,7 +91,7 @@ SCALE = {
         'cpu_usage_total': {
             'controller': 'simple_scale',
             'config': {
-                'max_value': 0.5,
+                'max_value': 0.55,
                 'sum_length': 5,
             }
         }
