@@ -27,19 +27,19 @@
       <hashTree/>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-366539634">
+          <collectionProp name="1735772786">
             <stringProp name="54">6</stringProp>
             <stringProp name="0">0</stringProp>
             <stringProp name="1507423">1000</stringProp>
             <stringProp name="1507423">1000</stringProp>
             <stringProp name="51508">400</stringProp>
           </collectionProp>
-          <collectionProp name="1306703872">
-            <stringProp name="1602">24</stringProp>
-            <stringProp name="52469">500</stringProp>
-            <stringProp name="53430">600</stringProp>
-            <stringProp name="51508">400</stringProp>
-            <stringProp name="48625">100</stringProp>
+          <collectionProp name="1650679199">
+            <stringProp name="1600">22</stringProp>
+            <stringProp name="50547">300</stringProp>
+            <stringProp name="1509345">1200</stringProp>
+            <stringProp name="49586">200</stringProp>
+            <stringProp name="49586">200</stringProp>
           </collectionProp>
         </collectionProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
