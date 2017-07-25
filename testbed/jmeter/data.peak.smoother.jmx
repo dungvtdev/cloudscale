@@ -15,8 +15,8 @@
         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
           <collectionProp name="Arguments.arguments"/>
         </elementProp>
-        <stringProp name="HTTPSampler.domain">localhost</stringProp>
-        <stringProp name="HTTPSampler.port">8888</stringProp>
+        <stringProp name="HTTPSampler.domain">192.168.122.188</stringProp>
+        <stringProp name="HTTPSampler.port">8000</stringProp>
         <stringProp name="HTTPSampler.protocol"></stringProp>
         <stringProp name="HTTPSampler.contentEncoding"></stringProp>
         <stringProp name="HTTPSampler.path"></stringProp>
@@ -27,19 +27,19 @@
       <hashTree/>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-366539634">
+          <collectionProp name="1735772786">
             <stringProp name="54">6</stringProp>
             <stringProp name="0">0</stringProp>
             <stringProp name="1507423">1000</stringProp>
             <stringProp name="1507423">1000</stringProp>
             <stringProp name="51508">400</stringProp>
           </collectionProp>
-          <collectionProp name="1306703872">
-            <stringProp name="1602">24</stringProp>
-            <stringProp name="52469">500</stringProp>
-            <stringProp name="53430">600</stringProp>
-            <stringProp name="51508">400</stringProp>
-            <stringProp name="48625">100</stringProp>
+          <collectionProp name="1650679199">
+            <stringProp name="1600">22</stringProp>
+            <stringProp name="50547">300</stringProp>
+            <stringProp name="1509345">1200</stringProp>
+            <stringProp name="49586">200</stringProp>
+            <stringProp name="49586">200</stringProp>
           </collectionProp>
         </collectionProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -58,7 +58,7 @@
               <collectionProp name="Arguments.arguments">
                 <elementProp name="number" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">8000</stringProp>
+                  <stringProp name="Argument.value">10000</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">number</stringProp>
@@ -85,7 +85,7 @@
               <collectionProp name="Arguments.arguments">
                 <elementProp name="number" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">25000</stringProp>
+                  <stringProp name="Argument.value">40000</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">number</stringProp>
