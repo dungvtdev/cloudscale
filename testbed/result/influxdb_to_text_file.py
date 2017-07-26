@@ -18,7 +18,7 @@ def get_data(begin, end):
     payload = {
         'db': db_name,
         'q': q,
-        'epoch': 'm'
+        'epoch': 's'
     }
 
     r = requests.get(url, params=payload)
@@ -29,10 +29,10 @@ def get_data(begin, end):
 def convert_to_dataframe(values):
     df = pd.DataFrame(values)
     array = np.asarray(df[1])
-    time = pd.to_datetime(df[0], format='%Y-%m-%d %H:%M:%S')
+    time = pd.to_datetime(df[0] * 1000000000, format='%Y-%m-%d %H:%M:%S')
     convert = pd.DataFrame(array, index=time)
     return convert
-
+    #return df
 
 if __name__ == '__main__':
     begin = '2017-07-25 00:00:00'
