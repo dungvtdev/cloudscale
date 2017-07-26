@@ -57,12 +57,12 @@ if __name__ == '__main__':
     scale_up = next((it for it in data if it['tags']['result'] == 'scale_up'), None)
     scale_up = scale_up['values']
     scale_up_convert = convert_to_dataframe(scale_up)
-    scale_up_convert.index = scale_up_convert.index.shift(-4, freq='m')
+    scale_up_convert.index = scale_up_convert.index.shift(-4, freq='T')
 
     scale_down = next((it for it in data if it['tags']['result'] == 'scale_down'), None)
     scale_down = scale_down['values']
     scale_down_convert = convert_to_dataframe(scale_down)
-    scale_down_convert.index = scale_down_convert.index.shift(-4, freq='m')
+    scale_down_convert.index = scale_down_convert.index.shift(-4, freq='T')
     
     th = pd.concat([real_convert, predict_convert, scale_up_convert, scale_down_convert], axis=1)
     th.to_csv('data.result.csv', header=False)
