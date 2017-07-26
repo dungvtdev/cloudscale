@@ -4,7 +4,7 @@ import numpy as np
 import json
 
 endpoint = 'localhost:8086'
-db_name = 'cache_test_group_v1'
+db_name = 'cache_test_group_v3'
 
 
 def get_data(begin, end):
@@ -35,8 +35,8 @@ def convert_to_dataframe(values):
 
 
 if __name__ == '__main__':
-    begin = '2017-07-16 13:16:00'
-    end = '2017-07-19 13:59:00'
+    begin = '2017-07-25 00:00:00'
+    end = '2017-07-26 06:16:00'
 
     data = get_data(begin, end)
     data = json.loads(data)
@@ -57,11 +57,12 @@ if __name__ == '__main__':
     scale_up = next((it for it in data if it['tags']['result'] == 'scale_up'), None)
     scale_up = scale_up['values']
     scale_up_convert = convert_to_dataframe(scale_up)
+    scale_up_convert.index = scale_up_convert.index.shift(-4, freq='m')
 
     scale_down = next((it for it in data if it['tags']['result'] == 'scale_down'), None)
     scale_down = scale_down['values']
     scale_down_convert = convert_to_dataframe(scale_down)
-    scale_down_convert.index = scale_down_convert.index - 4
+    scale_down_convert.index = scale_down_convert.index.shift(-4, freq='m')
     
     th = pd.concat([real_convert, predict_convert, scale_up_convert, scale_down_convert], axis=1)
     th.to_csv('data.result.csv', header=False)
