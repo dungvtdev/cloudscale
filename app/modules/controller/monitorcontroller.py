@@ -320,6 +320,13 @@ class MonitorController():
             raise ServiceIOException()
 
     def get_data_series(self):
+        accum = self.get_data_values()
+        if accum:
+            ita = [[it[1] for it in a] for a in accum]
+            s = [su.interpolate_to_pandas_series(si) for si in ita]
+            return s
+
+    def get_data_values(self):
         # max_time_length = self.max_batch_size * self.interval_minute
         max_batch_size = 1000
         max_time_length = max_batch_size * self.interval_minute

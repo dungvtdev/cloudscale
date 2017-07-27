@@ -66,3 +66,9 @@ def force_positive(data):
         data[i] = 0
         i = i + 1
     return data
+
+
+def interpolate_to_pandas_series(list_data):
+    s = pd.Series(list_data)
+    s = s.interpolate()
+    return s
