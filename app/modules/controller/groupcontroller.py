@@ -404,8 +404,9 @@ class GroupController(threading.Thread):
                                    (self.logname, e.message))
 
             # self.thread_up_forcast_model =
-            delta = time.time() - t
-            time.sleep(max(interval * 60 - delta, 0))
+            # delta = time.time() - t
+            # time.sleep(max(interval * 60 - delta, 0))
+            time.sleep(interval * 60)
             # time.sleep(1)
             interval = self.interval_minute
 
