@@ -1,5 +1,5 @@
 from core import seriesutils as su
-from core.exceptions import InstanceNotValid, ServiceIOException, BadInputParams, ExtendServiceError
+from core.exceptions import InstanceNotValid, ServiceIOException, BadInputParams, DataFormatError
 from requests.exceptions import ConnectionError, Timeout
 
 
@@ -306,7 +306,7 @@ class MonitorController():
             self.cacher.write(values)
         except (ConnectionError, Timeout):
             raise ServiceIOException()
-        except ExtendServiceError:
+        except DataFormatError:
             self.logger.error('%s Write data series fail format' % self.logname)
 
     def write_cache_value(self, key, value):
@@ -314,7 +314,7 @@ class MonitorController():
             self.cacher.write_value(key, value)
         except (ConnectionError, Timeout):
             raise ServiceIOException()
-        except ExtendServiceError:
+        except DataFormatError:
             self.logger.error('%s Write cache value fail format' % self.logname)
 
     def cache_one(self, timestamp, value):
@@ -323,7 +323,7 @@ class MonitorController():
             self.cacher.write([(t, value), ])
         except (ConnectionError, Timeout):
             raise ServiceIOException()
-        except ExtendServiceError:
+        except DataFormatError:
             self.logger.error('%s Write cache value fail format' % self.logname)
 
     def read_cache_value(self, key):
@@ -331,7 +331,7 @@ class MonitorController():
             return self.cacher.read_value(key)
         except (ConnectionError, Timeout):
             raise ServiceIOException()
-        except ExtendServiceError:
+        except DataFormatError:
             self.logger.error('%s Get data value fail format' % self.logname)
 
     def get_data_series(self):
@@ -343,7 +343,7 @@ class MonitorController():
                 return s
         except (ConnectionError, Timeout):
             raise ServiceIOException()
-        except ExtendServiceError:
+        except DataFormatError:
             self.logger.error('%s Get data series fail format' % self.logname)
 
     def get_data_values(self):
@@ -400,25 +400,23 @@ class MonitorController():
                 t = values[-1][0]
                 t = t - t % self.interval_minute
                 v = sum(v[1] for v in values) / len(values)
-                # self.write_cache_value('last_time', t)
+
+            return t, v
         except (ConnectionError, Timeout) as e:
             raise InstanceNotValid()
-        except ExtendServiceError:
+        except DataFormatError:
             self.logger.error('%s Get last data fail format' % self.logname)
         finally:
             if t is None:
                 c_t = self.read_cache_value('last_time')
                 timestamp = c_t + self.interval_minute
                 value = 0
+                self.logger.info('%s Get new point fail, write fake value to cache, time %s m' %
+                                 (self.logname, timestamp))
             else:
                 timestamp = t
                 value = v
 
-            self.logger.info('%s Get new point fail, write fake value to cache, time %s m' %
-                                 (self.logname, timestamp))
             # write to database
             self.cache_one(timestamp, value)
             self.write_cache_value('last_time', timestamp)
-
-            # tra lai dung gia tri ban dau, timestamp chi la gia tri tam de write cache
-            return t, v

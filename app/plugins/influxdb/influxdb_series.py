@@ -2,7 +2,7 @@
 from core import requests_wrapper as requests
 
 from core import DependencyModule
-from core.exceptions import ExtendServiceError
+from core.exceptions import DataFormatError
 import json
 
 
@@ -69,7 +69,7 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
 
         if r.status_code != 204 and r.status_code != 200:
             # raise Exception(body.get("error", ""))
-            raise ExtendServiceError(r.text)
+            raise DataFormatError(r.text)
 
     def get_read_query(self, config, time_from, time_to, time_length):
         metric = config['metric']
@@ -112,10 +112,10 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
             try:
                 return body['results'][0]['series'][0]['values']
             except Exception as e:
-                raise ExtendServiceError('Data not correct form or null')
+                raise DataFormatError('Data not correct form or null')
         else:
             print(r)
-            raise ExtendServiceError(r.text)
+            raise DataFormatError(r.text)
 
     def read_value(self, config, tag):
         return self.read_write_value(config, 'read', tag)
@@ -150,7 +150,7 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
                 value = body['results'][0]['series'][0]['values'][0][1]
                 return value
             except Exception as e:
-                raise ExtendServiceError('Get error')
+                raise DataFormatError('Get error')
         else:
             tags_str = ','.join("%s=%s" % (k, v) for k, v in tags.items())
             tags_str = '%s,value_tag=%s' % (tags_str, tag)
@@ -162,7 +162,7 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
             r = requests.post(url, data=data)
             success = r.status_code == 200 or r.status_code == 204
             if not success:
-                raise ExtendServiceError('Error when write value')
+                raise DataFormatError('Error when write value')
 
 
 class SimpleInfluxdb():

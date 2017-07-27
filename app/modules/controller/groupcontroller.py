@@ -6,7 +6,7 @@ import numpy as np
 # from threading import Lock
 import time
 from core.exceptions import NotEnoughParams, ExistsException, \
-    InstanceNotValid, ServiceIOException, BadInputParams, ExtendServiceError
+    InstanceNotValid, ServiceIOException, BadInputParams, DataFormatError
 from . import MonitorController
 from . import ForecastCpuController
 from core.seriesutils import join_series
@@ -139,7 +139,7 @@ class GroupController(threading.Thread):
             if value is None:
                 return
             self.cache_predict.write([(timestamp, value)])
-        except ExtendServiceError as e:
+        except DataFormatError as e:
             self.log.error('Group %s cache predict value with error %s' % (self.logname, e))
 
     def cache_scale_value(self, type_cache, timestamp, value):
@@ -152,7 +152,7 @@ class GroupController(threading.Thread):
         }
         try:
             types[type_cache].write([(timestamp, value)])
-        except ExtendServiceError as e:
+        except DataFormatError as e:
             self.log.error('Group %s cache scale fail with error %s' % (self.logname, e))
 
     def clear(self):

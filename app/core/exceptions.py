@@ -27,7 +27,7 @@ class ParamsError(BaseWrapperException):
     __ex_name__ = "ParamsError"
 
 
-class ExtendServiceError(BaseWrapperException):
+class DataFormatError(BaseWrapperException):
     __ex_name__ = "ExtendServiceError"
 
 
