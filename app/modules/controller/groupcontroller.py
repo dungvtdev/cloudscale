@@ -1,6 +1,7 @@
 import thread
 import threading
 import copy
+import numpy as np
 
 # from threading import Lock
 import time
@@ -135,11 +136,16 @@ class GroupController(threading.Thread):
 
     def cache_predict_value(self, timestamp, value):
         try:
+            if value is None:
+                return
             self.cache_predict.write([(timestamp, value)])
         except ExtendServiceError as e:
             self.log.error('Group %s cache predict value with error %s' % (self.logname, e))
 
     def cache_scale_value(self, type_cache, timestamp, value):
+        if value is None:
+            return
+
         types = {
             'up': self.cache_scale_up,
             'down': self.cache_scale_down
@@ -302,11 +308,14 @@ class GroupController(threading.Thread):
                     'Group %s data periods = %s' % (self.logname, periods))
                 finish.append('success')
             except ServiceIOException as e:
+                finish.append(e)
                 raise e
             except InstanceNotValid as e:
+                # TODO check out here, tim ra neu influxdb_series read gap phai loi ConnectionError hoac timeout thi sao
+                finish.append(e)
                 raise e
             except Exception as e:
-                finish.append(e.message)
+                finish.append(e)
             finally:
                 self.log.debug('Group %s finish train with %s' %
                                (self.logname, finish))
@@ -347,6 +356,8 @@ class GroupController(threading.Thread):
 
         while self.is_running:
             need_update_model = False
+
+            t = time.time()
 
             if state == 'wait':
                 # truong hop dang doi model de train
@@ -393,7 +404,8 @@ class GroupController(threading.Thread):
                                    (self.logname, e.message))
 
             # self.thread_up_forcast_model =
-            time.sleep(interval * 60)
+            delta = time.time() - t
+            time.sleep(max(interval * 60 - delta, 0))
             # time.sleep(1)
             interval = self.interval_minute
 
@@ -423,7 +435,10 @@ class GroupController(threading.Thread):
                 self.forecast_model.add_last_point(value)
                 # khong them value None vao cache, value trong se duoc interpolate sau
                 if value is not None:
-                    pr = self.forecast_model.predict() or 0
+                    pr = self.forecast_model.predict()
+                    if np.isnan(pr):
+                        pr = None
+
                     self.log.debug('Group %s forecast value %s' %
                                    (self.logname, pr))
                     t = timestamp + self.interval_minute * \
@@ -452,14 +467,13 @@ class GroupController(threading.Thread):
         self.log.info('Group %s stop' % self.logname)
 
     def scale_decide(self, timestamp, value, pr):
-        type_scale = self.scalecontroller.add_point(value, pr)
-
         result = self.scalecontroller.receive()
         print(result)
+
         if result and result['is_finish']:
             if result['state'] == 'success':
                 # cache scale
-                self.cache_scale_value(result['type'], timestamp * 1000000000 * 60, pr or 0)
+                self.cache_scale_value(result['type'], timestamp * 1000000000 * 60, value)
 
                 if result['type'] == 'up':
                     # them vao danh sach
@@ -479,6 +493,8 @@ class GroupController(threading.Thread):
                               (self.logname, result['error'].message))
                 self.eventlog.write('group', 'Group %s scale %s vm fail'
                                     % (self.logname, result['type']))
+
+        type_scale = self.scalecontroller.add_point(value, pr)
 
         return type_scale
 

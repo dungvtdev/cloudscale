@@ -1,5 +1,5 @@
 from core import seriesutils as su
-from core.exceptions import InstanceNotValid, ServiceIOException, BadInputParams
+from core.exceptions import InstanceNotValid, ServiceIOException, BadInputParams, ExtendServiceError
 from requests.exceptions import ConnectionError, Timeout
 
 
@@ -306,25 +306,45 @@ class MonitorController():
             self.cacher.write(values)
         except (ConnectionError, Timeout):
             raise ServiceIOException()
+        except ExtendServiceError:
+            self.logger.error('%s Write data series fail format' % self.logname)
 
     def write_cache_value(self, key, value):
         try:
             self.cacher.write_value(key, value)
         except (ConnectionError, Timeout):
             raise ServiceIOException()
+        except ExtendServiceError:
+            self.logger.error('%s Write cache value fail format' % self.logname)
+
+    def cache_one(self, timestamp, value):
+        try:
+            t = timestamp * 1000000000 * 60
+            self.cacher.write([(t, value), ])
+        except (ConnectionError, Timeout):
+            raise ServiceIOException()
+        except ExtendServiceError:
+            self.logger.error('%s Write cache value fail format' % self.logname)
 
     def read_cache_value(self, key):
         try:
             return self.cacher.read_value(key)
         except (ConnectionError, Timeout):
             raise ServiceIOException()
+        except ExtendServiceError:
+            self.logger.error('%s Get data value fail format' % self.logname)
 
     def get_data_series(self):
-        accum = self.get_data_values()
-        if accum:
-            ita = [[it[1] for it in a] for a in accum]
-            s = [su.interpolate_to_pandas_series(si) for si in ita]
-            return s
+        try:
+            accum = self.get_data_values()
+            if accum:
+                ita = [[it[1] for it in a] for a in accum]
+                s = [su.force_exceed_zero(si) for si in ita]
+                return s
+        except (ConnectionError, Timeout):
+            raise ServiceIOException()
+        except ExtendServiceError:
+            self.logger.error('%s Get data series fail format' % self.logname)
 
     def get_data_values(self):
         # max_time_length = self.max_batch_size * self.interval_minute
@@ -372,20 +392,32 @@ class MonitorController():
 
     def get_last_one(self):
         try:
+            t = None
+            v = None
+            raise ConnectionError()
             values = self.reader.read(time_length=self.interval_minute)
             if values:
                 self.data_total = self.data_total + 1
                 t = values[-1][0]
                 t = t - t % self.interval_minute
                 v = sum(v[1] for v in values) / len(values)
-
-                # write to database
-                t_ns = t * 1000000000 * 60
-                self.cacher.write([(t_ns, v), ])
-
-                self.write_cache_value('last_time', t)
-
-                return t, v
-            return None, None
+                # self.write_cache_value('last_time', t)
         except (ConnectionError, Timeout) as e:
             raise InstanceNotValid()
+        except ExtendServiceError:
+            self.logger.error('%s Get last data fail format' % self.logname)
+        finally:
+            if t is None:
+                c_t = self.read_cache_value('last_time')
+                t = c_t + self.interval_minute
+                v = 0
+                self.logger.info('%s Get new point fail, write fake value to cache, time %s m' %
+                                 (self.logname, t))
+                # write to database
+                self.cache_one(t, v)
+
+                return None, None
+            else:
+                # write to database
+                self.cache_one(t, v)
+                return t, v

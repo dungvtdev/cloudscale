@@ -68,6 +68,18 @@ def force_positive(data):
     return data
 
 
+def force_exceed_zero(data):
+    if isinstance(data, list):
+        data = pd.Series(data)
+    data[(data <= 0)] = np.nan
+    data = data.interpolate()
+    i = 0
+    while np.isnan(data[i]):
+        data[i] = 0
+        i = i + 1
+    return data
+
+
 def interpolate_to_pandas_series(list_data):
     s = pd.Series(list_data)
     s = s.interpolate()

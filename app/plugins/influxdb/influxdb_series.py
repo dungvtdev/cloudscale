@@ -114,6 +114,7 @@ class SimpleInfluxdbService(InfluxdbDriverBase):
             except Exception as e:
                 raise ExtendServiceError('Data not correct form or null')
         else:
+            print(r)
             raise ExtendServiceError(r.text)
 
     def read_value(self, config, tag):
