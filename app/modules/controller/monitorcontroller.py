@@ -394,7 +394,6 @@ class MonitorController():
         try:
             t = None
             v = None
-            raise ConnectionError()
             values = self.reader.read(time_length=self.interval_minute)
             if values:
                 self.data_total = self.data_total + 1
@@ -409,15 +408,17 @@ class MonitorController():
         finally:
             if t is None:
                 c_t = self.read_cache_value('last_time')
-                t = c_t + self.interval_minute
-                v = 0
-                self.logger.info('%s Get new point fail, write fake value to cache, time %s m' %
-                                 (self.logname, t))
-                # write to database
-                self.cache_one(t, v)
-
-                return None, None
+                timestamp = c_t + self.interval_minute
+                value = 0
             else:
-                # write to database
-                self.cache_one(t, v)
-                return t, v
+                timestamp = t
+                value = v
+
+            self.logger.info('%s Get new point fail, write fake value to cache, time %s m' %
+                                 (self.logname, timestamp))
+            # write to database
+            self.cache_one(timestamp, value)
+            self.write_cache_value('last_time', timestamp)
+
+            # tra lai dung gia tri ban dau, timestamp chi la gia tri tam de write cache
+            return t, v
