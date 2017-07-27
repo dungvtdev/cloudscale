@@ -459,7 +459,7 @@ class GroupController(threading.Thread):
         if result and result['is_finish']:
             if result['state'] == 'success':
                 # cache scale
-                self.cache_scale_value(result['type'], timestamp * 1000000000 * 60, pr)
+                self.cache_scale_value(result['type'], timestamp * 1000000000 * 60, pr or 0)
 
                 if result['type'] == 'up':
                     # them vao danh sach
