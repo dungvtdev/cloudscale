@@ -1,0 +1,37 @@
+thu nghiem 2_4
+mae [0.044132706094833329, 0.028016335338679168, 0.026196599160478985]
+rmses [0.07241640257936337, 0.043135580544410475, 0.036910865629101244]
+mapes [0.13907103468080256, 0.086937450542471914, 0.097798730537506914]
+
+2017-07-27 22:15:02,966|group|Group test_group_v3_2_4 startup.
+2017-07-27 22:23:33,548|group|Group test_group_v3_2_4 detect scale up in 0.530434532085 value, next value 0.603251
+2017-07-27 22:25:33,787|group|Group test_group_v3_2_4 scale up success with vm 9571176c-395c-4f06-9574-316a044ae329
+2017-07-28 01:55:56,995|group|Group test_group_v3_2_4 detect scale down in 0.187437085242 value, next value 0.218696
+2017-07-28 01:57:57,217|group|Group test_group_v3_2_4 scale down success with vm 9571176c-395c-4f06-9574-316a044ae329
+2017-07-28 04:10:09,878|group|Group test_group_v3_2_4 detect scale up in 0.560775036459 value, next value 0.555834
+2017-07-28 04:12:10,108|group|Group test_group_v3_2_4 scale up success with vm d765e2c7-1524-404a-9240-845c21640c44
+2017-07-28 09:16:42,125|group|Group test_group_v3_2_4 detect scale down in 0.204474199519 value, next value 0.209538
+2017-07-28 09:18:42,334|group|Group test_group_v3_2_4 scale down success with vm d765e2c7-1524-404a-9240-845c21640c44
+2017-07-28 10:38:50,193|group|Group test_group_v3_2_4 detect scale up in 0.621239427179 value, next value 0.567302
+2017-07-28 10:40:50,441|group|Group test_group_v3_2_4 scale up success with vm 2db5e7cf-a608-4f75-b033-21af595843aa
+2017-07-28 11:00:52,425|group|Group test_group_v3_2_4 detect scale down in 0.144948230233 value, next value 0.135028
+2017-07-28 11:02:52,610|group|Group test_group_v3_2_4 scale down success with vm 2db5e7cf-a608-4f75-b033-21af595843aa
+2017-07-28 12:25:00,634|group|Group test_group_v3_2_4 detect scale up in 0.550086988867 value, next value 0.556884
+2017-07-28 12:27:00,845|group|Group test_group_v3_2_4 scale up success with vm 3eeda649-ca98-49e6-8148-9e23093402cd
+2017-07-28 17:13:30,845|group|Group test_group_v3_2_4 detect scale down in 0.196544453289 value, next value 0.226255
+2017-07-28 17:15:31,096|group|Group test_group_v3_2_4 scale down success with vm 3eeda649-ca98-49e6-8148-9e23093402cd
+2017-07-28 18:41:40,325|group|Group test_group_v3_2_4 detect scale up in 0.691480386024 value, next value 0.551197
+2017-07-28 18:43:40,504|group|Group test_group_v3_2_4 scale up success with vm 24a1e159-bc35-44c5-89ea-b6a1f4437443
+2017-07-28 19:01:42,392|group|Group test_group_v3_2_4 detect scale down in 0.148634400776 value, next value 0.217613
+2017-07-28 19:03:42,615|group|Group test_group_v3_2_4 scale down success with vm 24a1e159-bc35-44c5-89ea-b6a1f4437443
+2017-07-28 20:27:51,300|group|Group test_group_v3_2_4 detect scale up in 0.600309219959 value, next value 0.572176
+2017-07-28 20:29:51,525|group|Group test_group_v3_2_4 scale up success with vm ebc45835-d9ee-415b-aee7-e742aa80c5d4
+2017-07-29 01:18:42,164|group|Group test_group_v3_2_4 detect scale down in 0.195193476987 value, next value 0.193307
+2017-07-29 01:20:42,366|group|Group test_group_v3_2_4 scale down success with vm ebc45835-d9ee-415b-aee7-e742aa80c5d4
+2017-07-29 02:38:49,747|group|Group test_group_v3_2_4 detect scale up in 0.588057098495 value, next value 0.595086
+2017-07-29 02:40:49,968|group|Group test_group_v3_2_4 scale up success with vm d4cb9968-9acb-4452-8d9e-7a27f96d5601
+2017-07-29 03:00:52,063|group|Group test_group_v3_2_4 detect scale down in 0.152877520773 value, next value 0.149203
+2017-07-29 03:02:52,253|group|Group test_group_v3_2_4 scale down success with vm d4cb9968-9acb-4452-8d9e-7a27f96d5601
+2017-07-29 04:10:58,569|group|Group test_group_v3_2_4 detect scale up in 0.613457024151 value, next value 0.576135
+2017-07-29 04:12:58,816|group|Group test_group_v3_2_4 scale up success with vm 0231bd94-f7cd-487a-8c17-d98507e79d47
+2017-07-29 09:23:33,235|group|Group test_group_v3_2_4 detect scale down in 0.207010948948 value, next value 0.227342
