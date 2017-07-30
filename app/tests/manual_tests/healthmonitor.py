@@ -32,7 +32,7 @@ def start_healthcheck(group_dict, app):
                 state = app.healthcheck.reboot_server(vm)
                 if state == 'fail':
                     # thu reboot lai ngay neu fail
-                    app.healthcheck.reboot_server(vm)
+                    # app.healthcheck.reboot_server(vm)
                     log('fail to reboot monitor vm, retry')
                 else:
                     log('reboot monitor vm state %s' % state)
