@@ -3,10 +3,10 @@ from plugins.forecast import SimpleFeeder
 import pandas as pd
 import os
 
-data = range(1, 100)
+data = pd.Series(range(1, 100))
 k = 1
 m = 1
-T = 10
+T = 0
 p = 4
 
 base_path = os.path.dirname(__file__)

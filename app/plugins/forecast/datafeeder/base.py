@@ -19,6 +19,9 @@ class BaseFeeder():
         self.n_periodic = n_periodic
         self.period = period
 
+        if self.period == 0:
+            self.n_periodic = 0
+
     # def preprocess_data(self, data):
     #     raise NotImplementedError('Feeder need implement preprocess_data')
 
@@ -68,7 +71,7 @@ class BaseFeeder():
             for p in range(0, self.n_input):
                 temp.append(raw_data[t - p])
             for m in range(1, self.n_periodic + 1):
-                pval = raw_data[t - m * self.period + k]
+                pval = raw_data[t - self.n_periodic * self.period + k]
                 temp.append(pval)
             training.append(temp)
         return training
