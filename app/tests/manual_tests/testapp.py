@@ -13,7 +13,7 @@ with open(os.path.join(file_path, 'user_data.sh'), 'r') as f:
     user_data = f.read()
 
 group_dict = {
-    'name': 'testvm',
+    'name': 'testvm_local_2_4',
     'user_id': '',
     'image': 'd0111621-ab84-47c3-9f4c-ebae9a8e8c91',
     'flavor': 'b6f1a774-a56c-47ec-b43c-ed67babe5da7',
@@ -30,7 +30,7 @@ group_dict = {
     'metric': 'cpu_usage_total',
     'max_scale_vm': 1
 }
-# app.controller.create_group(group_dict)
+app.controller.create_group(group_dict)
 
-from tests.manual_tests import test_env
-test_env.check_all(app, group_dict)
+#from tests.manual_tests import test_env
+#test_env.check_all(app, group_dict)

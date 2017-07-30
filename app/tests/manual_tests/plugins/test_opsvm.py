@@ -62,7 +62,7 @@ def test_create():
 
 
 def test_reboot():
-    instance_id = '3a2c205d-bfb3-4009-ada4-dfc2ae8ef2a4'
+    instance_id = 'a202fc26-90e0-410e-89e9-04841676e773'
     thrd = ops.make_reboot_thread({'instance_id': instance_id})
     thrd.start()
     thrd.join()

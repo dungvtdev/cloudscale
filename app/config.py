@@ -12,19 +12,19 @@ DB_PATH = 'sqlite:///db.sqlite'
 DEFAULT_PARAMS = {
     "pdgabp": {
         # tinh theo chu ky 1 lan lay du lieu (interval_minute)
-        "data_length": 100,
+        "data_length": 120,
         "update_in_time": 120,  # tinh nhu tren
         "neural_size": 15,
         "recent_point": 4,
         "periodic_number": 1,
-        "predict_length": 1,
+        "predict_length": 2,
         'cross_rate': 0.5,
         'mutation_rate': 0.04,
         'pop_size': 50
     },
     "monitor": {
         # "db_name": "cadvisor",
-        'interval_minute': 4,
+        'interval_minute': 2,
         "metric": "cpu_usage_total"
     },
     "scale": {
@@ -50,7 +50,7 @@ OPS_ACCOUNT = {
 }
 
 MONITOR = {
-    'max_batch_size': 10000,
+    'max_batch_size': 30000,
     'max_fault_point': 10,
     'read_plugin': {
         'plugin': 'cadvisor_influxdb_series_read',
@@ -70,7 +70,7 @@ MONITOR = {
 
 FORECAST = {
     'threshold': 0.1,
-    'fs': 360,
+    'fs': 720,
     'predict_plugin': 'predictplugin',
     'feeder_plugin': 'feederplugin',
 }
