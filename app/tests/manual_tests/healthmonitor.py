@@ -8,6 +8,7 @@ filelog = os.path.join(basepath, 'health.log')
 
 
 def log(msg):
+    print(msg)
     with open(filelog, 'a') as f:
         f.write('%s\n' % msg)
 
@@ -15,8 +16,12 @@ def log(msg):
 def start_healthcheck(group_dict, app):
     vm = group_dict['instances'][0]
     print('start_health check')
+    n_interval = 15
+    warm_up = 240
     while True:
+        interval = n_interval
         # ping influxsrv
+
         url = 'http://%s:8086/ping' % vm['endpoint']
         need_reboot = False
         try:
@@ -34,9 +39,10 @@ def start_healthcheck(group_dict, app):
                     # thu reboot lai ngay neu fail
                     # app.healthcheck.reboot_server(vm)
                     log('fail to reboot monitor vm, retry')
-                else:
+                elif state == 'success':
+                    interval = warm_up
                     log('reboot monitor vm state %s' % state)
             except Exception as e:
                 log('fail to reboot monitor vm %s' % e)
 
-        time.sleep(15)
+        time.sleep(interval)
