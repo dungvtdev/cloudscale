@@ -59,7 +59,7 @@ class BaseFeeder():
             data = pd.DataFrame(data)[0]
 
         input_train = self.get_train_data(data, k=k)[0]
-        input_train = su.normalize(input_train, dmin, dmax)
+        input_train, _, _ = su.normalize(input_train, dmin, dmax)
         return np.asarray(input_train)
 
     def get_train_data(self, raw_data, output_train=None, k=None):

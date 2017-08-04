@@ -16,6 +16,11 @@ def join_series(series_list):
 
 
 def normalize(data, dmin=None, dmax=None):
+    if isinstance(data, list):
+        data = pd.DataFrame(data)[0]
+    elif isinstance(data, np.ndarray):
+        data = pd.DataFrame(data)[0]
+
     dmin = data.min() if dmin is None else dmin
     dmax = data.max() if dmax is None else dmax
     return (data - dmin) / (dmax - dmin), dmin, dmax

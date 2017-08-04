@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from core.seriesutils import clamp01
 
+
 # def clamp01(data):
 #     data[(data > 1) | (data < 0)] = np.nan
 #     data = data.interpolate()
@@ -30,6 +31,8 @@ class ForecastControllerBase(object):
         self.feeder = None
         self.datacache = None
         self.app = app
+
+        self.dmin = self.dmax = None
 
     def train(self, data):
         if isinstance(data, list):
@@ -77,7 +80,7 @@ class ForecastControllerBase(object):
         self.predictor = self.predict_plugin.create(**pd)
 
         # train data
-        in_train, out_train = self.feeder.generate(data, predict_length)
+        in_train, out_train, self.dmin, self.dmax = self.feeder.generate(data, predict_length)
         self.predictor.train(in_train, out_train)
 
         # cache lai data
@@ -96,7 +99,7 @@ class ForecastControllerBase(object):
         predict_length = self.config['predict_length']
         data = self.datacache.get_valid_data()
         if data is not None:
-            out = self.feeder.generate_train_one(data, predict_length)
+            out = self.feeder.generate_train_one(data, predict_length, dmin=0, dmax=1)
             pr = self.predictor.predict_one(out)
             return pr
 
