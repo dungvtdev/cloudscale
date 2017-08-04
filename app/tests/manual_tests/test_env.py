@@ -98,7 +98,7 @@ def check_cache(app, group_data):
 
 
 def check_all(app, group_data):
-    # check_vm(app, group_data)
+    check_vm(app, group_data)
     check_haproxy(app)
-    # check_cache(app, group_data)
-    # check_ops(app, group_data)
+    check_cache(app, group_data)
+    check_ops(app, group_data)
