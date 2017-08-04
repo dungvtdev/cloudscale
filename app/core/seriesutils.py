@@ -15,6 +15,12 @@ def join_series(series_list):
     return s
 
 
+def normalize(data, dmin=None, dmax=None):
+    dmin = data.min() if dmin is None else dmin
+    dmax = data.max() if dmax is None else dmax
+    return (data - dmin) / (dmax - dmin), dmin, dmax
+
+
 def minutevaluepair_to_pdseries(timevalues):
     df = timevalues if isinstance(timevalues, pd.DataFrame) \
         else pd.DataFrame(timevalues)

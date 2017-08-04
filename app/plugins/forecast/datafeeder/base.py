@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from core import seriesutils as su
 
 """
 ** generate function
@@ -13,6 +14,7 @@ import numpy as np
 class BaseFeeder():
     def __init__(self, **kwargs):
         self.setup(**kwargs)
+        self.last_dmin = self.last_dmax = None
 
     def setup(self, n_input=None, n_periodic=None, period=None):
         self.n_input = n_input
@@ -22,10 +24,7 @@ class BaseFeeder():
         if self.period == 0:
             self.n_periodic = 0
 
-    # def preprocess_data(self, data):
-    #     raise NotImplementedError('Feeder need implement preprocess_data')
-
-    def generate(self, data, k=None):
+    def generate(self, data, k=None, dmin=None, dmax=None):
         # data = self.preprocess_data(data)
 
         if isinstance(data, list):
@@ -33,6 +32,11 @@ class BaseFeeder():
         elif isinstance(data, np.ndarray):
             data = pd.DataFrame(data)[0]
 
+        data, dmin, dmax = su.normalize(data, dmin=dmin, dmax=dmax)
+
+        check = pd.DataFrame(data)
+        check[check > 1] = np.nan
+        print('Is > 1 %s' % check.isnull().any())
         # calc output train range
         # t_start = max(m.T - k, p - 1)
         # o_start = t_start + k
@@ -43,14 +47,19 @@ class BaseFeeder():
         o_start = t_start + k
         o_end = len(data) - k - 1
         output_train = data[o_start:o_end + 1]
-        input_train = self.get_train_data(data, output_train=output_train, k=k)
-        return np.asarray(input_train), np.asarray(output_train)
 
-    def generate_train_one(self, data, k=0):
+        input_train = self.get_train_data(data, output_train=output_train, k=k)
+
+        # output_train = self.normalize(output_train)
+
+        return np.asarray(input_train), np.asarray(output_train), dmin, dmax
+
+    def generate_train_one(self, data, k=0, dmin=None, dmax=None):
         if isinstance(data, list):
             data = pd.DataFrame(data)[0]
 
         input_train = self.get_train_data(data, k=k)[0]
+        input_train = su.normalize(input_train, dmin, dmax)
         return np.asarray(input_train)
 
     def get_train_data(self, raw_data, output_train=None, k=None):

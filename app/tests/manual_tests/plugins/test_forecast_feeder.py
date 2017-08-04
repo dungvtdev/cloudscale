@@ -4,6 +4,7 @@ import pandas as pd
 import os
 
 data = pd.Series(range(1, 100))
+data = data[10:]
 k = 1
 m = 1
 T = 0

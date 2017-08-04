@@ -38,7 +38,7 @@ class HAProxyCtrl(DependencyModule):
             backend.servers().append(config.Server(sname, endpoint_addr, endpoint_port, ['check', ]))
 
         cfg_render = Render(configuration)
-        # cfg_render.dumps_to(self.cf_path)
+        cfg_render.dumps_to(self.cf_path)
 
         HAProxyCtrl.restart_service()
 
@@ -72,7 +72,7 @@ class HAProxyCtrl(DependencyModule):
                 configuration.frontends.remove(frontend)
 
         cfg_render = Render(configuration)
-        # cfg_render.dumps_to(self.cf_path)
+        cfg_render.dumps_to(self.cf_path)
 
         HAProxyCtrl.restart_service()
 

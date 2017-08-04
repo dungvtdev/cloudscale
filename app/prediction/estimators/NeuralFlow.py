@@ -4,7 +4,7 @@ import tensorflow as tf
 from sklearn.base import BaseEstimator
 from sklearn.metrics import mean_squared_error
 
-from ..experiments.initializer import *
+from prediction.experiments.initializer import *
 
 
 class NeuralFlowRegressor(BaseEstimator):

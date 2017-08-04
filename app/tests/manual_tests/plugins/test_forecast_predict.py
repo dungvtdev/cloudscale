@@ -1,6 +1,7 @@
 import setup_test
 from plugins.forecast import SimpleFeeder, Predictor
 import pandas as pd
+import numpy as np
 import os
 from tests.manual_tests.utils.GraphUtil import plot_figure
 from sklearn.metrics import mean_absolute_error
@@ -10,7 +11,7 @@ base_path = os.path.dirname(__file__)
 
 def test_simple():
     k = 3
-    m = 1
+    m = 0
     T = 10
     p = 4
     feeder = SimpleFeeder(n_input=p, n_periodic=m, period=T)
@@ -34,9 +35,11 @@ def test_simple():
 
 
 def test_data():
-    k = 1
+    # np.random.seed(7)
+
+    k = 2
     m = 0
-    T = 0
+    T = 144
     p = 4
     feeder = SimpleFeeder(n_input=p, n_periodic=m, period=T)
     d = {
@@ -49,18 +52,26 @@ def test_data():
     path = os.path.join(base_path, '10min_workload.csv')
     data = pd.read_csv(path, header=None)
     data = data[0]
-    dmin = data.min()
-    dmax = data.max()
-    data = (data - dmin) / (dmax - dmin)
 
-    train = data[142 * 39:142 * 46]
-    test = data[142 * 46:142 * 48]
+    train = data[142 * 45:142 * 52]
+    print(train.min())
+    print(train.max())
+    test = data[142 * 53:142 * 55]
+    print(test.min())
+    print(test.max())
 
-    in_train, out_train = feeder.generate(train, k)
-    in_test, out_test = feeder.generate(test, k)
+    dtmin, dtmax = 0, 1796037
+    in_train, out_train, dmin, dmax = feeder.generate(train, k=k, dmin=dtmin, dmax=dtmax)
+    in_test, out_test, dtmin, dtmax = feeder.generate(test, k=k, dmin=dtmin, dmax=dtmax)
 
-    predictor.train(in_train, out_train)
+    # print(dtmin == dmin and dtmax == dmax)
+
+    out_test = out_test * (dtmax - dtmin) + dtmin
+
+    predictor.train(in_train, out_train, dmin, dmax)
     out_pred = predictor.predict_test(in_test)
+
+    out_pred = out_pred * (dtmax - dtmin) + dtmin
 
     mae = mean_absolute_error(out_test, out_pred)
     print(mae)
@@ -70,17 +81,16 @@ def test_data():
             max_fail = out_test[i] - out_pred[i]
     print(max_fail)
 
-    out_test = out_test * (dmax - dmin) + dmin
-    out_pred = out_pred * (dmax - dmin) + dmin
+    print(mean_absolute_error(out_test, out_pred))
 
     plot_figure(out_pred, out_test)
 
 
-test_data()
+# test_data()
 
 
 def test_data2():
-    k = 2
+    k = 1
     m = 0
     T = 0
     p = 4
@@ -104,11 +114,11 @@ def test_data2():
 
     # train = data[142 * 39:142 * 46]
     # test = data[142 * 45:142 * 48]
-    train = data[20:4200]
-    test = data[4200:4500]
+    train = data[20:4800]
+    test = data[5000:5200]
 
-    in_train, out_train = feeder.generate(train, k)
-    in_test, out_test = feeder.generate(test, k)
+    in_train, out_train, dmin, dmax = feeder.generate(train, k)
+    in_test, out_test, dmin, dmax = feeder.generate(test, k, 0, 1)
 
     predictor.train(in_train, out_train)
     out_pred = predictor.predict_test(in_test)
@@ -118,4 +128,5 @@ def test_data2():
 
     plot_figure(out_pred, out_test)
 
-# test_data2()
+
+test_data2()
