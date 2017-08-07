@@ -19,6 +19,7 @@ if __name__ == '__main__':
     ax = plt.subplot()
 
     file_name = 'data.v3_2_4.result.csv'
+    # file_name = 'data.result.csv'
 
     data = pd.read_csv(file_name, header=None)
 
@@ -52,9 +53,9 @@ if __name__ == '__main__':
     ax.plot(real_data.index, real_data, c='red', zorder=1, label='Real')
     ax.plot(predict_data.index, predict_data, '--',
             c='blue', zorder=2, label='predict')
-    ax.scatter(scale_up.index, scale_up, c='black',
+    ax.scatter(scale_up.index, scale_up, c='black', s=100,
                marker="o", zorder=3, label='scalue_up')
-    ax.scatter(scale_down.index, scale_down, c='black',
+    ax.scatter(scale_down.index, scale_down, c='black', s=100,
                marker="v", zorder=4, label='scalue_up')
 
     plt.show()

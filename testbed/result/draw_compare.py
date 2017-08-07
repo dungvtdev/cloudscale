@@ -1,5 +1,7 @@
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.ticker import MaxNLocator
+
 import numpy as np
 
 
@@ -17,8 +19,10 @@ if __name__ == '__main__':
     mape_1 = pd.Series([0.1135399, 0.0983195, 0.0897212])
     mape_2 = pd.Series([0.1390710, 0.0869374, 0.0977987])
 
-    d1 = mape_1
-    d2 = mape_2
+    d1 = rmse_1
+    d2 = rmse_2
+
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     ax.plot(d1.index, d1, c='red', zorder=1, label='thunghiem1')
     ax.plot(d2.index, d2, '--',
