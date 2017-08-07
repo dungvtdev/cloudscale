@@ -18,17 +18,17 @@ def mean_absolute_percentage_error(y_true, y_pred):
 if __name__ == '__main__':
     ax = plt.subplot()
 
-    file_name = 'data.v3_2_4.result.csv'
-    # file_name = 'data.result.csv'
+    # file_name = 'data.v3_2_4.result.csv'
+    file_name = 'data.result.csv'
 
     data = pd.read_csv(file_name, header=None)
 
     time = pd.to_datetime(data[0], format='%Y-%m-%d %H:%M:%S')
 
     real_data = pd.Series(np.asarray(data[1]), index=time)
-    real_data = real_data.interpolate()
+    real_data = real_data.interpolate()[:360]
     predict_data = pd.Series(np.asarray(data[2]), index=time)
-    predict_data = predict_data.interpolate()
+    predict_data = predict_data.interpolate()[:360]
     scale_up = pd.Series(np.asarray(data[3]), index=time)
     scale_down = pd.Series(np.asarray(data[4]), index=time)
 
