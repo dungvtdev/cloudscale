@@ -80,7 +80,7 @@ class ForecastControllerBase(object):
         self.predictor = self.predict_plugin.create(**pd)
 
         # train data
-        in_train, out_train, self.dmin, self.dmax = self.feeder.generate(data, predict_length)
+        in_train, out_train, self.dmin, self.dmax = self.feeder.generate(data, predict_length, 0, 1)
         self.predictor.train(in_train, out_train)
 
         # cache lai data
