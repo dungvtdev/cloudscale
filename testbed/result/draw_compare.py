@@ -19,13 +19,19 @@ if __name__ == '__main__':
     mape_1 = pd.Series([0.1135399, 0.0983195, 0.0897212])
     mape_2 = pd.Series([0.1390710, 0.0869374, 0.0977987])
 
-    d1 = rmse_1
-    d2 = rmse_2
+    # d1 = rmse_1
+    # d2 = rmse_2
+    d1 = mae_1
+    d2 = mae_2
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     ax.plot(d1.index, d1, c='red', zorder=1, label='thunghiem1')
     ax.plot(d2.index, d2, '--',
             c='blue', zorder=2, label='thunghiem2')
+    ax.legend()
+    plt.xlabel('Update times')
+    plt.ylabel('MAE')
+    
 
     plt.show()
