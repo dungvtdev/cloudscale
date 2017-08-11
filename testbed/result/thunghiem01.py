@@ -19,8 +19,8 @@ def mean_absolute_percentage_error(y_true, y_pred):
 if __name__ == '__main__':
     fig, ax = plt.subplots()
 
-    # file_name = 'data.v3_2_4.result.csv'
-    file_name = 'data.result.csv'
+    file_name = 'data.v3_2_4.result.csv'
+    # file_name = 'data.result.csv'
 
     data = pd.read_csv(file_name, header=None)
 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     scale_up = pd.Series(np.asarray(data[3]), index=time)
     scale_down = pd.Series(np.asarray(data[4]), index=time)
 
-    n = 120
+    n = 240
     total = real_data.shape[0]
     print(total)
     maes = []
@@ -63,6 +63,12 @@ if __name__ == '__main__':
         if not np.isnan(scale_down[i]):
             scale_down[i] = real_data[i]
 
+    s = 480
+    e = 720
+    real_data = real_data[s:e]
+    predict_data = predict_data[s:e]
+    scale_up = scale_up[s:e]
+    scale_down = scale_down[s:e]
 
     ax.plot(real_data.index, real_data, c='red', zorder=1, label='Real')
     ax.plot(predict_data.index, predict_data, '--',
@@ -74,6 +80,7 @@ if __name__ == '__main__':
 
     myFmt = mdates.DateFormatter('%H:%M %d/%m')
     ax.xaxis.set_major_formatter(myFmt)
+    ax.set_xticks(ax.get_xticks()[::2])
     ax.legend()
     plt.xlabel('Time')
     plt.ylabel('% CPU / 100')

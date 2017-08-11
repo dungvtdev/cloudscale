@@ -47,12 +47,12 @@ def period_detect(series, fs=1440, threshold=0.2, periodogram_candiate=8, max_er
     plt.scatter(period_candidate, period_candidate_pxx)
     for a,b in zip(period_candidate, period_candidate_pxx):
         plt.text(a, b, str('  p=%0.2f' % a))
-    plt.show()
+    # plt.show()
     # plt.semilogy(period_candidate, period_candidate_pxx)
     # # plt.semilogy(f, Pxx_den)
     # plt.xlabel('frequency [Hz]')
     # plt.ylabel('PSD [V**2/Hz]')
-    # plt.show()
+    plt.show()
 
     t = {
         'period': period_candidate,
@@ -147,7 +147,7 @@ def period_detect(series, fs=1440, threshold=0.2, periodogram_candiate=8, max_er
                 final_all_period.append(final_period + begin_frame)
     return [x * 1.0 / fs for x in final_all_period]
 
-filename = 'data.result.tn.02.csv'
+filename = 'data.result.tn.03.csv'
 
 data = pd.read_csv(filename, header=None)
 
@@ -157,10 +157,11 @@ data = pd.read_csv(filename, header=None)
 real = pd.Series(np.asarray(data[1]))
 real = real.interpolate()
 # real = real[:1600]
-real = real[:5140]
+# real = real[:5140]
+real = real[:len(real)-136]
 
 fs = 720
-threshold=0.1
+threshold=0.2
 
 # plt.plot(real.index, real)
 # plt.xlabel('Point')
@@ -168,7 +169,28 @@ threshold=0.1
 
 # plt.show()
 
-for i in range(3):
-    dr = real[:5140+i*240]
-    ps = period_detect(dr, fs=fs, threshold=threshold, max_error=0.005)
-    print('period %s'  % ps)
+# for i in range(3):
+#     # dr = real[:5140+i*240]
+#     dr = real
+#     ps = period_detect(dr, fs=fs, threshold=threshold, max_error=0.005)
+#     print('period %s'  % ps)
+
+# i=17
+# real = real[:len(real)-i]
+# ps = period_detect(real,fs=fs, threshold=threshold, max_error=0.005)
+# print('%s period %s'  % (i, ps))
+
+# save = []
+# for i in range(200):
+#     d = real[:len(real)-i]
+#     ps = period_detect(d,fs=fs, threshold=threshold, max_error=0.005)
+#     print('%s period %s'  % (i, ps))
+
+#     if ps and ps[0] <= 1.5:
+#         save.append((i, ps))
+#         break
+
+# print(save)
+
+ps = period_detect(real,fs=fs, threshold=threshold, max_error=0.005)
+print('period %s'  % ps)
