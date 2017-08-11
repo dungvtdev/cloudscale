@@ -23,12 +23,14 @@ def period_detect(series, fs=1440, threshold=0.2, periodogram_candiate=8, max_er
         data_value_trans, fs, window=signal.get_window('hamming', n))
     # print(len(f))
     # print(f)
-    # t = 0.02 * np.max(Pxx_den)
-    # i_draw = [i for i in range(1, Pxx_den.size) if Pxx_den[i]>=t and f[i] < (n-1)/fs]
-    # p_draw = [f[i] for i in i_draw]
-    # y_draw = [Pxx_den[i] for i in i_draw]
-    # plt.semilogy(p_draw, y_draw)
-    # # plt.semilogy(f, Pxx_den)
+    t = 0.02 * np.max(Pxx_den)
+    i_draw = [i for i in range(1, Pxx_den.size) if Pxx_den[i]>=t and f[i] < (n-1)/fs]
+    p_draw = [f[i] for i in i_draw]
+    y_draw = [Pxx_den[i] for i in i_draw]
+    plt.semilogy(p_draw, y_draw)
+    plt.xlabel('Days')
+    plt.ylabel('Power')
+    # plt.semilogy(f, Pxx_den)
     # plt.xlabel('frequency [Hz]')
     # plt.ylabel('PSD [V**2/Hz]')
     # plt.show()
@@ -42,6 +44,10 @@ def period_detect(series, fs=1440, threshold=0.2, periodogram_candiate=8, max_er
     period_candidate_pxx = [Pxx_den[i]
                             for i in index_period_candidate if (f[i] < (n - 1) / fs)]
 
+    plt.scatter(period_candidate, period_candidate_pxx)
+    for a,b in zip(period_candidate, period_candidate_pxx):
+        plt.text(a, b, str('  p=%0.2f' % a))
+    plt.show()
     # plt.semilogy(period_candidate, period_candidate_pxx)
     # # plt.semilogy(f, Pxx_den)
     # plt.xlabel('frequency [Hz]')
@@ -72,7 +78,7 @@ def period_detect(series, fs=1440, threshold=0.2, periodogram_candiate=8, max_er
     print(psy)
     plt.scatter(ps, psy)
     plt.plot(days, autocorr)
-    plt.xlabel('day')
+    plt.xlabel('Days')
     plt.ylabel('ACF')
     plt.show()
     # ACF_candidate = [autocorr[int(i*fs)] for i in period_candidate_point['period']]
@@ -140,3 +146,29 @@ def period_detect(series, fs=1440, threshold=0.2, periodogram_candiate=8, max_er
                 final_period = segments[seg_index][2]
                 final_all_period.append(final_period + begin_frame)
     return [x * 1.0 / fs for x in final_all_period]
+
+filename = 'data.result.tn.02.csv'
+
+data = pd.read_csv(filename, header=None)
+
+# time = pd.to_datetime(data[0], format='%Y-%m-%d %H:%M:%S')
+
+# real = pd.Series(np.asarray(data[1]), index=time)
+real = pd.Series(np.asarray(data[1]))
+real = real.interpolate()
+# real = real[:1600]
+real = real[:5140]
+
+fs = 720
+threshold=0.1
+
+# plt.plot(real.index, real)
+# plt.xlabel('Point')
+# plt.ylabel('% CPU / 100')
+
+# plt.show()
+
+for i in range(3):
+    dr = real[:5140+i*240]
+    ps = period_detect(dr, fs=fs, threshold=threshold, max_error=0.005)
+    print('period %s'  % ps)

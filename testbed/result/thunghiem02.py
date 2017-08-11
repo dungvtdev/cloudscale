@@ -45,14 +45,18 @@ if __name__ == '__main__':
     total_data = total_data.ix[begin:end]
 
     # ax.plot(total_data.index, total_data, c='green', zorder=0, label='Total')
-    ax.fill_between(total_data.index, total_data, color='#cccccc', zorder=-2)
+    ax.fill_between(total_data.index, total_data, color='#cccccc', zorder=-2, label='Total')
 
     ax.plot(real_data.index, real_data, c='red', zorder=1, label='Real')
     ax.plot(predict_data.index, predict_data, '--',
-            c='blue', zorder=2, label='predict')
-    ax.scatter(scale_up.index, scale_up, c='black', s=500,
-               marker="o", zorder=-1, label='scalue_up')
-    ax.scatter(scale_down.index, scale_down, c='black', s=500,
-               marker="v", zorder=-1, label='scale_up')
+            c='blue', zorder=2, label='Predict')
+    ax.scatter(scale_up.index, scale_up, c='black', s=100,
+               marker="o", zorder=-1, label='Scale Up')
+    ax.scatter(scale_down.index, scale_down, c='black', s=100,
+               marker="v", zorder=-1, label='Scale Down')
 
+    plt.xlabel('Time')
+    plt.ylabel('% CPU / 100')
+
+    ax.legend()
     plt.show()
