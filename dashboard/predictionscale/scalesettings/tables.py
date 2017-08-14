@@ -106,4 +106,5 @@ class ScaleGroupTable(tables.DataTable):
         name = 'scalegroups'
         verbose_name = _("Scale Groups")
         table_actions = (AddGroup, DeleteGroup,)
-        row_actions = (UpdateGroup, DeleteGroup,)
+        # row_actions = (UpdateGroup, DeleteGroup,)
+        row_actions = ()
