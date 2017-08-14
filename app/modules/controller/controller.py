@@ -72,3 +72,20 @@ class Controller(DependencyModule):
 
     def is_group_exists(self, group_dict):
         return self.group_ctrls.is_exist(group_dict)
+
+    def get_group_current_state(self, group_dict):
+        group = self.group_ctrls.get(group_dict)
+        if group:
+            # n_vms = group.count_vms()
+            state = group.get_state()
+            # return {
+            #     'process': state,
+            #     # 'number_vm': n_vms
+            # }
+            return state
+
+    def get_group_log(self, group_dict):
+        group = self.group_ctrls.get(group_dict)
+        if group:
+            g_log = group.get_log()
+            return g_log

@@ -114,14 +114,14 @@ class UpdateView(workflows.WorkflowView):
             return group.to_dict()
         else:
             return GroupData().to_dict()
-        # return {'flavor_id': flavor.id,
-        #         'name': flavor.name,
-        #         'vcpus': flavor.vcpus,
-        #         'memory_mb': flavor.ram,
-        #         'disk_gb': flavor.disk,
-        #         'swap_mb': flavor.swap or 0,
-        #         'rxtx_factor': flavor.rxtx_factor or 1,
-        #         'eph_gb': getattr(flavor, 'OS-FLV-EXT-DATA:ephemeral', None)}
+            # return {'flavor_id': flavor.id,
+            #         'name': flavor.name,
+            #         'vcpus': flavor.vcpus,
+            #         'memory_mb': flavor.ram,
+            #         'disk_gb': flavor.disk,
+            #         'swap_mb': flavor.swap or 0,
+            #         'rxtx_factor': flavor.rxtx_factor or 1,
+            #         'eph_gb': getattr(flavor, 'OS-FLV-EXT-DATA:ephemeral', None)}
 
 
 class IndexView(RedirectView):
@@ -159,26 +159,26 @@ class Step1View(tables.DataTableView):
         return context
 
 
-def get_group_context(view, request, context, *args, **kwargs):
-    id = kwargs['id']
-    context['step_title'] = view.step_title
-    context['step_index'] = view.step_index
-
-    try:
-        group = client(request).get_group(id)
-        group = get_group_view_data(request, [group, ])[0]
-        if group is None:
-            raise
-    except:
-        err_msg = _('Can\'t retrieve group')
-        exceptions.handle(request, err_msg)
-        return context
-
-    # instances = group.instances
-    insts = zip(group.instances, group.instances_id)
-    context['instances'] = [InstanceTmpl(inst[0], inst[1]) for inst in insts]
-    context['group'] = group
-    return context
+# def get_group_context(view, request, context, *args, **kwargs):
+#     id = kwargs['id']
+#     # context['step_title'] = view.step_title
+#     # context['step_index'] = view.step_index
+#
+#     try:
+#         group = client(request).get_group(id)
+#         group = get_group_view_data(request, [group, ])[0]
+#         if group is None:
+#             raise
+#     except:
+#         err_msg = _('Can\'t retrieve group')
+#         exceptions.handle(request, err_msg)
+#         return context
+#
+#     # instances = group.instances
+#     insts = zip(group.instances, group.instances_id)
+#     context['instances'] = [InstanceTmpl(inst[0], inst[1]) for inst in insts]
+#     context['group'] = group
+#     return context
 
 
 # class Step2View(views.APIView):
@@ -196,14 +196,18 @@ class Step2View(views.APIView):
     step_title = _('Group Control')
     step_index = 2
 
-    # def get_data(self, request, context, *args, **kwargs):
-    #     context = super(Step3View, self).get_context_data(**kwargs)
-    #     context['step_title'] = self.step_title
-    #     context['step_index'] = self.step_index
-    #     return context
     def get_data(self, request, context, *args, **kwargs):
         context = super(Step2View, self).get_context_data(**kwargs)
-        return get_group_context(self, request, context, *args, **kwargs)
+        # return get_group_context(self, request, context, *args, **kwargs)
+        context['group'] = {
+            'id': kwargs['id']
+        }
+
+        return context
+
+        # def get_data(self, request, context, *args, **kwargs):
+        #     context = super(Step2View, self).get_context_data(**kwargs)
+        #     return get_group_context(self, request, context, *args, **kwargs)
 
         # class IndexView(views.APIView):
         #     # A very simple class-based view...
@@ -214,15 +218,15 @@ class Step2View(views.APIView):
         #         return context
 
 
-# class ReportView(views.APIView):
-#     template_name = 'predictionscale/scalesettings/report.html'
-#
-#     def get_data(self, request, context, *args, **kwargs):
-#         context = super(ReportView, self).get_context_data(**kwargs)
-#         id = kwargs['id']
-#         name = 'test'
-#         context['inst'] = {
-#             'id': id,
-#             'name': name,
-#         }
-#         return context
+        # class ReportView(views.APIView):
+        #     template_name = 'predictionscale/scalesettings/report.html'
+        #
+        #     def get_data(self, request, context, *args, **kwargs):
+        #         context = super(ReportView, self).get_context_data(**kwargs)
+        #         id = kwargs['id']
+        #         name = 'test'
+        #         context['inst'] = {
+        #             'id': id,
+        #             'name': name,
+        #         }
+        #         return context

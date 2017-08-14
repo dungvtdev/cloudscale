@@ -25,12 +25,12 @@ group_dict = {
         # 'endpoint': '192.168.122.224',
         'instance_id': 'a202fc26-90e0-410e-89e9-04841676e773'
     }],
-    'data_length': 10,
+    'data_length': 5,
     'update_in_time': 20,
     'metric': 'cpu_usage_total',
     'max_scale_vm': 1
 }
-# app.controller.create_group(group_dict)
+app.controller.create_group(group_dict)
 
-from tests.manual_tests import test_env
-test_env.check_all(app, group_dict)
+# from tests.manual_tests import test_env
+# test_env.check_all(app, group_dict)

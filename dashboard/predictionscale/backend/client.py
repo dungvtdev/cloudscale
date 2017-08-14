@@ -74,6 +74,14 @@ class Client(object):
                 group = GroupData(group_dicts[0])
                 return group
 
+    def get_group_log(self, id):
+        addr_tmpl = '/v1/users/{user_id}/groups/{id}/log'
+        url = self.get_url(addr_tmpl, id=id)
+        r, ok = self.request_get(url)
+        if ok:
+            log = json.loads(r.text)['log']
+            return log
+
     def drop_group(self, id):
         addr_tmpl = '/v1/users/{user_id}/groups/{id}'
         url = self.get_url(addr_tmpl, id=id)

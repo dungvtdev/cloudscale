@@ -131,8 +131,12 @@ class GroupController(threading.Thread):
         self.cache_scale_down = cache_plugin.create(scale_down_config)
 
     def setup_eventlog(self):
-        name = self.data['user_id']
+        # name = self.data['user_id']
+        name = self.data['group_id']
         self.eventlog = self.app.eventlogfactory.create(name)
+
+    def get_log(self):
+        return self.eventlog.get_log()
 
     def cache_predict_value(self, timestamp, value):
         try:
@@ -172,7 +176,7 @@ class GroupController(threading.Thread):
                                         'Group %s delete instance in ops %s' % (self.data['name'], vm['instance_id']))
 
         # remove database
-        self.groupservice.db_drop_group(group_dict=self.data)
+        # self.groupservice.db_drop_group(group_dict=self.data)
 
         # remove trong proxy
         for inst in self.data['instances']:
@@ -336,6 +340,7 @@ class GroupController(threading.Thread):
         self.log.info('Group %s start' % self.logname)
 
         try:
+            self._state = 'init'
             interval, cache = self._run_init()
         except BadInputParams as e:
             if "too short data" in e.message:
@@ -379,6 +384,8 @@ class GroupController(threading.Thread):
                                    self.logname)
                     need_update_model = True
 
+            # self._state = state
+
             if need_update_model and not train_data_func:
                 # update forecast_model, cache co the null
                 train_data_func = self._run_train_data(cache)
@@ -406,19 +413,26 @@ class GroupController(threading.Thread):
             # self.thread_up_forcast_model =
             # delta = time.time() - t
             # time.sleep(max(interval * 60 - delta, 0))
-            time.sleep(interval * 60)
-            # time.sleep(1)
+            # time.sleep(interval * 60)
+            time.sleep(3)
             interval = self.interval_minute
 
             timestamp, value = None, None
             try:
                 timestamp, value = self.monitorcontroller.get_last_one()
-            except InstanceNotValid as e:
+                self._state = 'run'
+            except (InstanceNotValid, ServiceIOException) as e:
+                self._state = 'vm_error'
                 # health check
-                self.log.error('Group %s fail to connect monitor vm. Need reboot vm.' % (
-                    self.logname))
-                self.reboot_monitor_vm()
+                if isinstance(e, InstanceNotValid):
+                    self.log.error('Group %s fail to connect monitor vm. Need reboot vm.' % (
+                        self.logname))
+                    self.reboot_monitor_vm()
+                else:
+                    self.log.error('Group %s fail to connect cache database.' % (
+                        self.logname))
             except Exception as e:
+                self._state = 'system_error'
                 self.log.error('Group %s error when get last point. Er %s' % (
                     self.logname, e.message))
             # luu lai value neu model dang train, trong truong hop thoi gian train
@@ -502,7 +516,7 @@ class GroupController(threading.Thread):
     def run(self):
         try:
             self.eventlog.write('group', 'Group %s startup.' % self.data['name'])
-            self._state = 'running'
+            # self._state = 'running'
             self._run()
         except ServiceIOException as e:
             self.eventlog.write('group', 'Group %s fail with error ServiceIO Exception' % self.data['name'])
@@ -521,6 +535,20 @@ class GroupController(threading.Thread):
 
     """ Status region
     """
+
+    # def count_vms(self):
+    #     vms = self.groupservice.dbutils_get_group_vms()
+    #     return len(vms) if vms else 0
+
+    def get_state(self):
+        mapping = {
+            'wait': 'waiting',
+            'run': 'running',
+            'finish': 'finished',
+            'init': 'initing'
+        }
+        s = self.state
+        return mapping.get(s, s)
 
     def _get_collect_data_process(self):
         return {

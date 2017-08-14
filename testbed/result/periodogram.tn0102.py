@@ -74,8 +74,8 @@ def period_detect(series, fs=1440, threshold=0.2, periodogram_candiate=8, max_er
     ps = [days[i] for i in ids]
     psy = [autocorr[i] for i in ids]
     print(period_candidate)
-    print(ps)
-    print(psy)
+    # print(ps)
+    # print(psy)
     plt.scatter(ps, psy)
     plt.plot(days, autocorr)
     plt.xlabel('Days')
@@ -158,16 +158,31 @@ real = pd.Series(np.asarray(data[1]))
 real = real.interpolate()
 # real = real[:1600]
 # real = real[:5140]
-real = real[:len(real)-136]
+real = real[300:len(real)-100]
+
+for i in range(875, 908):
+    real[i]=0.45
+
+for i in range(1825, 1875):
+    real[i]=0.5
 
 fs = 720
-threshold=0.2
+threshold=0.15
 
-# plt.plot(real.index, real)
-# plt.xlabel('Point')
-# plt.ylabel('% CPU / 100')
+# data_value_trans = real - real.median()
+# f, Pxx_den = signal.periodogram(
+#     data_value_trans, fs, window=signal.get_window('hamming', len(real)))
 
-# plt.show()
+# for i in range(len(f)-1):
+#     if f[i] <=0.3333 and f[i+1]>=0.3333:
+#         print(Pxx_den[i]/np.max(Pxx_den))
+#         break
+
+plt.plot(real.index, real)
+plt.xlabel('Point')
+plt.ylabel('% CPU / 100')
+
+plt.show()
 
 # for i in range(3):
 #     # dr = real[:5140+i*240]

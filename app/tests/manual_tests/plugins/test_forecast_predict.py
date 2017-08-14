@@ -37,7 +37,7 @@ def test_simple():
 def test_data():
     # np.random.seed(7)
 
-    k = 2
+    k = 1
     m = 0
     T = 144
     p = 4
@@ -60,15 +60,17 @@ def test_data():
     print(test.min())
     print(test.max())
 
-    dtmin, dtmax = 0, 1796037
+    # dtmin, dtmax = 0, 1796037
+    dtmin, dtmax = None, None
     in_train, out_train, dmin, dmax = feeder.generate(train, k=k, dmin=dtmin, dmax=dtmax)
+    dtmin, dtmax = 0, 1796037
     in_test, out_test, dtmin, dtmax = feeder.generate(test, k=k, dmin=dtmin, dmax=dtmax)
 
     # print(dtmin == dmin and dtmax == dmax)
 
     out_test = out_test * (dtmax - dtmin) + dtmin
 
-    predictor.train(in_train, out_train, dmin, dmax)
+    predictor.train(in_train, out_train)
     out_pred = predictor.predict_test(in_test)
 
     out_pred = out_pred * (dtmax - dtmin) + dtmin
@@ -114,14 +116,24 @@ def test_data2():
 
     # train = data[142 * 39:142 * 46]
     # test = data[142 * 45:142 * 48]
-    train = data[20:4800]
-    test = data[5000:5200]
+    train = data[20:4600]
+    test = data[4700:4900]
 
-    in_train, out_train, dmin, dmax = feeder.generate(train, k)
+    in_train, out_train, dmin, dmax = feeder.generate(train, k, 0, 1)
     in_test, out_test, dmin, dmax = feeder.generate(test, k, 0, 1)
 
     predictor.train(in_train, out_train)
     out_pred = predictor.predict_test(in_test)
+
+    for i in len(out_pred):
+        if out_pred[i + 1] > out_pred[i]:
+            out_pred[i + 1] = out_pred[i + 1] + 0.07
+        else:
+            out_pred[i + 1] = out_pred[i + 1] - 0.07
+
+    print(out_pred)
+
+    # out_pred = out_pred * (dmax - dmin) + dmin
 
     # out_test = out_test * (dmax - dmin) + dmin
     # out_pred = out_pred * (dmax - dmin) + dmin

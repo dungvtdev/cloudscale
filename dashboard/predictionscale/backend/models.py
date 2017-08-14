@@ -5,7 +5,7 @@ class GroupData:
     attrs = ['id', 'group_id', 'name', 'desc', 'instances', 'image', 'flavor', 'selfservice',
              'provider', 'script_data', 'created',
              'data_length', 'recent_point', 'periodic_number', 'update_in_time',
-             'proxy_url', 'max_scale_vm']
+             'proxy_url', 'max_scale_vm', 'number_vm', 'process']
 
     def __init__(self, data_dict):
         # populate attrs

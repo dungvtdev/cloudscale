@@ -36,7 +36,7 @@ def init_route(app):
 
     class ResourceGroupAction(object):
         post_map = ['update_group', 'purge_group', ]
-        get_map = ['status', ]
+        get_map = ['status', 'log']
 
         def on_post(self, req, resp, user_id, id, action):
             if action in self.post_map:
@@ -66,6 +66,13 @@ def init_route(app):
 
         def _status_action(self, req, resp, user_id, id):
             pass
+
+        def _log_action(self, req, resp, user_id, id):
+            group = backend.get_group({'id': id})
+            g_log = backend.get_group_log(group)
+            req.context['result'] = {
+                'log': g_log
+            }
 
     class ResourceInstances(object):
         def on_get(self, req, resp, user_id):

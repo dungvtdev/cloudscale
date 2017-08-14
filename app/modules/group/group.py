@@ -34,6 +34,11 @@ class GroupUtils(DependencyModule):
         return vm_dict
 
     @dbsession_method
+    def count_vms(self, session, group_dict):
+        vms = self.dbutils_get_group_vms(session, group_dict)
+        return len(vms) if vms else 0
+
+    @dbsession_method
     def db_get_groups_ports(self, session, user_id):
         return self.dbutils_get_groups_port(session, user_id)
 
