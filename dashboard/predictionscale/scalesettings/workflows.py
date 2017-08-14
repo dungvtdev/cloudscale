@@ -249,10 +249,10 @@ class UpdateGroupInstances(workflows.UpdateMembersStep):
 
 
 class UpdateGroupParamsAction(workflows.MembershipAction):
-    data_length = forms.IntegerField(label=_("Data Length"), required=True, help_text="")
+    data_length = forms.IntegerField(label=_("Data Length (1 per 2 secs)"), required=True, help_text="")
     recent_point = forms.IntegerField(label=_("Window Size"), required=True, help_text="")
     periodic_number = forms.IntegerField(label=_("Periodic Number"), required=True, help_text="")
-    update_in_time = forms.IntegerField(label=_("Update Time"), required=True, help_text="")
+    update_in_time = forms.IntegerField(label=_("Update Time (1 per 2 secs)"), required=True, help_text="")
     max_scale_vm = forms.IntegerField(label=_("Max Scale VM"), required=True, help_text="")
 
     # def clean(self):

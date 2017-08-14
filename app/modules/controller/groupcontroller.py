@@ -352,6 +352,9 @@ class GroupController(threading.Thread):
         if not cache and self.wait_cycle_training > 0:
             self.log.debug('Group %s wait %s cycle to train data' %
                            (self.logname, self.wait_cycle_training))
+
+            self.eventlog.write('group', 'Group %s wait %s cycle before train model.' % (self.data['name'], self.wait_cycle_training))
+
         state = 'wait'
 
         cache_list_when_train = None
@@ -387,6 +390,8 @@ class GroupController(threading.Thread):
             # self._state = state
 
             if need_update_model and not train_data_func:
+                self.eventlog.write('group', 'Group %s update model.' % (self.data['name']))
+
                 # update forecast_model, cache co the null
                 train_data_func = self._run_train_data(cache)
                 # setup list nhan du lieu trong qua trinh train

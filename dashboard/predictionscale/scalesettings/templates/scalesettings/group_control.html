@@ -1,7 +1,20 @@
 {% extends 'predictionscale/scalesettings/index.html' %}
 {% block step_content %}
     <div id="group-view" data-url="{% url 'horizon:predictionscale:scalesettings:get_group_log' id=group.id %}">
-        <div id="content"></div>
+        <div>
+            <h3>Group {{ group.name }} logs</h3>
+            <br/>
+        </div>
+        <div id="content"
+             style="font-size: 15px;
+                    line-height: 2;
+                    display: block;
+                    width: 100%;
+                    border-bottom: 1px solid black;
+                    border-top: 1px solid black;
+                    padding-top: 20px;
+                    padding-bottom: 10px;">
+        </div>
     </div>
 {% endblock %}
 {% block self_js %}

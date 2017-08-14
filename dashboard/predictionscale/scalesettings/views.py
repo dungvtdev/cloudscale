@@ -89,6 +89,16 @@ class AddView(workflows.WorkflowView):
     template_name = 'admin/flavors/create.html'
     page_title = _("Add Group")
 
+    def get_initial(self):
+        init = {
+            'data_length': 100,
+            'recent_point': 4,
+            'periodic_number': 1,
+            'update_in_time': 100,
+            'max_scale_vm': 1
+        }
+        return init
+
 
 class UpdateView(workflows.WorkflowView):
     workflow_class = settings_workflows.UpdateGroup
@@ -199,8 +209,15 @@ class Step2View(views.APIView):
     def get_data(self, request, context, *args, **kwargs):
         context = super(Step2View, self).get_context_data(**kwargs)
         # return get_group_context(self, request, context, *args, **kwargs)
+
+        try:
+            group = client(request).get_group(kwargs['id'])
+        except Exception:
+            pass
+
         context['group'] = {
-            'id': kwargs['id']
+            'id': kwargs['id'],
+            'name': group.name if group else ""
         }
 
         return context
