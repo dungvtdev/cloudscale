@@ -418,8 +418,8 @@ class GroupController(threading.Thread):
             # self.thread_up_forcast_model =
             # delta = time.time() - t
             # time.sleep(max(interval * 60 - delta, 0))
-            # time.sleep(interval * 60)
-            time.sleep(3)
+            time.sleep(interval * 60)
+            # time.sleep(3)
             interval = self.interval_minute
 
             timestamp, value = None, None

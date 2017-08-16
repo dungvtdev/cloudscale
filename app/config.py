@@ -115,7 +115,7 @@ LOADBALANCER = {
 }
 
 EVENTLOG = {
-    'path': base_path,
+    'path': '%s/logs/' % base_path,
     'prefix': 'eventlog',
     'maxBytes': 10000000,
     'backupCount': 3
