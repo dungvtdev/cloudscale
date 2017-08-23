@@ -401,6 +401,7 @@ class GroupController(threading.Thread):
                 try:
                     forecast = train_data_func()
                     if forecast is not None:
+                        self.eventlog.write('group', 'Group %s train new model successfully.' % (self.data['name']))
                         del self.forecast_model
                         self.forecast_model = forecast
                         train_data_func = None
@@ -500,6 +501,7 @@ class GroupController(threading.Thread):
                     vm = result['vm']
                     vm['is_monitoring'] = False
                     vm['is_origin'] = False
+                    vm['group_id'] = self.data['group_id']
                     self.groupservice.db_create_vm(vm)
                     # self.data['instances'].append(vm_dict)
                 elif result['type'] == 'down':
@@ -536,7 +538,7 @@ class GroupController(threading.Thread):
             self._state = 'finish'
             if self.delete_callback:
                 self.delete_callback(self)
-            self.clear()
+            # self.clear()
 
     """ Status region
     """

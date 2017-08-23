@@ -103,4 +103,4 @@ configure_group_module(application)
 configure_controller(application)
 configure_api(application)
 
-# app.apihandler.listen()
+app.apihandler.listen()

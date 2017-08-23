@@ -139,7 +139,7 @@ class SimpleScaleController(ScaleControllerBase):
             'flavor': group_data['flavor'],
             'selfservice': group_data['selfservice'],
             'provider': group_data['provider'],
-            'user_data': group_data['user_data'],
+            'user_data': group_data.get('user_data', group_data.get('script_data', None)),
             'try_again': try_again
         }
 
